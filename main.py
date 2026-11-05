@@ -211,22 +211,34 @@ direct_prompt = ChatPromptTemplate.from_messages([
 # query planning: split a question into the separate facts it needs (one search each)
 class QueryPlan(BaseModel):
     """The searches needed to answer the question."""
-    sub_questions: list[str] = Field(description="1 to 3 standalone search questions: just the original "
-        "question if one policy answers it; more only when the answer needs facts from different policies.")
+    sub_questions: list[str] = Field(description="1 to 3 standalone search questions, one per thing the "
+        "answer needs to look up; just the original question if it asks one thing that one policy answers.")
 
 
 plan_prompt = ChatPromptTemplate.from_messages([
     ("system",
      "You plan searches over Orbitra's internal knowledge base (HR, IT, security, finance, admin, legal, "
-     "engineering, product and sales policies). Most questions need one fact: return the question "
-     "unchanged as the only item. Split only when the answer needs facts that sit in different policies, "
-     "for example:\n"
-     "- whether something can happen on a date -> the rule for it (e.g. deployment windows and freezes) "
-     "and the holiday calendar\n"
-     "- an expense claim or purchase -> the spending limit and who approves it (the company approval matrix)\n"
-     "- when a bonus or reimbursement will be paid -> the rule for it and the payroll cut-off dates\n"
-     "- resigning or leaving -> the notice period and leave encashment\n"
-     "Keep the user's region and level in every sub-question; leave out their own amounts and calculations."),
+     "engineering, product and sales policies). Write one search question for each separate thing the "
+     "answer has to look up (at most 3).\n"
+     "Split when:\n"
+     "- the question asks two or more things (\"X and Y\", \"what will happen and what do I do\"), or\n"
+     "- answering it means combining rules that usually sit in different policies, for example:\n"
+     "  - whether something can happen on a date -> the rule for it (e.g. deployment windows and change "
+     "freezes) and the holiday calendar\n"
+     "  - an expense claim or purchase -> the spending limit and who approves it (the approval matrix)\n"
+     "  - when a bonus or reimbursement will be paid -> the rule for it and the payroll cut-off dates\n"
+     "  - resigning or leaving -> the notice period, leave encashment, and what happens to each benefit "
+     "asked about (e.g. ESOP vesting, gratuity)\n"
+     "  - a new joiner or someone on probation -> the onboarding/probation rules and the policy asked about "
+     "(e.g. leave)\n"
+     "  - a lost or stolen device -> the IT asset-loss rules and how to report a security incident\n"
+     "Do not split a question that asks one thing answered by one policy: return it unchanged as the only "
+     "item.\n"
+     "Each sub-question is a plain, standalone search question about one topic. Keep the user's own key "
+     "terms and specifics as they wrote them (e.g. \"comp-off\", \"40 days after birth\"): search matches "
+     "exact words. Never name or guess which policy holds the answer (no \"according to the X policy\"). "
+     "Keep the user's region and level only if they gave them; never add placeholders like "
+     "\"region: unspecified\" or notes in brackets. Leave out the user's own amounts and calculations."),
     ("human", "{question}"),
 ])
 planner = plan_prompt | judge_llm.with_structured_output(QueryPlan).with_retry(**RETRY_BAD_OUTPUT)
@@ -374,7 +386,10 @@ def route_after_decision(state: GraphState) -> Literal["plan_queries", "generate
 
 def plan_queries(state: GraphState) -> dict:
     plan = planner.invoke({"question": state["question"]})
-    return {"sub_questions": plan.sub_questions[:MAX_SUB_QUESTIONS] or [state["question"]]}
+    parts = plan.sub_questions[:MAX_SUB_QUESTIONS]
+    # one part = no split: search the user's own words, since a rephrased query can lose
+    # the exact terms BM25 matches on (e.g. "comp-off" -> "compensatory off")
+    return {"sub_questions": parts if len(parts) > 1 else [state["question"]]}
 
 
 def retrieve(state: GraphState) -> dict:

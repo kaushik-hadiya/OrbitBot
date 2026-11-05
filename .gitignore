@@ -21,3 +21,6 @@ chroma_db/
 
 # eval results (re-creatable with eval/run_eval.py)
 eval/results_*.jsonl
+
+# DeepEval local run cache
+.deepeval/
