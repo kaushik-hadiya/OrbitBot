@@ -381,13 +381,18 @@ def retrieve(state: GraphState) -> dict:
     # after a rewrite: one new query; otherwise one search per sub-question
     queries = [state["search_query"]] if state.get("search_query") else state["sub_questions"]
     k = TOP_K if len(queries) == 1 else TOP_K_PER_PART
+    ranked_lists = [hybrid_search(query, k) for query in queries]
+    # round-robin: every part's best chunk first, then every part's second-best, ...
+    # (appending list after list would bury part 2's top chunk behind part 1's weakest)
     docs, seen = [], set()
-    for query in queries:
-        for d in hybrid_search(query, k):
-            key = (d.metadata["source"], d.page_content)   # the same chunk can come back for two parts
-            if key not in seen:
-                seen.add(key)
-                docs.append(d)
+    for rank in range(k):
+        for ranked in ranked_lists:
+            if rank < len(ranked):
+                d = ranked[rank]
+                key = (d.metadata["source"], d.page_content)   # the same chunk can come back for two parts
+                if key not in seen:
+                    seen.add(key)
+                    docs.append(d)
     return {"documents": docs}
 
 
