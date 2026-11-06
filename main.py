@@ -157,18 +157,28 @@ OPENROUTER = dict(
 llm = ChatOpenAI(**OPENROUTER)
 # yes/no judgments don't need deep thinking: ask OpenRouter for low reasoning effort
 judge_llm = ChatOpenAI(**OPENROUTER, extra_body={"reasoning": {"effort": "low"}})
-# the judge sometimes returns a value outside the schema (e.g. "partial" instead of "partially");
-# the provider rejects that with a 400 and max_retries doesn't retry it, so ask again up to 3 times
-RETRY_BAD_OUTPUT = dict(retry_if_exception_type=(BadRequestError,), stop_after_attempt=3)
+# max_retries only covers HTTP errors (429/5xx), so two bad replies need their own retry (up to 3 tries):
+# - BadRequestError: the judge returned a value outside the schema (e.g. "partial" instead of
+#   "partially") and the provider rejected it with a 400
+# - ValueError: the provider failed mid-answer and OpenRouter sent back an empty 200
+#   (finish_reason 'error'), so LangChain found no parsed output
+RETRY_BAD_OUTPUT = dict(retry_if_exception_type=(BadRequestError, ValueError), stop_after_attempt=3)
 
 prompt = ChatPromptTemplate.from_messages([
     ("system",
      "You are OrbitBot, an internal assistant for Orbitra Technologies employees. "
-     "Answer the question using only the context below. Give the direct answer first, "
-     "then the conditions, exceptions and next steps the context gives for it (e.g. who "
-     "must approve, deadlines, what is not allowed, what to do if it doesn't work), one "
-     "short line each; leave out details about other topics. If the context does not "
-     "contain the answer, say you don't know. If the answer depends on details the "
+     "Answer the question using only the context below. Give the direct answer first. "
+     "Then add, one short line each, only the conditions, exceptions and next steps that "
+     "change or limit that answer for what was asked (e.g. who must approve it, a deadline "
+     "for it, an exception to it, what to do if it doesn't work). Leave out related rules "
+     "that don't change the answer (other leave types, carry-over, payouts, general "
+     "process steps, contacts), and never add a line saying there are no other conditions. "
+     "If nothing changes the answer, the direct answer alone is enough. If the context does not "
+     "contain the answer, say you don't know; if it answers only some parts of the question, "
+     "answer those and say which part you don't know. If chunks from different policies "
+     "touch the same topic, follow the policy whose subject is the question's topic and "
+     "put its process first; never carry a rule from a policy about something else (another "
+     "team, ticket type, region or group) into the answer. If the answer depends on details the "
      "user did not give (location, level, etc.), list the options from the context "
      "and ask which applies. Cite the doc_id of every source you use, like "
      "[HR-LV-001].\n\nContext:\n{context}"),
