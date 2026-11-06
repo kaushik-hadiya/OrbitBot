@@ -10,7 +10,7 @@ Only the 47 answerable questions are in that file; unanswerable ones (no gold_do
 
     input             = the original question
     actual_output     = the raw generate answer
-    retrieval_context = the kept chunks, as "[doc_id] text", like generate sees them
+    retrieval_context = the kept chunks, as "[doc_id: title] text" (main.format_docs), like generate sees them
 
 Faithfulness checks every claim in the answer against retrieval_context; answer relevancy checks
 every statement in the answer addresses the question. Neither needs gold chunks or ground_truth.
@@ -60,9 +60,14 @@ def latest_retrieval_run() -> Path:
     return runs[-1]
 
 
+# older retrieval runs didn't save chunk titles; look them up by source file
+TITLES = {d.metadata["source"]: d.metadata.get("title", "?") for d in main.load_documents()}
+
+
 def kept_chunks(row: dict) -> list[Document]:
     """The chunks grade_documents kept for this question (grades are in the same order as chunks)."""
     return [Document(page_content=c["text"], metadata={"doc_id": c["doc_id"], "source": c["source"],
+                                                       "title": c.get("title") or TITLES.get(c["source"], "?"),
                                                        "status": c["status"]})
             for c, g in zip(row["chunks"], row["after_grading"]["grades"]) if g["relevant"]]
 
@@ -118,7 +123,7 @@ def main_eval(args):
         name=r["qid"],
         input=r["question"],
         actual_output=answers[r["qid"]],
-        retrieval_context=[f"[{d.metadata['doc_id']}] {d.page_content}" for d in kept_chunks(r)],
+        retrieval_context=[main.format_docs([d]) for d in kept_chunks(r)],
     ) for r in rows]
     judge = OpenRouterModel(model=args.judge, api_key=os.environ["OPENROUTER_API_KEY"], temperature=0)
     metrics = [FaithfulnessMetric(model=judge), AnswerRelevancyMetric(model=judge)]

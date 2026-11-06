@@ -186,7 +186,10 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 def format_docs(docs: list[Document]) -> str:
-    return "\n\n".join(f"[{d.metadata.get('doc_id', '?')}] {d.page_content}" for d in docs)
+    # the title tells the LLMs what a chunk's rules are for: a chunk from the middle of a document
+    # has no heading of its own (e.g. IT-001's ticket SLAs vs CS-001's customer SLAs)
+    return "\n\n".join(f"[{d.metadata.get('doc_id', '?')}: {d.metadata.get('title', '?')}] {d.page_content}"
+                       for d in docs)
 
 
 # retrieval decision (Self-RAG's "Retrieve" step), returned as a Pydantic object
@@ -298,7 +301,11 @@ support_prompt = ChatPromptTemplate.from_messages([
      "question (e.g. their own salary, dates or counts), or if it is a direct calculation or "
      "rewording of those. Saying 'I don't know', asking the user a clarifying question, and "
      "citations like [HR-LV-001] are not claims. Anything else, such as numbers, names, rules or "
-     "steps not found in the chunks or the question, is unsupported.\n\nChunks:\n{context}"),
+     "steps not found in the chunks or the question, is unsupported. A rule or step that is in a "
+     "chunk is still unsupported if the answer applies it to something that chunk is not about "
+     "(e.g. one team's, ticket type's, region's or group's process presented as applying to another); "
+     "each chunk is prefixed with its doc_id, so check which document a claim comes from.\n\n"
+     "Chunks:\n{context}"),
     ("human", "Question: {question}\n\nAnswer to check:\n{answer}"),
 ])
 support_checker = support_prompt | judge_llm.with_structured_output(SupportGrade).with_retry(**RETRY_BAD_OUTPUT)

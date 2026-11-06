@@ -13,7 +13,7 @@ skipped, since there is nothing to recall.
 
     input             = the original question (the judge rates relevance against it)
     expected_output   = ground_truth (recall checks each of its statements is in the chunks)
-    retrieval_context = the chunks, as "[doc_id] text", like generate sees them
+    retrieval_context = the chunks, as "[doc_id: title] text" (main.format_docs), like generate sees them
 
 If the grader drops every chunk, the graph would go to rewrite_query; here that question's
 after-grading context is empty and scores 0 on both metrics (DeepEval can't score an empty list).
@@ -104,7 +104,7 @@ def test_case(name: str, q: dict, docs) -> LLMTestCase:
         name=name,
         input=q["question"],
         expected_output=q["ground_truth"],
-        retrieval_context=[f"[{doc_id(d)}] {d.page_content}" for d in docs],
+        retrieval_context=[main.format_docs([d]) for d in docs],
     )
 
 
@@ -194,7 +194,7 @@ def main_eval(args):
             "retrieved_doc_ids": [doc_id(d) for d in run["docs"]],   # in rank order, may repeat a doc
             "gold_doc_recall": gold_doc_recall(run["docs"], q["gold_docs"]),
             "metrics": scores_for(f"{q['qid']}|before", by_name),
-            "chunks": [{"doc_id": doc_id(d), "source": d.metadata.get("source"),
+            "chunks": [{"doc_id": doc_id(d), "title": d.metadata.get("title"), "source": d.metadata.get("source"),
                         "status": d.metadata.get("status"), "text": d.page_content} for d in run["docs"]],
         }
         if after:
