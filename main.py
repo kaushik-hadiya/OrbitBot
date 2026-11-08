@@ -173,7 +173,10 @@ prompt = ChatPromptTemplate.from_messages([
      "for it, an exception to it, what to do if it doesn't work). Leave out related rules "
      "that don't change the answer (other leave types, carry-over, payouts, general "
      "process steps, contacts), and never add a line saying there are no other conditions. "
-     "If nothing changes the answer, the direct answer alone is enough. If the context does not "
+     "If nothing changes the answer, the direct answer alone is enough. When the answer is no, "
+     "don't suggest a way around it: mention an exception, approval or alternative only if the "
+     "context says it applies to the user's case (e.g. not a fix-only exception for a feature, or a "
+     "tool approved for less sensitive data than theirs). If the context does not "
      "contain the answer, say you don't know; if it answers only some parts of the question, "
      "answer those and say which part you don't know. If chunks from different policies "
      "touch the same topic, follow the policy whose subject is the question's topic and "
@@ -287,11 +290,17 @@ grader = grade_prompt | judge_llm.with_structured_output(DocGrade).with_retry(**
 # support check (Self-RAG's "IsSup" step): is the answer grounded in the chunks?
 class SupportGrade(BaseModel):
     """How well the retrieved chunks support the generated answer."""
+    # filled first, so the model checks each suggested way out against the user's case before grading
+    # (without it, workarounds like "get VP approval" for a fix-only freeze passed as 'fully')
+    alternatives_check: list[str] = Field(description="Before grading: each exception, approval, "
+        "workaround or alternative the answer suggests, followed by the user's case and whether a chunk "
+        "says it applies to that case (quote the chunk's limit if it doesn't). Empty if none.")
     support: Literal["fully", "partially", "none"] = Field(description="'fully' if every factual "
         "claim in the answer is stated in, or directly calculated from, the chunks; 'partially' if "
         "some claims are not; 'none' if the answer is mostly unsupported.")
-    unsupported_claims: list[str] = Field(description="Each claim not backed by the chunks; "
-        "empty if fully supported.")
+    unsupported_claims: list[str] = Field(description="Each claim not backed by the chunks, including "
+        "every alternative from alternatives_check that doesn't apply to the user's case; empty if "
+        "fully supported.")
 
 
 support_prompt = ChatPromptTemplate.from_messages([
@@ -304,19 +313,27 @@ support_prompt = ChatPromptTemplate.from_messages([
      "steps not found in the chunks or the question, is unsupported. A rule or step that is in a "
      "chunk is still unsupported if the answer applies it to something that chunk is not about "
      "(e.g. one team's, ticket type's, region's or group's process presented as applying to another); "
-     "each chunk is prefixed with its doc_id, so check which document a claim comes from.\n\n"
+     "each chunk is prefixed with its doc_id, so check which document a claim comes from. Likewise, "
+     "a suggested exception, approval, workaround or alternative is unsupported unless a chunk says "
+     "it applies to the user's case; if a chunk limits it to other cases (other data classes, "
+     "incident types, situations), it is unsupported even though the chunk mentions it.\n\n"
      "Chunks:\n{context}"),
     ("human", "Question: {question}\n\nAnswer to check:\n{answer}"),
 ])
-support_checker = support_prompt | judge_llm.with_structured_output(SupportGrade).with_retry(**RETRY_BAD_OUTPUT)
+# medium effort: one call per answer (not per chunk like the grader), and at low effort the check
+# missed most workarounds that a chunk rules out for the user's case
+support_llm = ChatOpenAI(**OPENROUTER, extra_body={"reasoning": {"effort": "medium"}})
+support_checker = support_prompt | support_llm.with_structured_output(SupportGrade).with_retry(**RETRY_BAD_OUTPUT)
 
 # used when the support check fails: edit the previous answer instead of starting over
 revise_prompt = ChatPromptTemplate.from_messages([
     ("system",
      "You are OrbitBot, an internal assistant for Orbitra Technologies employees. Your previous "
      "answer contained claims that the context does not support. Remove or correct only those "
-     "claims and keep the rest of the answer as it was. Do not add any new details, even ones that "
-     "seem helpful. Keep the doc_id citations like [HR-LV-001].\n\nContext:\n{context}"),
+     "claims and keep the rest of the answer as it was. If an unsupported claim suggests an exception, "
+     "approval, workaround or alternative, delete it; don't replace it with a different one. Do not add "
+     "any new details, even ones that seem helpful. Keep the doc_id citations like [HR-LV-001]."
+     "\n\nContext:\n{context}"),
     ("human", "Question: {question}\n\nPrevious answer:\n{answer}\n\nUnsupported claims:\n{claims}"),
 ])
 
@@ -493,7 +510,10 @@ def check_support(state: GraphState) -> dict:
         "question": state["question"],  # the user's own numbers are valid inputs to the answer
         "answer": state["answer"],
     })
-    return {"support": grade.support, "unsupported_claims": grade.unsupported_claims}
+    # a verdict that names no claim gives revise_answer nothing to fix and flag_unsupported nothing
+    # to list, so treat it as supported
+    support = grade.support if grade.unsupported_claims else "fully"
+    return {"support": support, "unsupported_claims": grade.unsupported_claims}
 
 
 # END is just the string "__end__", so a router can finish the graph directly
