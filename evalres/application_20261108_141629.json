@@ -1,0 +1,1902 @@
+{
+  "stage": "application",
+  "run_at": "2026-11-08T14:16:29",
+  "config": {
+    "judge": "openai/gpt-4o",
+    "judge_providers": "any with logprobs (require_parameters)",
+    "logprob_calls_by_provider": {
+      "OpenAI": 94
+    },
+    "metrics": {
+      "Correctness": {
+        "type": "GEval, evaluation_steps + rubric, params: input/actual_output/expected_output",
+        "evaluation_steps": [
+          "Break the expected output into its individual facts (numbers, durations, amounts, dates, eligibility conditions, owners, contacts, process steps).",
+          "For each fact, check whether the actual output states it with the same value; paraphrasing is fine, a different number, unit, date, region or policy version is not.",
+          "Heavily penalize any statement in the actual output that contradicts the expected output, such as a figure from a superseded policy presented as current, or another region's rule (India vs US vs UK).",
+          "Mentioning an outdated figure is acceptable only if the actual output clearly labels it as superseded, old or no longer applicable.",
+          "Do not penalize extra details that are consistent with the expected output; penalize them only if they contradict it or change what the answer means.",
+          "Score in proportion to how many expected facts are covered, giving most weight to the fact that directly answers the question: missing it means a low score even if minor facts are present.",
+          "The core fact is whatever the expected output gives as the answer. If the expected output itself says where or how to get the information (e.g. a system to check or a ticket to raise) rather than the information, an actual output that says it cannot see it and gives that same route is fully correct. Give the lowest score only when the actual output says it cannot answer or does not know while the expected output contains the answer itself."
+        ],
+        "rubric": [
+          {
+            "score_range": [
+              0,
+              1
+            ],
+            "expected_outcome": "Wrong or no answer: contradicts the core fact, presents a superseded or other-region figure as current, or declines although the expected output contains the answer itself (not just a route to it)."
+          },
+          {
+            "score_range": [
+              2,
+              4
+            ],
+            "expected_outcome": "Core fact missing or wrong, though some secondary facts are right."
+          },
+          {
+            "score_range": [
+              5,
+              6
+            ],
+            "expected_outcome": "Core fact right, but most supporting facts missing, or a minor detail contradicts the expected output."
+          },
+          {
+            "score_range": [
+              7,
+              8
+            ],
+            "expected_outcome": "Core fact right, one or two minor supporting details missing, no contradictions."
+          },
+          {
+            "score_range": [
+              9,
+              10
+            ],
+            "expected_outcome": "All expected facts present and consistent; extra details do not contradict."
+          }
+        ]
+      },
+      "Completeness": {
+        "type": "GEval, evaluation_steps + rubric, params: input/actual_output/expected_output",
+        "evaluation_steps": [
+          "List the parts the input asks for: each separate question, and each condition or case it names (e.g. 'how many days and how do I apply' has two parts).",
+          "List the individual facts in the expected output (numbers, durations, dates, conditions, owners, contacts, process steps).",
+          "For each part of the input and each expected fact, check whether the actual output addresses it; paraphrasing counts. Judge only whether it is addressed, not whether the stated value is right: accuracy is scored by a separate metric.",
+          "Weigh the parts of the input most: leaving a part of the question unanswered is a major gap, missing a supporting fact from the expected output is a minor one.",
+          "Extra information beyond the expected output neither adds to nor reduces completeness.",
+          "If the expected output says where or how to get the information (e.g. a system to check or a ticket to raise) rather than the information itself, giving that same route is complete.",
+          "If the actual output says it cannot answer or does not know while the expected output contains the answer itself, give the lowest score."
+        ],
+        "rubric": [
+          {
+            "score_range": [
+              0,
+              1
+            ],
+            "expected_outcome": "Addresses none of what the input asks, or declines although the expected output contains the answer itself."
+          },
+          {
+            "score_range": [
+              2,
+              4
+            ],
+            "expected_outcome": "At least one part of the question is left unanswered (missing supporting facts alone never put an answer in this band)."
+          },
+          {
+            "score_range": [
+              5,
+              6
+            ],
+            "expected_outcome": "Every part of the question is addressed, but most of the supporting facts are missing."
+          },
+          {
+            "score_range": [
+              7,
+              8
+            ],
+            "expected_outcome": "Every part of the question is addressed; some supporting facts are missing."
+          },
+          {
+            "score_range": [
+              9,
+              10
+            ],
+            "expected_outcome": "Every part of the question is addressed and every expected fact is present."
+          }
+        ]
+      }
+    },
+    "threshold": 0.7,
+    "generator_llm": "openai/gpt-oss-120b",
+    "answers_from": "evalres/pipeline_20261106_153648.json",
+    "scoring_seconds": 33.6
+  },
+  "summary": {
+    "overall": {
+      "n": 47,
+      "correctness": 0.851,
+      "correctness pass_rate": 0.872,
+      "correctness errors": 0,
+      "completeness": 0.846,
+      "completeness pass_rate": 0.957,
+      "completeness errors": 0
+    },
+    "by_type": {
+      "action_redirect": {
+        "n": 2,
+        "correctness": 0.972,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.948,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "ambiguous": {
+        "n": 1,
+        "correctness": 0.943,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.932,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "multi_hop": {
+        "n": 14,
+        "correctness": 0.805,
+        "correctness pass_rate": 0.786,
+        "correctness errors": 0,
+        "completeness": 0.828,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "numerical": {
+        "n": 3,
+        "correctness": 0.91,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.903,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "policy_judgment": {
+        "n": 3,
+        "correctness": 0.922,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.915,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "procedural": {
+        "n": 1,
+        "correctness": 0.856,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.885,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "region_specific": {
+        "n": 2,
+        "correctness": 0.826,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.718,
+        "completeness pass_rate": 0.5,
+        "completeness errors": 0
+      },
+      "single_hop": {
+        "n": 17,
+        "correctness": 0.848,
+        "correctness pass_rate": 0.824,
+        "correctness errors": 0,
+        "completeness": 0.84,
+        "completeness pass_rate": 0.941,
+        "completeness errors": 0
+      },
+      "temporal": {
+        "n": 1,
+        "correctness": 0.893,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.79,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "version_conflict": {
+        "n": 3,
+        "correctness": 0.844,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.824,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      }
+    },
+    "by_outcome": {
+      "answered -> useful": {
+        "n": 42,
+        "correctness": 0.868,
+        "correctness pass_rate": 0.929,
+        "correctness errors": 0,
+        "completeness": 0.85,
+        "completeness pass_rate": 0.952,
+        "completeness errors": 0
+      },
+      "revised -> useful": {
+        "n": 2,
+        "correctness": 0.899,
+        "correctness pass_rate": 1.0,
+        "correctness errors": 0,
+        "completeness": 0.895,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "rewrite + revised -> useful": {
+        "n": 2,
+        "correctness": 0.626,
+        "correctness pass_rate": 0.0,
+        "correctness errors": 0,
+        "completeness": 0.727,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      },
+      "flagged unsupported": {
+        "n": 1,
+        "correctness": 0.5,
+        "correctness pass_rate": 0.0,
+        "correctness errors": 0,
+        "completeness": 0.807,
+        "completeness pass_rate": 1.0,
+        "completeness errors": 0
+      }
+    },
+    "unanswerable": {
+      "n": 3,
+      "abstained": 3,
+      "answered_anyway": []
+    }
+  },
+  "failures": {},
+  "results": [
+    {
+      "qid": "Q001",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "How many sick leaves do India employees get per year?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "12 days per year.  \nCredited in full on 1 January (pro‑rated for new joiners) [HR‑LV‑001].",
+      "scored_answer": "12 days per year.  \nCredited in full on 1 January (pro‑rated for new joiners) [HR‑LV‑001].",
+      "expected_output": "India employees get 12 days of sick leave per year. Sick leave is credited on 1 January. Sick leave is pro-rated for joiners. Sick leave lapses on 31 December.",
+      "correctness": {
+        "score": 0.8121656805768186,
+        "reason": "The core fact that India employees get 12 days of sick leave per year is correctly stated. The details about sick leave being credited on 1 January and being pro-rated for new joiners are also present. However, the actual output misses the detail that sick leave lapses on 31 December, which is a minor supporting fact.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.823656097079654,
+        "reason": "The response addresses all parts of the question by stating the number of sick leave days, the crediting date, and the pro-rating for new joiners. However, it misses the fact that sick leave lapses on 31 December.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q002",
+      "type": "version_conflict",
+      "difficulty": "medium",
+      "question": "How many days of paternity leave can I take in Bengaluru?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "10 working days of paternity leave per child.  \n- Must be taken within 6 months of the child’s birth. [HR-LV-001]",
+      "scored_answer": "10 working days of paternity leave per child.  \n- Must be taken within 6 months of the child’s birth. [HR-LV-001]",
+      "expected_output": "Paternity leave in India is 10 working days per child under Leave Policy v5.0. Leave Policy v5.0 is effective from 1 April 2026. Paternity leave must be used within 6 months of the birth.",
+      "correctness": {
+        "score": 0.7947434904579478,
+        "reason": "The actual output correctly states the core fact of 10 working days of paternity leave per child, matching the expected output. It also accurately mentions the leave must be taken within 6 months of the child's birth. However, it lacks the detail about the policy version and effective date, which are minor supporting details.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8183520515110463,
+        "reason": "The response addresses the main question about the number of paternity leave days and includes the condition that it must be taken within 6 months of the child's birth. However, it misses the supporting fact about the Leave Policy v5.0 and its effective date.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q003",
+      "type": "version_conflict",
+      "difficulty": "medium",
+      "question": "What is the maximum earned leave I can carry forward?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "30 days.\n\n- Only Earned Leave (EL) may be carried forward; other leave types cannot.  \n- The total EL balance carried into the next year cannot exceed 30 days.  \n- This applies to India‑based employees; the leave year runs 1 Jan – 31 Dec.【HR-LV-001】",
+      "scored_answer": "30 days.\n\n- Only Earned Leave (EL) may be carried forward; other leave types cannot.  \n- The total EL balance carried into the next year cannot exceed 30 days.  \n- This applies to India‑based employees; the leave year runs 1 Jan – 31 Dec.【HR-LV-001】",
+      "expected_output": "Up to 30 days of earned leave can be carried forward under Leave Policy v5.0.",
+      "correctness": {
+        "score": 0.8945298167521246,
+        "reason": "The core fact that up to 30 days of earned leave can be carried forward is correctly stated. The additional details about the applicability to India-based employees and the leave year duration are consistent with the expected output and do not contradict it. The only minor missing detail is the specific mention of 'Leave Policy v5.0', but this does not affect the correctness of the core fact.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8597141742136097,
+        "reason": "The actual output addresses the main part of the question by stating that the maximum earned leave that can be carried forward is 30 days. It also provides additional supporting facts, such as the condition that only earned leave can be carried forward, the applicability to India-based employees, and the leave year duration. The only missing detail is the specific mention of 'Leave Policy v5.0' from the expected output.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q004",
+      "type": "version_conflict",
+      "difficulty": "medium",
+      "question": "Within how many days must I use a comp-off?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "You must use a comp‑off within **60 days** of earning it.  \n- It requires manager approval. [HR-LV-001]  \n- It is granted only after working a minimum of 4 hours on a weekend or holiday. [HR-LV-001]",
+      "scored_answer": "You must use a comp‑off within **60 days** of earning it.  \n- It requires manager approval. [HR-LV-001]  \n- It is granted only after working a minimum of 4 hours on a weekend or holiday. [HR-LV-001]",
+      "expected_output": "A comp-off must be used within 60 days under Leave Policy v5.0.",
+      "correctness": {
+        "score": 0.8418040225490013,
+        "reason": "The core fact that a comp-off must be used within 60 days is correctly stated. The additional details about manager approval and the conditions for earning a comp-off do not contradict the expected output and provide useful context. The only minor omission is the specific mention of 'Leave Policy v5.0', but this does not affect the correctness of the core fact.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.793783333467445,
+        "reason": "The response addresses the main part of the question by stating that a comp-off must be used within 60 days, which matches the expected output. However, it includes additional details about manager approval and conditions for earning a comp-off, which are not part of the expected facts. The reference to Leave Policy v5.0 is missing, which is a minor omission.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 0.6666666666666666
+      }
+    },
+    {
+      "qid": "Q005",
+      "type": "region_specific",
+      "difficulty": "medium",
+      "question": "I work in the Austin office. How many PTO days do I get in my first year?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "20 days of PTO in your first year. 【HR-LV-002】",
+      "scored_answer": "20 days of PTO in your first year. 【HR-LV-002】",
+      "expected_output": "US employees with 0–2 years of service get 20 days of PTO per year. US employees get 10 sick days per year. US employees get 11 company holidays per year. US employees get 1 floating holiday per year.",
+      "correctness": {
+        "score": 0.7251049980443341,
+        "reason": "The core fact about receiving 20 days of PTO in the first year is correct. However, the actual output lacks supporting details about sick days, company holidays, and floating holidays, which are present in the expected output. There are no contradictions in the provided information.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.5573875275451619,
+        "reason": "The response addresses the main part of the question by stating the number of PTO days in the first year, which is the primary focus of the input. However, it misses supporting facts such as sick days, company holidays, and floating holidays, which are part of the expected output.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q006",
+      "type": "region_specific",
+      "difficulty": "medium",
+      "question": "How much paternity leave do London employees get?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "6 weeks of paternity/partner leave at full pay.  \n- Must be booked through PeopleHub.  \n- For questions, contact HRBP UK Hannah Price (hannah.price@orbitra.io). [HR-LV-003]",
+      "scored_answer": "6 weeks of paternity/partner leave at full pay.  \n- Must be booked through PeopleHub.  \n- For questions, contact HRBP UK Hannah Price (hannah.price@orbitra.io). [HR-LV-003]",
+      "expected_output": "UK employees get 6 weeks of paternity leave. UK paternity leave is at full pay.",
+      "correctness": {
+        "score": 0.9278256793702401,
+        "reason": "The core fact that London employees get 6 weeks of paternity leave at full pay is correctly stated. The actual output includes additional details about booking through PeopleHub and contact information for HRBP UK, which do not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8776758034040191,
+        "reason": "The response addresses the question about paternity leave for London employees, providing the duration and pay details as expected. It also includes additional information on booking and contact details, which are not required but do not detract from completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 0.3333333333333333
+      }
+    },
+    {
+      "qid": "Q007",
+      "type": "ambiguous",
+      "difficulty": "medium",
+      "question": "What is my notice period?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "I can’t determine your exact notice period without knowing your employment details (location, level, and whether you’re still on probation).  \n\n- If you’re **still on probation** (any level), the notice period is **15 days**.  \n- If you’re a **confirmed employee in India**:  \n  • **L1–L5** → **60 days**  \n  • **L6–L10** → **90 days**  \n- If you’re in the **US (at‑will)** → **2 weeks** (requested).  \n- If you’re in the **UK** → per contract: **1 month** for L1–L5, **3 months** for L6+.  \n\nPlease let me know your location, level, and whether you’re still on probation so I can give the precise notice period. [HR-EXIT-001]",
+      "scored_answer": "I can’t determine your exact notice period without knowing your employment details (location, level, and whether you’re still on probation).  \n\n- If you’re **still on probation** (any level), the notice period is **15 days**.  \n- If you’re a **confirmed employee in India**:  \n  • **L1–L5** → **60 days**  \n  • **L6–L10** → **90 days**  \n- If you’re in the **US (at‑will)** → **2 weeks** (requested).  \n- If you’re in the **UK** → per contract: **1 month** for L1–L5, **3 months** for L6+.  \n\nPlease let me know your location, level, and whether you’re still on probation so I can give the precise notice period. [HR-EXIT-001]",
+      "expected_output": "The notice period during probation is 15 days. In India, the notice period is 60 days for L1–L5. In India, the notice period is 90 days for L6–L10. In the UK, the notice period is 1 month for L1–L5. In the UK, the notice period is 3 months for L6 and above. In the US, 2 weeks' notice is requested.",
+      "correctness": {
+        "score": 0.9426321592547492,
+        "reason": "The actual output correctly states all the expected notice periods for different regions and levels, including probation. It also appropriately requests additional information to provide a precise answer, which aligns with the expected output's details. No contradictions or missing facts are present.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9317426265587677,
+        "reason": "The response addresses every part of the question by explaining the notice period for different scenarios based on location, level, and probation status. It includes all expected facts such as the notice periods for probation, India, the UK, and the US. The only minor shortcoming is the additional request for employment details, which does not affect completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q008",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm an L6 in Pune and want to resign. If I have 40 days of EL, can I use them to shorten my notice?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "No – you cannot apply your 40 days of earned leave to reduce the 90‑day notice required for an L6 employee in India.  \n\n- EL balance **cannot** be adjusted against the notice period [HR-EXIT-001].  \n- To leave earlier you would need manager approval for an early release or buy out the shortfall as per the policy.",
+      "scored_answer": "No – you cannot apply your 40 days of earned leave to reduce the 90‑day notice required for an L6 employee in India.  \n\n- EL balance **cannot** be adjusted against the notice period [HR-EXIT-001].  \n- To leave earlier you would need manager approval for an early release or buy out the shortfall as per the policy.",
+      "expected_output": "The notice period for L6 employees in India is 90 days. Earned leave cannot be adjusted against the notice period. Earned leave is encashed at exit up to a maximum of 30 days. Early release from the notice period is at the manager's discretion. A notice-period shortfall can be bought out at (Basic + HRA)/30 per day.",
+      "correctness": {
+        "score": 0.8748747227597395,
+        "reason": "The core fact that earned leave cannot be used to reduce the 90-day notice period for L6 employees in India is correctly stated. The actual output also correctly mentions the need for manager approval for early release or the option to buy out the notice period shortfall, aligning with the expected output. The only missing detail is the encashment of earned leave up to 30 days, but this does not contradict the core facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7990553795665067,
+        "reason": "The response addresses all parts of the question: the inability to use earned leave to shorten the notice period and the conditions for early release. It mentions the 90-day notice period and the need for manager approval or buyout for early release. However, it misses the detail about earned leave being encashed up to 30 days and the specific buyout rate calculation.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q009",
+      "type": "numerical",
+      "difficulty": "hard",
+      "question": "My Basic is INR 60,000 and HRA is INR 30,000 per month. How much would I pay to buy out 20 days of notice?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "You would pay ₹60,000 to buy out 20 days of notice.  \n- Calculation: (Basic ₹60,000 + HRA ₹30,000) ÷ 30 × 20 = ₹60,000. [HR-EXIT-001]",
+      "scored_answer": "You would pay ₹60,000 to buy out 20 days of notice.  \n- Calculation: (Basic ₹60,000 + HRA ₹30,000) ÷ 30 × 20 = ₹60,000. [HR-EXIT-001]",
+      "expected_output": "A notice-period shortfall can be bought out at (Basic + HRA)/30 per day of shortfall.",
+      "correctness": {
+        "score": 0.8616685824105037,
+        "reason": "The core fact is correct: the calculation for buying out 20 days of notice is accurately provided as ₹60,000. The calculation method aligns with the expected output formula (Basic + HRA)/30 per day. All expected facts are present and consistent, with no contradictions.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8602506243186869,
+        "reason": "The response addresses the question of how much would be paid to buy out 20 days of notice and provides the calculation method, which matches the expected output. All parts of the question are addressed, and the calculation aligns with the expected formula, covering all expected facts.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q010",
+      "type": "numerical",
+      "difficulty": "hard",
+      "question": "I'm an L5 travelling Bengaluru to Delhi for 3 nights, flying out at 4 PM on day 1 and returning at 10 AM on day 4. What per diem can I claim?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "**INR 4,500** total per‑diem (Day 1 = ½ × 1,500 = 750 INR; Day 2 = 1,500 INR; Day 3 = 1,500 INR; Day 4 = ½ × 1,500 = 750 INR)【FIN-002】  \n\n- 50 % rate applies on the departure day (after 2 PM) and the return day (before 12 PM).  \n- Claim in SpendWise under “Per diem” with the travel dates; no receipts required.  ",
+      "scored_answer": "**INR 4,500** total per‑diem (Day 1 = ½ × 1,500 = 750 INR; Day 2 = 1,500 INR; Day 3 = 1,500 INR; Day 4 = ½ × 1,500 = 750 INR)【FIN-002】  \n\n- 50 % rate applies on the departure day (after 2 PM) and the return day (before 12 PM).  \n- Claim in SpendWise under “Per diem” with the travel dates; no receipts required.",
+      "expected_output": "The domestic per diem for L5 is INR 1,500 per day. If departure is after 2 PM, the per diem for that day is 50%. If return is before 12 PM, the per diem for that day is 50%.",
+      "correctness": {
+        "score": 0.9253861006969247,
+        "reason": "The actual output correctly calculates the total per diem as INR 4,500, breaking down the amounts for each day in line with the expected rules: 50% rate for departure after 2 PM and return before 12 PM. It also provides additional consistent details about claiming the per diem in SpendWise, which do not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9161539026942453,
+        "reason": "The response addresses every part of the question, including the calculation of the per diem for each day based on the travel times. It provides the total per diem amount and explains the 50% rate application for the departure and return days. Additionally, it includes the process for claiming the per diem, which is extra information not required by the expected output. All expected facts are present.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q011",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm an L4 in Hyderabad going to a client in Mumbai. What flight class and hotel limit apply, and who books it?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "**Flight class:** Economy | **Hotel limit:** INR 6,000 per night (excluding taxes) | **Booking:** Must be done through Orbitra Travel (travel.orbitra.internal)【FIN-002: Business Travel Policy】  \n\n- Manager approval is required for domestic travel【FIN-002: Business Travel Policy】.  \n- Domestic travel must be booked at least 7 days in advance【FIN-002: Business Travel Policy】.  \n- Use company‑preferred hotels on Orbitra Travel where available (they include breakfast)【FIN-002: Business Travel Policy】.",
+      "scored_answer": "**Flight class:** Economy | **Hotel limit:** INR 6,000 per night (excluding taxes) | **Booking:** Must be done through Orbitra Travel (travel.orbitra.internal)【FIN-002: Business Travel Policy】  \n\n- Manager approval is required for domestic travel【FIN-002: Business Travel Policy】.  \n- Domestic travel must be booked at least 7 days in advance【FIN-002: Business Travel Policy】.  \n- Use company‑preferred hotels on Orbitra Travel where available (they include breakfast)【FIN-002: Business Travel Policy】.",
+      "expected_output": "L4 employees travel by economy class flights. The hotel limit in Tier 1 cities for L1–L5 is INR 6,000 per night, excluding taxes. Travel is booked via Orbitra Travel (JourneyPro). Travel must be booked at least 7 days in advance. Travel bookings need manager approval.",
+      "correctness": {
+        "score": 0.8529791719262378,
+        "reason": "The core facts are correct: L4 employees travel by economy class, the hotel limit is INR 6,000 per night excluding taxes, and bookings are made through Orbitra Travel. All supporting details are present, including the requirement for manager approval and booking at least 7 days in advance. The only minor discrepancy is the mention of 'JourneyPro' instead of 'Orbitra Travel', but this does not contradict the core facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9287767815761052,
+        "reason": "The response addresses all parts of the input: flight class, hotel limit, and booking process. It includes all expected facts: economy class for L4, hotel limit of INR 6,000 per night, booking through Orbitra Travel, requirement for manager approval, and booking at least 7 days in advance. The only minor discrepancy is the mention of 'JourneyPro' instead of 'Orbitra Travel', but this does not affect completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q012",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm an L7 taking a client for dinner in Pune with 3 client people and me. What is the maximum I can claim and what must I include?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "**Maximum claim:** INR 12,000 (INR 3,000 × 4 attendees).  \n\n- Include the client’s name and company on the claim.  \n- Alcohol may not exceed 30 % of the total bill.  \n- Submit the expense under “Client entertainment” in SpendWise.  \n\nSource: [FIN-001]",
+      "scored_answer": "**Maximum claim:** INR 12,000 (INR 3,000 × 4 attendees).  \n\n- Include the client’s name and company on the claim.  \n- Alcohol may not exceed 30 % of the total bill.  \n- Submit the expense under “Client entertainment” in SpendWise.  \n\nSource: [FIN-001]",
+      "expected_output": "Client entertainment is limited to INR 3,000 per head for L1–L7. Alcohol may be at most 30% of the bill. The claim must mention the client's name and company. A receipt is required for the claim. An L7 manager can approve expenses up to INR 50,000.",
+      "correctness": {
+        "score": 0.8008865452886706,
+        "reason": "The core fact about the maximum claim amount is correct, calculated as INR 12,000 for 4 attendees at INR 3,000 each. The output correctly includes the requirement to mention the client's name and company, and the alcohol limit of 30% of the bill. However, it misses the requirement for a receipt and the approval limit for an L7 manager, which are minor supporting details.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7930731183312207,
+        "reason": "The response addresses both parts of the question: the maximum claim amount and what must be included. It correctly calculates the maximum claim as INR 12,000 for four attendees and mentions including the client's name and company, as well as the alcohol limit. However, it misses the requirement for a receipt and the approval limit for an L7 manager.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q013",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the deadline for submitting tax investment proofs?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "The deadline for submitting tax investment proofs is 31 January.  \n- Proofs must be submitted between 5 January and 31 January; missing the deadline results in higher TDS deductions in February and March. [HR-PAY-001]",
+      "scored_answer": "The deadline for submitting tax investment proofs is 31 January.  \n- Proofs must be submitted between 5 January and 31 January; missing the deadline results in higher TDS deductions in February and March. [HR-PAY-001]",
+      "expected_output": "Tax investment proofs must be submitted by 31 January. The window for submitting investment proofs is 5–31 January.",
+      "correctness": {
+        "score": 0.9760650652677288,
+        "reason": "The actual output correctly states the core fact that the deadline for submitting tax investment proofs is 31 January. It also accurately includes the supporting detail that the submission window is from 5 January to 31 January. Additionally, it provides extra information about the consequences of missing the deadline, which does not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9278256793702404,
+        "reason": "The response addresses the question about the deadline for submitting tax investment proofs and includes all expected facts: the deadline of 31 January and the submission window from 5 to 31 January. Additionally, it provides extra information about the consequences of missing the deadline, which does not affect completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q014",
+      "type": "temporal",
+      "difficulty": "medium",
+      "question": "Is tomorrow a holiday in the Bengaluru office? (asked on 19 Oct 2026)",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Yes, tomorrow (20 Oct 2026) is a holiday in the Bengaluru office. 【HR-HOL-2026】",
+      "scored_answer": "Yes, tomorrow (20 Oct 2026) is a holiday in the Bengaluru office. 【HR-HOL-2026】",
+      "expected_output": "20 October 2026 (Tuesday) is Dussehra, a fixed holiday in Bengaluru.",
+      "correctness": {
+        "score": 0.8929984254986097,
+        "reason": "The core fact that 20 October 2026 is a holiday in the Bengaluru office is correctly stated. The actual output includes the date and confirms it as a holiday, consistent with the expected output. However, it lacks the detail that the holiday is Dussehra, which is a minor supporting fact.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7897653850598436,
+        "reason": "The response correctly identifies that 20 October 2026 is a holiday in the Bengaluru office, addressing the main part of the question. However, it lacks the supporting fact that the holiday is Dussehra, which is mentioned in the expected output.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q015",
+      "type": "multi_hop",
+      "difficulty": "medium",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "No, the Hyderabad office is open on 9 November 2026.  \n- Hyderabad is closed only on 8 November 2026 (not on the 9th)【COM-004】.",
+      "scored_answer": "No, the Hyderabad office is open on 9 November 2026.  \n- Hyderabad is closed only on 8 November 2026 (not on the 9th)【COM-004】.",
+      "expected_output": "The second Diwali day, 9 November 2026, is a holiday only for Bengaluru and Pune. Hyderabad gets Telangana Formation Day as a holiday instead.",
+      "correctness": {
+        "score": 0.9,
+        "reason": "The core fact is correct: the Hyderabad office is open on 9 November 2026. The actual output correctly states that Hyderabad is closed on 8 November 2026, which aligns with the expected output's implication that Hyderabad does not observe the second Diwali day as a holiday. There are no contradictions, and the extra detail about the closure on 8 November is consistent with the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7137774809424885,
+        "reason": "The response addresses the main question about whether the Hyderabad office is closed on 9 November 2026, stating it is open. It also provides a supporting fact that Hyderabad is closed on 8 November 2026. However, it misses the specific detail that 9 November is a holiday for Bengaluru and Pune due to Diwali, and that Hyderabad observes Telangana Formation Day instead.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q016",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "Can I deploy a non-urgent feature to production on 9 November 2026?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "revise_answer",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "revised -> useful",
+      "answer": "No – production deployments are not allowed on 9 November 2026.\n\n- The company‑wide deployment freeze runs from 6 to 10 Nov (ENG‑004 §5).  \n- 9 Nov is a public holiday (Diwali Balipratipada) for Bengaluru and Pune (HR‑HOL‑2026).  \n- Production deploys on public holidays require an approved exception (ENG‑003).  \n\nWithout such an exception, the deployment must wait until the freeze ends and a non‑holiday window.",
+      "scored_answer": "No – production deployments are not allowed on 9 November 2026.\n\n- The company‑wide deployment freeze runs from 6 to 10 Nov (ENG‑004 §5).  \n- 9 Nov is a public holiday (Diwali Balipratipada) for Bengaluru and Pune (HR‑HOL‑2026).  \n- Production deploys on public holidays require an approved exception (ENG‑003).  \n\nWithout such an exception, the deployment must wait until the freeze ends and a non‑holiday window.",
+      "expected_output": "6–10 November 2026 is the Diwali deployment freeze. During the freeze, only SEV1 and SEV2 fixes may be deployed. Deployments during the freeze need VP Engineering approval. 9 November 2026 is a holiday for Bengaluru and Pune. Deployments are not allowed on public holidays.",
+      "correctness": {
+        "score": 0.9,
+        "reason": "The actual output correctly states the core fact that deployments are not allowed on 9 November 2026 due to a deployment freeze and public holiday. It includes all expected facts: the freeze dates, the holiday, and the requirement for an exception. The only minor omission is the specific mention of SEV1 and SEV2 fixes being allowed, but this does not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9,
+        "reason": "The response addresses all parts of the question by stating that deployments are not allowed on 9 November 2026 due to a deployment freeze and a public holiday. It includes key supporting facts such as the freeze dates (6-10 November) and the requirement for an approved exception for public holiday deployments. The only minor omission is the specific mention of SEV1 and SEV2 fixes and VP Engineering approval, but these do not affect the main conclusion.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q017",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the IT hotline number?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "**Answer:** The IT hotline number is **Ext. 4000** (or +91‑80‑4719‑4000).【IT-001】",
+      "scored_answer": "**Answer:** The IT hotline number is **Ext. 4000** (or +91‑80‑4719‑4000).【IT-001】",
+      "expected_output": "The IT hotline is Ext. 4000. The IT hotline's direct number is +91-80-4719-4000. The IT hotline is available 24x7.",
+      "correctness": {
+        "score": 0.7840213570620951,
+        "reason": "The core fact, the IT hotline number, is correctly stated as Ext. 4000 and +91-80-4719-4000. However, the actual output misses the supporting detail that the hotline is available 24x7. There are no contradictions present.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7,
+        "reason": "The actual output addresses the main part of the question by providing the IT hotline number in both extension and direct formats. However, it misses the supporting fact that the hotline is available 24x7.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q018",
+      "type": "procedural",
+      "difficulty": "medium",
+      "question": "My VPN is connected but Confluence won't open. What should I try?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Flush your DNS cache (Mac: `sudo dscacheutil -flushcache`; Windows: `ipconfig /flushdns`) and try switching the VPN gateway to a nearer one.  \nIf that doesn’t resolve the issue, raise an IT ticket (“VPN issue”) with a screenshot and log file via OrbitDesk. [IT-003]",
+      "scored_answer": "Flush your DNS cache (Mac: `sudo dscacheutil -flushcache`; Windows: `ipconfig /flushdns`) and try switching the VPN gateway to a nearer one.  \nIf that doesn’t resolve the issue, raise an IT ticket (“VPN issue”) with a screenshot and log file via OrbitDesk. [IT-003]",
+      "expected_output": "If the VPN is connected but internal sites won't open, flush DNS. On Mac, flush DNS with sudo dscacheutil -flushcache. On Windows, flush DNS with ipconfig /flushdns. Switch to a nearer VPN gateway. If it still fails, raise OrbitDesk → IT → VPN issue. Attach the logs from Help → Collect Logs to the ticket.",
+      "correctness": {
+        "score": 0.8555147768191415,
+        "reason": "The actual output correctly includes the core fact of flushing the DNS cache and switching to a nearer VPN gateway. It also advises raising an IT ticket via OrbitDesk if the issue persists, which aligns with the expected output. The only minor omission is the specific instruction to attach logs from 'Help → Collect Logs' to the ticket, but this does not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8847967758377825,
+        "reason": "The response addresses both parts of the question: flushing the DNS cache and switching the VPN gateway. It also includes the process for raising an IT ticket via OrbitDesk, which matches the expected output. The only minor omission is the specific instruction to attach logs from Help → Collect Logs, but this does not significantly impact the completeness of the response.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q019",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I lost my laptop for the second time in two years and I left it in my car. What will happen and what do I need to do?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "You will be charged 50 % of the laptop’s book value for the second loss caused by negligence.  \n\n- Report the loss within 4 hours by calling the IT hotline (Ext. 4000) **and** emailing security@orbitra.io.  \n- File a police report (FIR) within 48 hours and upload it to an OrbitDesk ticket.  \n- A replacement laptop will be issued within 2 business days after the police report is uploaded.  \n\n[IT-002]",
+      "scored_answer": "You will be charged 50 % of the laptop’s book value for the second loss caused by negligence.  \n\n- Report the loss within 4 hours by calling the IT hotline (Ext. 4000) **and** emailing security@orbitra.io.  \n- File a police report (FIR) within 48 hours and upload it to an OrbitDesk ticket.  \n- A replacement laptop will be issued within 2 business days after the police report is uploaded.  \n\n[IT-002]",
+      "expected_output": "A lost laptop must be reported within 4 hours. A lost laptop must be reported to IT on Ext. 4000. A lost laptop must be reported to security@orbitra.io. A police report must be filed within 48 hours and uploaded to the ticket. A replacement laptop is issued within 2 business days of the police report upload. For a second loss within 3 years due to negligence, 50% of the laptop's book value is recovered.",
+      "correctness": {
+        "score": 0.9332498122499387,
+        "reason": "The actual output correctly states the core fact that 50% of the laptop's book value is charged for a second loss due to negligence. It also accurately includes all supporting details: reporting the loss within 4 hours to IT and security, filing a police report within 48 hours, and the replacement timeline. The only minor discrepancy is the expected output mentioning a 3-year period for the second loss, which is not specified in the actual output, but this does not contradict the core facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9622459331201855,
+        "reason": "The response addresses both parts of the question: what will happen and what needs to be done. It includes all expected facts: the charge of 50% for the second loss, the requirement to report the loss within 4 hours to IT and security, the need to file a police report within 48 hours and upload it, and the issuance of a replacement laptop within 2 business days after the report upload.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q020",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "How long does my account stay locked after too many wrong passwords?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Your account stays locked for **30 minutes** after too many wrong passwords.  \n- It locks after **5 failed attempts**.  \n- You can unlock it immediately via the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "scored_answer": "Your account stays locked for **30 minutes** after too many wrong passwords.  \n- It locks after **5 failed attempts**.  \n- You can unlock it immediately via the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "expected_output": "An account is locked after 5 failed password attempts. The lockout lasts 30 minutes. A locked account can be unlocked sooner via self-service. A locked account can be unlocked sooner by calling Ext. 4000.",
+      "correctness": {
+        "score": 0.9880797077977881,
+        "reason": "The actual output correctly states all expected facts: the account locks after 5 failed attempts, the lockout duration is 30 minutes, and it provides both methods for unlocking the account sooner, matching the expected output without contradictions.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9917302657324962,
+        "reason": "The response addresses every part of the question and includes all expected facts: the account locks after 5 failed attempts, the lockout duration is 30 minutes, and it provides both methods for unlocking the account sooner, matching the expected output.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q021",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "Who approves my request for production AWS console access and for how long?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "VP Engineering + Security approve production AWS console access, and it is granted for a maximum of 8 hours.  \n- Request must be submitted in OrbitDesk using the “Break‑glass” option. [IT-004]",
+      "scored_answer": "VP Engineering + Security approve production AWS console access, and it is granted for a maximum of 8 hours.  \n- Request must be submitted in OrbitDesk using the “Break‑glass” option. [IT-004]",
+      "expected_output": "Production AWS console access is approved by VP Engineering and Security. Production AWS console access is time-bound to a maximum of 8 hours. Production AWS console access is requested via Break-glass in OrbitDesk.",
+      "correctness": {
+        "score": 0.9865224082577045,
+        "reason": "All expected facts are present and consistent with the expected output. The core fact about who approves the request and the duration of access is correctly stated. The process for requesting access via Break-glass in OrbitDesk is also accurately mentioned. No contradictions or missing details are present.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9771843497839076,
+        "reason": "The response addresses both parts of the question: who approves the request and the duration of access. It includes all expected facts: the approvers (VP Engineering and Security), the maximum duration (8 hours), and the process for requesting access (via Break-glass in OrbitDesk).",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 0.5
+      }
+    },
+    {
+      "qid": "Q022",
+      "type": "policy_judgment",
+      "difficulty": "medium",
+      "question": "Can I paste a customer's export file with emails into a public AI chatbot to clean it up?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "revise_answer",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "revised -> useful",
+      "answer": "No – you may not paste a customer export file containing emails into a public AI chatbot.\n\n- Public free AI chatbots are **not permitted** for work and must not receive any internal data, especially **Restricted** personal data such as customer emails. [IT-005]  \n- Customer emails are personal data and are classified as **Restricted**; such data must never be entered into any AI tool. [SEC-001]  \n\nIf you need to clean or process the file, you must use an **approved internal AI tool** (e.g., OrbitBot) **only if the data classification is no higher than Confidential** and after obtaining the required privacy and security approvals. [IT-005]  \n\nOtherwise, consult Security and the Data Privacy team before any processing. [LEG-002]",
+      "scored_answer": "No – you may not paste a customer export file containing emails into a public AI chatbot.\n\n- Public free AI chatbots are **not permitted** for work and must not receive any internal data, especially **Restricted** personal data such as customer emails. [IT-005]  \n- Customer emails are personal data and are classified as **Restricted**; such data must never be entered into any AI tool. [SEC-001]  \n\nIf you need to clean or process the file, you must use an **approved internal AI tool** (e.g., OrbitBot) **only if the data classification is no higher than Confidential** and after obtaining the required privacy and security approvals. [IT-005]  \n\nOtherwise, consult Security and the Data Privacy team before any processing. [LEG-002]",
+      "expected_output": "Customer personal data is classified as Restricted. Public AI chatbots are not permitted for work. Restricted data must never be put into any AI tool.",
+      "correctness": {
+        "score": 0.8988466691206123,
+        "reason": "The actual output correctly states that customer export files with emails, classified as Restricted, must not be pasted into public AI chatbots, aligning with the expected output. It also provides additional consistent details about using approved internal AI tools and consulting security teams, which do not contradict the expected facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8890132497909103,
+        "reason": "The response addresses all parts of the input question by clearly stating that customer export files with emails should not be pasted into a public AI chatbot. It includes all expected facts: classification of customer emails as Restricted, prohibition of public AI chatbots for work, and the restriction against entering Restricted data into any AI tool. Additionally, it provides extra details about using approved internal AI tools and consulting security teams, which, while not required, do not detract from completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q023",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Click the **“Report Phish”** button in Gmail.  \nReport it within 1 hour of noticing the email. 【SEC-002】",
+      "scored_answer": "Click the **“Report Phish”** button in Gmail.  \nReport it within 1 hour of noticing the email. 【SEC-002】",
+      "expected_output": "Suspicious emails are reported with the 'Report Phish' button in Gmail.",
+      "correctness": {
+        "score": 0.6472332099224031,
+        "reason": "The core fact about using the 'Report Phish' button in Gmail is correct. However, the actual output includes an additional detail about reporting within 1 hour, which is not mentioned in the expected output. This extra detail does not contradict the expected output but is not required.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8481046782914949,
+        "reason": "The actual output addresses the main part of the question by instructing to use the 'Report Phish' button in Gmail, which matches the expected output. Additionally, it provides the supporting fact of reporting within 1 hour, which is extra information but does not detract from completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q024",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "A vendor emailed asking us to update their bank account. What's the correct process?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Verify the request by calling the vendor on a known number, obtain a vendor‑letterhead request and cancelled cheque, and have AP complete a call‑back verification using the phone number in the vendor master before updating the bank account.  \n\n- Use only the vendor master phone number, not the number in the email. [FIN-003]  \n- Require a formal request on vendor letterhead and a cancelled cheque. [FIN-003]  \n- Follow the full FIN‑003 §6 bank‑change procedure before making any changes. [FIN-003]",
+      "scored_answer": "Verify the request by calling the vendor on a known number, obtain a vendor‑letterhead request and cancelled cheque, and have AP complete a call‑back verification using the phone number in the vendor master before updating the bank account.  \n\n- Use only the vendor master phone number, not the number in the email. [FIN-003]  \n- Require a formal request on vendor letterhead and a cancelled cheque. [FIN-003]  \n- Follow the full FIN‑003 §6 bank‑change procedure before making any changes. [FIN-003]",
+      "expected_output": "A vendor bank account change request must be on vendor letterhead. A vendor bank account change request must include a cancelled cheque. AP must do call-back verification on the phone number in the vendor master. AP must never call back on the number given in the email. Suspicious requests must be reported to security.",
+      "correctness": {
+        "score": 0.8312935177925471,
+        "reason": "The core facts are correct: the process requires a request on vendor letterhead, a cancelled cheque, and call-back verification using the vendor master phone number. The actual output also correctly advises against using the email number. However, it misses the detail about reporting suspicious requests to security.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8619016285539571,
+        "reason": "The response addresses all parts of the question by outlining the process for updating a vendor's bank account. It includes verifying the request via a known phone number, requiring a formal request on vendor letterhead, and a cancelled cheque. It also specifies using the vendor master phone number for call-back verification, aligning with the expected output. However, it misses mentioning the need to report suspicious requests to security.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q025",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the gift limit from a vendor?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "The gift limit from a vendor is **INR 5,000 / USD 75 / GBP 60 per person per year**【HR-COC-001】.  \n- If a gift exceeds this amount, it must be declared in the Gift Register within 7 days and may need to be returned.",
+      "scored_answer": "The gift limit from a vendor is **INR 5,000 / USD 75 / GBP 60 per person per year**【HR-COC-001】.  \n- If a gift exceeds this amount, it must be declared in the Gift Register within 7 days and may need to be returned.",
+      "expected_output": "Vendor gifts are limited to INR 5,000 / USD 75 / GBP 60 per person per year. Cash and gift cards may not be accepted as gifts. Gifts above the limit must be declared in the Gift Register within 7 days.",
+      "correctness": {
+        "score": 0.853860866708076,
+        "reason": "The actual output correctly states the core fact about the gift limit from a vendor in INR, USD, and GBP, matching the expected output. It also includes the requirement to declare gifts above the limit in the Gift Register within 7 days, which aligns with the expected output. The only missing detail is the prohibition on cash and gift cards, but there are no contradictions present.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7714206412873289,
+        "reason": "The response addresses the main question about the gift limit from a vendor and includes the specific amounts in INR, USD, and GBP, as well as the requirement to declare gifts above the limit in the Gift Register within 7 days. However, it misses the detail that cash and gift cards may not be accepted as gifts.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q026",
+      "type": "policy_judgment",
+      "difficulty": "medium",
+      "question": "Can I take a freelance project on weekends?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "No – paid freelance work isn’t allowed without prior written approval.  \n\n- You must obtain written approval from your HR Business Partner **and** your department head before starting. [HR-COC-001]  \n- Submit a request for that approval — do not begin the project until it’s granted.",
+      "scored_answer": "No – paid freelance work isn’t allowed without prior written approval.  \n\n- You must obtain written approval from your HR Business Partner **and** your department head before starting. [HR-COC-001]  \n- Submit a request for that approval — do not begin the project until it’s granted.",
+      "expected_output": "Paid outside work, including freelancing, needs written approval from your HRBP and department head.",
+      "correctness": {
+        "score": 0.9157930559433899,
+        "reason": "The actual output correctly states the core fact that paid freelance work requires written approval from both the HR Business Partner and the department head, matching the expected output. It also provides additional details about the process of obtaining approval, which do not contradict the expected facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9135401257174662,
+        "reason": "The response addresses the main question about taking freelance projects on weekends by stating that paid freelance work isn't allowed without prior written approval. It includes all expected facts: the need for written approval from both the HR Business Partner and the department head, and the requirement to submit a request before starting the project. The response is complete and aligns well with the expected output.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q027",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "How do I report sexual harassment and how long do I have?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "revise_answer",
+        "check_support",
+        "check_useful",
+        "rewrite_query",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "rewrite + revised -> useful",
+      "answer": "Report the harassment in writing to **icc@orbitra.io** (or, for US/UK employees, also to your HRBP) — you must do so within **3 months of the incident** (the period can be extended by another 3 months for valid reasons).【HR-POSH-001】",
+      "scored_answer": "Report the harassment in writing to **icc@orbitra.io** (or, for US/UK employees, also to your HRBP) — you must do so within **3 months of the incident** (the period can be extended by another 3 months for valid reasons).【HR-POSH-001】",
+      "expected_output": "Sexual harassment is reported in writing to the Internal Committee at icc@orbitra.io. A complaint must be made within 3 months of the incident. The 3-month deadline can be extended by 3 more months. The complaint is acknowledged within 2 working days. The inquiry is completed within 90 days.",
+      "correctness": {
+        "score": 0.605000084265075,
+        "reason": "The core fact about reporting to icc@orbitra.io within 3 months is correct, and the possibility of a 3-month extension is mentioned. However, the actual output misses supporting details about the complaint acknowledgment within 2 working days and the inquiry completion within 90 days. No contradictions are present.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7278256793702402,
+        "reason": "The response addresses both parts of the question: how to report sexual harassment and the timeframe for doing so. It includes the email address for reporting and the initial 3-month deadline, as well as the possibility of an extension. However, it misses some supporting facts such as the acknowledgment within 2 working days and the inquiry completion within 90 days.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q028",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "When do ESOPs vest?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "ESOPs vest over 4 years with a 1‑year cliff — 25 % vests on the first anniversary of the grant date, and the remaining 75 % vests quarterly (6.25 % each quarter) over the next three years. 【HR-COMP-001】",
+      "scored_answer": "ESOPs vest over 4 years with a 1‑year cliff — 25 % vests on the first anniversary of the grant date, and the remaining 75 % vests quarterly (6.25 % each quarter) over the next three years. 【HR-COMP-001】",
+      "expected_output": "ESOPs vest over 4 years with a 1-year cliff. 25% of ESOPs vest at the first anniversary. After the first year, ESOPs vest 6.25% quarterly over 3 years. Refresh grants vest over 4 years with no cliff.",
+      "correctness": {
+        "score": 0.8713059841587218,
+        "reason": "The actual output correctly states the core fact that ESOPs vest over 4 years with a 1-year cliff, and provides accurate details about the vesting schedule: 25% vests on the first anniversary and 6.25% quarterly thereafter. It does not mention refresh grants, which is a minor omission, but all other expected facts are present and consistent.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.790006778469996,
+        "reason": "The response addresses the main question about when ESOPs vest, providing details about the 4-year vesting period, 1-year cliff, and quarterly vesting schedule. However, it misses the information about refresh grants vesting over 4 years with no cliff.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q029",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm leaving Orbitra after 3 years. What happens to my ESOPs and gratuity?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "You will keep the portion of ESOPs that has vested (about 75% after three years) and can exercise those options within five years of your leaving date; any unvested options will lapse on your last working day. You are not eligible for gratuity because it is only payable after five years of continuous service.  \n\n- Vested options are exercisable during the June or December exercise windows via the equity portal, and the perquisite tax will be deducted from payroll. [HR-COMP-001]  \n- Unvested options lapse on your last working day. [HR-COMP-001]  \n- Gratuity is payable only after five years of service; with three years you do not qualify. [HR-COMP-001]",
+      "scored_answer": "You will keep the portion of ESOPs that has vested (about 75% after three years) and can exercise those options within five years of your leaving date; any unvested options will lapse on your last working day. You are not eligible for gratuity because it is only payable after five years of continuous service.  \n\n- Vested options are exercisable during the June or December exercise windows via the equity portal, and the perquisite tax will be deducted from payroll. [HR-COMP-001]  \n- Unvested options lapse on your last working day. [HR-COMP-001]  \n- Gratuity is payable only after five years of service; with three years you do not qualify. [HR-COMP-001]",
+      "expected_output": "After leaving, vested options can be exercised within 5 years. Unvested options lapse on the last working day. Gratuity requires 5 years of continuous service.",
+      "correctness": {
+        "score": 0.9689305616785446,
+        "reason": "The actual output correctly states that vested ESOPs can be exercised within five years and that unvested options lapse on the last working day. It also accurately mentions that gratuity requires five years of continuous service, aligning perfectly with the expected output. Additional details provided do not contradict the expected facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9370225392595586,
+        "reason": "The response addresses both parts of the question: the status of ESOPs and gratuity upon leaving. It includes all expected facts: vested options can be exercised within five years, unvested options lapse on the last working day, and gratuity requires five years of service. Additionally, it provides extra details about exercise windows and tax implications, which do not affect completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q030",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I referred a friend who joined as L5 on 1 August 2026. When and how much will I get?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "revise_answer",
+        "check_support",
+        "flag_unsupported"
+      ],
+      "outcome": "flagged unsupported",
+      "answer": "You’ll receive the referral bonus 90 days after your friend’s start date – that is around 30 November 2026 – and it will be paid through payroll, provided you are still employed and not serving notice.  \n\nThe amount depends on the employee’s work location:\n\n- **India:** INR 1,00,000 for an L5 hire (or +50 % if the role is marked “hard‑to‑fill”).  \n- **United States:** USD 2,000 for an L5 hire.  \n- **United Kingdom:** GBP 1,500 for an L5 hire.  \n\nPlease let me know the employee’s location so I can confirm the exact amount.  \n\n[HR-TA-001]\n\n⚠️ I couldn't verify these parts against the knowledge base:\n- The answer states the bonus will be paid around 30 November 2026, which is an incorrect calculation of 90 days after the start date of 1 August 2026.",
+      "scored_answer": "You’ll receive the referral bonus 90 days after your friend’s start date – that is around 30 November 2026 – and it will be paid through payroll, provided you are still employed and not serving notice.  \n\nThe amount depends on the employee’s work location:\n\n- **India:** INR 1,00,000 for an L5 hire (or +50 % if the role is marked “hard‑to‑fill”).  \n- **United States:** USD 2,000 for an L5 hire.  \n- **United Kingdom:** GBP 1,500 for an L5 hire.  \n\nPlease let me know the employee’s location so I can confirm the exact amount.  \n\n[HR-TA-001]",
+      "expected_output": "The referral bonus for L5–L7 hires is INR 1,00,000. The referral bonus is paid after the referred employee completes 90 days. The payroll cut-off is the 20th of each month. The referrer must still be employed and not serving notice to get the referral bonus.",
+      "correctness": {
+        "score": 0.5,
+        "reason": "The core fact about the referral bonus being paid 90 days after the start date is correct. However, the actual output provides location-specific amounts, whereas the expected output gives a single amount for L5–L7 hires. The payroll cut-off date is missing, and the actual output asks for the employee's location, which is not required in the expected output. There are no contradictions, but several supporting details are missing or differ.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8067121145806914,
+        "reason": "The response addresses both parts of the question: when the bonus will be received and how much it will be. It specifies the 90-day period and mentions the requirement of being employed and not serving notice, aligning with the expected output. However, it provides additional location-based amounts instead of a single amount, and it does not mention the payroll cut-off date, which is a missing supporting fact.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 0.8571428571428571
+      }
+    },
+    {
+      "qid": "Q031",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I passed my CKA exam and I'm planning to resign in 6 months. Will the company reimburse it and will they recover it?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Yes, the CKA exam fee can be reimbursed, but because you will resign within 12 months the reimbursed amount (if > INR 25,000) will be recovered pro‑rata from your final settlement.  \n\n- Pre‑approval must be recorded in LearnSphere before you booked the exam. [LND-001]  \n- Claim the fee (certificate + invoice) in SpendWise within 60 days of passing. [LND-001]  \n- If the reimbursed amount exceeds INR 25,000, a claw‑back is applied when you resign within 12 months (pro‑rata). [LND-001]  \n- If the reimbursement is ≤ INR 25,000, no claw‑back is triggered. [LND-001]  ",
+      "scored_answer": "Yes, the CKA exam fee can be reimbursed, but because you will resign within 12 months the reimbursed amount (if > INR 25,000) will be recovered pro‑rata from your final settlement.  \n\n- Pre‑approval must be recorded in LearnSphere before you booked the exam. [LND-001]  \n- Claim the fee (certificate + invoice) in SpendWise within 60 days of passing. [LND-001]  \n- If the reimbursed amount exceeds INR 25,000, a claw‑back is applied when you resign within 12 months (pro‑rata). [LND-001]  \n- If the reimbursement is ≤ INR 25,000, no claw‑back is triggered. [LND-001]",
+      "expected_output": "CKA is a priority certification. Priority certifications are reimbursed outside the annual learning budget. Certifications are reimbursed after passing the exam. Certification reimbursement needs prior manager approval. A certification reimbursement must be claimed within 60 days. If a certification reimbursement exceeds INR 25,000 and the employee resigns within 12 months, it is clawed back pro-rata. The claw-back is deducted from the full and final settlement (FnF).",
+      "correctness": {
+        "score": 0.8860650984489948,
+        "reason": "The actual output correctly states the core fact that the CKA exam fee can be reimbursed and will be recovered pro-rata if the employee resigns within 12 months and the amount exceeds INR 25,000. It also includes all supporting details such as the need for pre-approval, the 60-day claim period, and the claw-back conditions. The only minor omission is the mention of the CKA being a priority certification, which does not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8880295904125225,
+        "reason": "The response addresses both parts of the question: reimbursement and recovery conditions. It includes all key facts such as the need for pre-approval, the 60-day claim period, and the pro-rata claw-back condition if the amount exceeds INR 25,000 and resignation occurs within 12 months. The only minor omission is the mention of priority certification status, which does not affect the main conditions addressed.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q032",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "2 approvals are required for a PR in orbitra/infra.  \n- At least one of those approvals must come from a code‑owner of the changed path.   [ENG-002]",
+      "scored_answer": "2 approvals are required for a PR in orbitra/infra.  \n- At least one of those approvals must come from a code‑owner of the changed path.   [ENG-002]",
+      "expected_output": "PRs in orbitra/infra need 2 approvals. One of the approvals must be from a CODEOWNER.",
+      "correctness": {
+        "score": 0.9430147348585842,
+        "reason": "The actual output correctly states the core fact that 2 approvals are needed for a PR in orbitra/infra, matching the expected output. It also accurately mentions that one approval must come from a code-owner, consistent with the expected output's requirement for a CODEOWNER. The extra detail '[ENG-002]' does not contradict the expected facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9278256793702402,
+        "reason": "The response addresses the question by stating that 2 approvals are needed for a PR in orbitra/infra, matching the expected output. It also includes the supporting fact that one approval must come from a code-owner, which aligns with the expected output's requirement for a CODEOWNER approval. The response is complete and contains all expected facts.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q033",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "What is the acknowledgement time for a SEV2 incident?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "15 minutes [ENG-004]",
+      "scored_answer": "15 minutes [ENG-004]",
+      "expected_output": "SEV2 incidents must be acknowledged within 15 minutes. SEV2 incident updates are posted every 60 minutes.",
+      "correctness": {
+        "score": 0.6131617455470775,
+        "reason": "The core fact about the SEV2 incident acknowledgement time of 15 minutes is correct. However, the supporting detail about updates being posted every 60 minutes is missing.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.5633975042814476,
+        "reason": "The response addresses the main part of the question by providing the acknowledgement time for a SEV2 incident, which is 15 minutes. However, it misses the supporting fact about SEV2 incident updates being posted every 60 minutes.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 0.5
+      }
+    },
+    {
+      "qid": "Q034",
+      "type": "numerical",
+      "difficulty": "medium",
+      "question": "I was on-call in India for a full week including the weekend. What allowance do I get?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "**You’ll receive INR 25,000 as on‑call allowance for that week (5 × INR 3,000 for weekdays + 2 × INR 5,000 for the weekend).**  \n\n- You must submit the claim in PeopleHub → Payroll → “On‑call allowance” by the 20th of the month. [ENG-004]  \n- If you were paged for more than 2 hours on a weekend/holiday day, you’ll also earn one comp‑off day. [ENG-004]  ",
+      "scored_answer": "**You’ll receive INR 25,000 as on‑call allowance for that week (5 × INR 3,000 for weekdays + 2 × INR 5,000 for the weekend).**  \n\n- You must submit the claim in PeopleHub → Payroll → “On‑call allowance” by the 20th of the month. [ENG-004]  \n- If you were paged for more than 2 hours on a weekend/holiday day, you’ll also earn one comp‑off day. [ENG-004]",
+      "expected_output": "The on-call allowance in India is INR 3,000 per weekday. The on-call allowance in India is INR 5,000 per weekend day. A comp-off is given if paged for more than 2 hours on a weekend day.",
+      "correctness": {
+        "score": 0.9433981464803898,
+        "reason": "The actual output correctly states the core fact of the on-call allowance amounts: INR 3,000 per weekday and INR 5,000 per weekend day, matching the expected output. It also includes the correct condition for earning a comp-off day. The additional detail about submitting the claim by the 20th of the month is consistent with the expected output and does not contradict any information.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9314050544991808,
+        "reason": "The response addresses every part of the question by providing the total allowance amount and the breakdown for weekdays and weekends. It also includes the process for submitting the claim and the condition for earning a comp-off day, which are all expected facts.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 0.6666666666666666
+      }
+    },
+    {
+      "qid": "Q035",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "What is the first response SLA for a P1 ticket from an Enterprise customer?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "30 minutes [CS-001]",
+      "scored_answer": "30 minutes [CS-001]",
+      "expected_output": "The first response SLA for a P1 ticket from an Enterprise (Premium support) customer is 30 minutes.",
+      "correctness": {
+        "score": 0.9026774846843544,
+        "reason": "The core fact, which is the first response SLA for a P1 ticket from an Enterprise customer being 30 minutes, is correctly stated. The actual output includes an extra detail '[CS-001]' which does not contradict the expected output. All expected facts are present and consistent.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8987345307021293,
+        "reason": "The actual output addresses the question by providing the first response SLA for a P1 ticket from an Enterprise customer as 30 minutes. The only missing detail is the mention of 'Premium support' in the expected output, which is a minor omission.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q036",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "What discount can an AE give without approval?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Up to 10 % discount off the list price can be given by an Account Executive without any further approval.  \n- For a 3‑year prepaid (multi‑year) deal, the AE may add an additional 5 % discount (total 15 %) without extra approval. [SAL-001]",
+      "scored_answer": "Up to 10 % discount off the list price can be given by an Account Executive without any further approval.  \n- For a 3‑year prepaid (multi‑year) deal, the AE may add an additional 5 % discount (total 15 %) without extra approval. [SAL-001]",
+      "expected_output": "An AE can give up to 10% off list price without approval. AEs self-approve discounts of up to 10% in CPQ. 3-year prepaid deals can get an additional 5% discount.",
+      "correctness": {
+        "score": 0.912530397708271,
+        "reason": "The core fact that an AE can give up to 10% discount without approval is correctly stated. The additional detail about a 3-year prepaid deal receiving an extra 5% discount is also present and consistent with the expected output. The mention of CPQ is missing, but this is a minor detail and does not contradict the main facts.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8718529810723178,
+        "reason": "The response addresses every part of the question by stating that an AE can give up to 10% discount without approval and mentions the additional 5% discount for 3-year prepaid deals. It includes all expected facts except for the mention of self-approval in CPQ, which is a minor missing detail.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q037",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "When is Legacy Forms v1 being retired?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Legacy Forms v1 will be retired on **31 January 2027**.  \n- Customers must migrate to Forms v2 using the migration tool in **Admin → Forms → Migrate**. [PRD-002]",
+      "scored_answer": "Legacy Forms v1 will be retired on **31 January 2027**.  \n- Customers must migrate to Forms v2 using the migration tool in **Admin → Forms → Migrate**. [PRD-002]",
+      "expected_output": "Legacy Forms v1 is retired on 31 January 2027.",
+      "correctness": {
+        "score": 0.9028963325153508,
+        "reason": "The core fact about the retirement date of Legacy Forms v1 is correct. The actual output includes an additional detail about the migration process, which does not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8669335461372076,
+        "reason": "The actual output addresses the main part of the question by providing the retirement date of Legacy Forms v1, which matches the expected output. Additionally, it includes extra information about the migration process, which is not required but does not detract from completeness.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q038",
+      "type": "unanswerable",
+      "difficulty": "medium",
+      "question": "What is the dental coverage limit under the US health insurance plan?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "rewrite_query",
+        "retrieve",
+        "grade_documents",
+        "suggest_contact"
+      ],
+      "outcome": "rewrite + contact (no answer)",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. The closest policy is Employee Benefits and Insurance – India [HR-BEN-001], owned by People Operations – Total Rewards: you can ask them at benefits@orbitra.io.",
+      "scored_answer": null,
+      "expected_output": "Not in the knowledge base. Only India benefits are documented (HR-BEN-001). Agent should say so and route to US HRBP Rachel Kim or raise an OrbitDesk Benefits ticket.",
+      "abstained": true
+    },
+    {
+      "qid": "Q039",
+      "type": "unanswerable",
+      "difficulty": "medium",
+      "question": "Does Orbitra provide pet insurance?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "rewrite_query",
+        "retrieve",
+        "grade_documents",
+        "suggest_contact"
+      ],
+      "outcome": "rewrite + contact (no answer)",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. The closest policy is Employee Benefits and Insurance – India [HR-BEN-001], owned by People Operations – Total Rewards: you can ask them at benefits@orbitra.io.",
+      "scored_answer": null,
+      "expected_output": "No information in the knowledge base (only pet bereavement leave exists). Agent should not invent; suggest benefits@orbitra.io.",
+      "abstained": true
+    },
+    {
+      "qid": "Q040",
+      "type": "unanswerable",
+      "difficulty": "hard",
+      "question": "What was Orbitra's net profit in FY26?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "rewrite_query",
+        "retrieve",
+        "grade_documents",
+        "suggest_contact"
+      ],
+      "outcome": "rewrite + contact (no answer)",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. Try rephrasing, or raise an OrbitDesk ticket with the relevant team.",
+      "scored_answer": null,
+      "expected_output": "Not available in the knowledge base (only ARR milestone of USD 100M is mentioned). Agent must not hallucinate.",
+      "abstained": true
+    },
+    {
+      "qid": "Q041",
+      "type": "action_redirect",
+      "difficulty": "medium",
+      "question": "What's my current EL balance?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "I don’t have access to your current EL balance.  \n\n- Check it in PeopleHub → Leave → My Balances.  \n- If the balance appears incorrect, raise an OrbitDesk ticket to HR with the request “Leave balance correction.” [HR-LV-001]",
+      "scored_answer": "I don’t have access to your current EL balance.  \n\n- Check it in PeopleHub → Leave → My Balances.  \n- If the balance appears incorrect, raise an OrbitDesk ticket to HR with the request “Leave balance correction.” [HR-LV-001]",
+      "expected_output": "Personal leave balances are shown in PeopleHub → Leave → My Balances. If the leave balance looks wrong, raise OrbitDesk → HR → \"Leave balance correction\".",
+      "correctness": {
+        "score": 0.9550607365535241,
+        "reason": "The actual output correctly directs the user to check their EL balance in PeopleHub under Leave and My Balances, matching the expected output. It also provides the correct procedure for addressing discrepancies by raising an OrbitDesk ticket to HR with the specified request, consistent with the expected output. No contradictions or missing facts are present.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.924220562872536,
+        "reason": "The response addresses the question by providing the method to check the EL balance in PeopleHub and the process to follow if the balance is incorrect. All expected facts are present, including the system to check (PeopleHub) and the process for correction (OrbitDesk ticket to HR).",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q042",
+      "type": "action_redirect",
+      "difficulty": "medium",
+      "question": "My Okta Verify stopped working because I changed phones. Please raise a ticket for me.",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Raise an OrbitDesk ticket to IT with the request type **“MFA reset.”** [IT-004]\n\n- IT will verify your identity on a video call (have your employee ID card ready).  \n- The factor will be reset within 4 business hours.  \n- Do not ask colleagues to share MFA codes.",
+      "scored_answer": "Raise an OrbitDesk ticket to IT with the request type **“MFA reset.”** [IT-004]\n\n- IT will verify your identity on a video call (have your employee ID card ready).  \n- The factor will be reset within 4 business hours.  \n- Do not ask colleagues to share MFA codes.",
+      "expected_output": "For an MFA reset, raise OrbitDesk → IT → \"MFA reset\". IT verifies identity on a video call before an MFA reset. Keep your employee ID card ready for the verification call. IT resets the MFA factor within 4 business hours. Do not ask colleagues to share MFA codes.",
+      "correctness": {
+        "score": 0.989625137313362,
+        "reason": "The actual output includes all expected facts: it instructs to raise an OrbitDesk ticket with the request type 'MFA reset', mentions IT will verify identity on a video call with an employee ID card, states the factor will be reset within 4 business hours, and advises not to ask colleagues to share MFA codes. There are no contradictions or missing details.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9724870276176827,
+        "reason": "The response addresses every part of the input by instructing to raise an OrbitDesk ticket for an MFA reset, which matches the expected output. It includes all expected facts: the need for a video call for identity verification, having the employee ID card ready, the 4 business hours timeframe for the reset, and the warning not to share MFA codes.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q043",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I joined on 1 September 2026 and I'm on probation. Can I take 8 days of EL in December?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "No – you can only use up to 6 days of Earned Leave while you’re on probation, and by December you will have accrued exactly 6 days.  \n\n- Probation limits EL usage to a maximum of 6 days [HR-LV-001].  \n- EL accrues 1.5 days on the 1st of each month; joining 1 Sept gives you 6 days by 1 Dec [HR-LV-001].  ",
+      "scored_answer": "No – you can only use up to 6 days of Earned Leave while you’re on probation, and by December you will have accrued exactly 6 days.  \n\n- Probation limits EL usage to a maximum of 6 days [HR-LV-001].  \n- EL accrues 1.5 days on the 1st of each month; joining 1 Sept gives you 6 days by 1 Dec [HR-LV-001].",
+      "expected_output": "During the 6-month probation, at most 6 days of earned leave can be used. Earned leave accrues at 1.5 days per month. Leave of more than 3 days needs 7 days' advance application.",
+      "correctness": {
+        "score": 0.8007468438922448,
+        "reason": "The core fact is correct: the user can only use up to 6 days of Earned Leave during probation. The actual output correctly states the probation limit and the accrual rate, matching the expected output. However, it misses the detail about needing 7 days' advance application for leave of more than 3 days.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.8247373687117312,
+        "reason": "The response addresses both parts of the question: the probation limit on EL usage and the accrual rate. It correctly states the maximum EL usage during probation and the accrual rate, matching the expected output. However, it misses the supporting fact about the requirement for a 7-day advance application for leave exceeding 3 days.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q044",
+      "type": "multi_hop",
+      "difficulty": "medium",
+      "question": "What should I bring on my first day and when will I get my ID card?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "revise_answer",
+        "check_support",
+        "check_useful",
+        "rewrite_query",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "revise_answer",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "rewrite + revised -> useful",
+      "answer": "Bring your completed PeopleHub information (personal details, bank account, PAN/Aadhaar or I‑9 or Right‑to‑Work, emergency contact, nominee) and any pending background‑verification documents.  \n\nYour official ID card will be issued within 3 working days of your start date; until then you’ll use a temporary visitor badge from reception.  \n\n- ID card ready ≤ 3 working days after joining [ADM-001]  \n- Temporary badge used until the ID card is issued [ADM-001]",
+      "scored_answer": "Bring your completed PeopleHub information (personal details, bank account, PAN/Aadhaar or I‑9 or Right‑to‑Work, emergency contact, nominee) and any pending background‑verification documents.  \n\nYour official ID card will be issued within 3 working days of your start date; until then you’ll use a temporary visitor badge from reception.  \n\n- ID card ready ≤ 3 working days after joining [ADM-001]  \n- Temporary badge used until the ID card is issued [ADM-001]",
+      "expected_output": "Day 1 for new joiners is a Monday. New joiners check in at reception at 9:30 AM on Day 1. New joiners complete their PeopleHub details before Day 1. New joiners complete BGV before Day 1. The employee ID card is ready within 3 working days. A temporary badge is given until the ID card is ready.",
+      "correctness": {
+        "score": 0.6461651142242273,
+        "reason": "The core fact about the ID card being ready within 3 working days is correct, and the use of a temporary badge until then is also mentioned. However, the actual output misses details about the check-in time at reception and the requirement to complete PeopleHub and BGV before Day 1. There are no contradictions present.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7264483461907978,
+        "reason": "The response addresses both parts of the question: what to bring on the first day and when the ID card will be issued. It includes key details such as bringing completed PeopleHub information and pending background verification documents, and mentions the ID card will be issued within 3 working days with a temporary badge provided until then. However, it misses some supporting facts like the specific check-in time and day for new joiners.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q045",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "When is the next town hall? (asked on 19 Oct 2026)",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "The next town hall is on **Thursday 29 October 2026 at 5:00 PM IST** (held in the Bengaluru Auditorium and on Zoom)【COM-004】.",
+      "scored_answer": "The next town hall is on **Thursday 29 October 2026 at 5:00 PM IST** (held in the Bengaluru Auditorium and on Zoom)【COM-004】.",
+      "expected_output": "The next town hall is on Thursday 29 October 2026. The town hall starts at 5:00 PM IST. The town hall is held in the Bengaluru Auditorium and on Zoom.",
+      "correctness": {
+        "score": 0.9841825647251567,
+        "reason": "All expected facts are present and consistent with the expected output. The date, time, and location of the town hall match exactly, and the extra detail of the reference code does not contradict any information.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9868826776238185,
+        "reason": "Every part of the question is addressed and every expected fact is present. The actual output provides the date, time, and location of the town hall, matching the expected output.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q046",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "Who should approve an expense claim of INR 1,20,000 submitted by someone whose manager is an L7?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "**Answer:** An L8 Director must approve the INR 1,20,000 expense claim.  \n- Only an L8 Director (or higher) can approve amounts above INR 50,000 and up to INR 2,00,000. [COM-002]",
+      "scored_answer": "**Answer:** An L8 Director must approve the INR 1,20,000 expense claim.  \n- Only an L8 Director (or higher) can approve amounts above INR 50,000 and up to INR 2,00,000. [COM-002]",
+      "expected_output": "An L7 manager can approve expenses up to INR 50,000. An L8 Director can approve expenses up to INR 2,00,000. Claims above an approver's authority go to the next level. Approved expense claims then go to Finance audit.",
+      "correctness": {
+        "score": 0.7311053620507376,
+        "reason": "The core fact that an L8 Director must approve the INR 1,20,000 expense claim is correct. However, the actual output does not mention the process step that approved claims go to Finance audit, which is a minor supporting detail missing. There are no contradictions in the provided information.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7,
+        "reason": "The response correctly identifies that an L8 Director must approve the INR 1,20,000 expense claim, addressing the main part of the question. However, it misses some supporting facts such as the approval limit for an L7 manager and the subsequent finance audit step.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 0.5,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q047",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "Who is my HRBP if I work in Sales in India?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "Pooja Reddy is your HR Business Partner for Sales in India. [COM-002]",
+      "scored_answer": "Pooja Reddy is your HR Business Partner for Sales in India. [COM-002]",
+      "expected_output": "The HRBP for Sales in India is Pooja Reddy. Pooja Reddy's email is pooja.reddy@orbitra.io.",
+      "correctness": {
+        "score": 0.7282274344058713,
+        "reason": "The core fact, identifying Pooja Reddy as the HRBP for Sales in India, is correct. However, the actual output is missing the supporting detail of Pooja Reddy's email address, which is present in the expected output. There are no contradictions or incorrect information provided.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7114368526181812,
+        "reason": "The response addresses the main part of the question by identifying Pooja Reddy as the HRBP for Sales in India. However, it is missing the supporting fact of providing Pooja Reddy's email address.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q048",
+      "type": "policy_judgment",
+      "difficulty": "medium",
+      "question": "Can I work from Dubai for 3 weeks next month?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "No – you cannot work from Dubai for three weeks next month.  \n\n- Working from another country requires HRBP **and** Legal approval, requested **30 days in advance**.  \n- The stay is limited to **14 days per calendar year**; three weeks exceeds this cap.  \n- (If you needed a shorter stay, you could request up to 14 days with the required approvals.)  \n\n[HR-WFH-001]",
+      "scored_answer": "No – you cannot work from Dubai for three weeks next month.  \n\n- Working from another country requires HRBP **and** Legal approval, requested **30 days in advance**.  \n- The stay is limited to **14 days per calendar year**; three weeks exceeds this cap.  \n- (If you needed a shorter stay, you could request up to 14 days with the required approvals.)  \n\n[HR-WFH-001]",
+      "expected_output": "Working from another country is capped at 14 days per year. Working from another country needs HRBP and Legal approval. Working from another country must be requested 30 days in advance.",
+      "correctness": {
+        "score": 0.950390617052908,
+        "reason": "The actual output correctly states the core fact that working from another country is capped at 14 days per year, which directly answers the question. It also accurately includes all supporting details: the need for HRBP and Legal approval, and the requirement to request 30 days in advance. There are no contradictions or missing facts, and the extra detail about requesting a shorter stay is consistent with the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9422504634814188,
+        "reason": "The response addresses all parts of the question by explaining that working from Dubai for three weeks is not allowed due to a 14-day cap and the need for HRBP and Legal approval 30 days in advance. All expected facts are present, including the duration limit, approval requirements, and advance notice period.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q049",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "My wife delivered a baby 40 days ago. Can I still add the baby to insurance and take paternity leave?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "You can’t add the baby to your health insurance now – the 30‑day window has passed, so you must wait for the March enrollment period. You can still take paternity leave, but the entitlement and rules depend on your location.  \n\n- Insurance addition must be done within 30 days of birth via PeopleHub → Benefits → Life Event; otherwise you wait for the March window. [HR-BEN-001]  \n- India: 10 working‑day paternity leave per child, must be taken within 6 months of birth. [HR-LV-001]  \n- United States: 12 weeks fully‑paid paternity leave for non‑birthing parents, must be taken within 12 months of birth/placement. [HR-LV-002]  \n- United Kingdom: 6 weeks fully‑paid paternity/partner leave. [HR-LV-003]  \n\nPlease let me know which country you’re based in so I can confirm the exact leave details.",
+      "scored_answer": "You can’t add the baby to your health insurance now – the 30‑day window has passed, so you must wait for the March enrollment period. You can still take paternity leave, but the entitlement and rules depend on your location.  \n\n- Insurance addition must be done within 30 days of birth via PeopleHub → Benefits → Life Event; otherwise you wait for the March window. [HR-BEN-001]  \n- India: 10 working‑day paternity leave per child, must be taken within 6 months of birth. [HR-LV-001]  \n- United States: 12 weeks fully‑paid paternity leave for non‑birthing parents, must be taken within 12 months of birth/placement. [HR-LV-002]  \n- United Kingdom: 6 weeks fully‑paid paternity/partner leave. [HR-LV-003]  \n\nPlease let me know which country you’re based in so I can confirm the exact leave details.",
+      "expected_output": "Newborns must be added to health insurance within 30 days of birth. Newborns are added via a PeopleHub Life Event. After the 30-day window, the newborn can only be added in the March enrolment window. Paternity leave is 10 working days. Paternity leave can be used within 6 months of the birth.",
+      "correctness": {
+        "score": 0.643073663622283,
+        "reason": "The core fact about the 30-day window for adding a newborn to insurance is correctly stated, and the process for adding via PeopleHub is mentioned. The actual output also correctly states the March enrollment period. However, the paternity leave details are not fully aligned with the expected output, as it provides multiple country-specific options without specifying the 10 working days mentioned in the expected output. No contradictions are present, but the lack of specific paternity leave details for the given scenario results in a slightly lower score.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.7511131199883905,
+        "reason": "The response addresses both parts of the question: adding the baby to insurance and taking paternity leave. It correctly notes the 30-day window for insurance and mentions the March enrollment period, aligning with the expected output. However, it does not specify the exact paternity leave duration or usage period, which are key supporting facts. The response also asks for the user's location to provide specific leave details, which is helpful but not part of the expected facts.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 1.0
+      }
+    },
+    {
+      "qid": "Q050",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the free cab cut-off time?",
+      "route": [
+        "decide_retrieval",
+        "plan_queries",
+        "retrieve",
+        "grade_documents",
+        "generate",
+        "check_support",
+        "check_useful"
+      ],
+      "outcome": "answered -> useful",
+      "answer": "**The free cab must be booked by 6 PM on the same day.**  \n- Applies only to employees leaving the office after 9 PM.  \n- Booking is done through the Orbitra Spaces → Cab module; after 6 PM you may request ad‑hoc via the transport desk (ext. 3333), subject to availability.  \n- Cab drop‑off is limited to 40 km from the office.  \n- If no company cab is available, you may take an Uber/Ola and claim the actuals under FIN‑001.  \n\n[ADM-002]",
+      "scored_answer": "**The free cab must be booked by 6 PM on the same day.**  \n- Applies only to employees leaving the office after 9 PM.  \n- Booking is done through the Orbitra Spaces → Cab module; after 6 PM you may request ad‑hoc via the transport desk (ext. 3333), subject to availability.  \n- Cab drop‑off is limited to 40 km from the office.  \n- If no company cab is available, you may take an Uber/Ola and claim the actuals under FIN‑001.  \n\n[ADM-002]",
+      "expected_output": "Employees leaving the office after 9 PM can book a free cab. Free cabs are booked via Orbitra Spaces. A free cab must be booked by 6 PM.",
+      "correctness": {
+        "score": 0.9,
+        "reason": "The core fact about the free cab cut-off time being 6 PM is correctly stated. All supporting details, such as the condition for employees leaving after 9 PM and booking through Orbitra Spaces, are present. Additional details about ad-hoc requests and cab drop-off limits do not contradict the expected output.",
+        "error": null
+      },
+      "completeness": {
+        "score": 0.9,
+        "reason": "The response addresses every part of the question by stating the free cab must be booked by 6 PM and applies to employees leaving after 9 PM. It includes all expected facts such as booking through Orbitra Spaces and the 6 PM cut-off time. Additional details like ad-hoc booking and distance limits are extra information.",
+        "error": null
+      },
+      "pipeline_metrics": {
+        "Faithfulness": 1.0,
+        "Answer Relevancy": 0.3333333333333333
+      }
+    }
+  ]
+}
