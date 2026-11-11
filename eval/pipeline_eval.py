@@ -19,7 +19,9 @@ rewrites) adds or costs.
 
 How each route is scored:
     answered from context (generate, maybe revise / flag)  -> faithfulness + answer relevancy
-    generate_direct (decider skipped retrieval)            -> answer relevancy only (no context)
+    generate_direct (decider chose small talk)             -> answer relevancy only (no context)
+    decline_out_of_scope / support_wellbeing (canned)      -> no generated answer: relevancy 0,
+                                                              faithfulness N/A, nothing sent to the judge
     suggest_contact with no kept chunks (canned reply)     -> no generated answer: relevancy 0,
                                                               faithfulness N/A, nothing sent to the judge
     unanswerable questions (no gold_docs)                  -> no DeepEval; a phrase check reports
@@ -92,6 +94,8 @@ def run_graph(question: str) -> dict:
 
 def generated_part(answer: str, route: list[str]) -> str | None:
     """The LLM-written part of the final answer, or None when the answer is entirely a template."""
+    if "decline_out_of_scope" in route or "support_wellbeing" in route:
+        return None
     if "suggest_contact" in route:
         if answer.startswith(NO_ANSWER_PREFIX):
             return None
@@ -105,7 +109,11 @@ def generated_part(answer: str, route: list[str]) -> str | None:
 
 def outcome(route: list[str], has_answer: bool) -> str:
     """One label per way the graph can end, e.g. 'revised -> useful' or 'rewrite + contact (no answer)'."""
-    if "generate_direct" in route:
+    if "decline_out_of_scope" in route:
+        label = "declined (out of scope)"
+    elif "support_wellbeing" in route:
+        label = "wellbeing support"
+    elif "generate_direct" in route:
         label = "direct (no retrieval)"
     elif "suggest_contact" in route:
         label = "contact + answer" if has_answer else "contact (no answer)"

@@ -2,8 +2,9 @@
 with query rewriting, over the Orbitra knowledge base.
 Retrieval is hybrid: vector + BM25 keyword search, merged with RRF, then reranked by a cross-encoder.
 
-Flow: question -> decide_retrieval -> (yes) plan_queries -> retrieve -> grade_documents
-                                   -> (no)  generate_direct -> answer
+Flow: question -> decide_retrieval -> (knowledge_base) plan_queries -> retrieve -> grade_documents
+                                   -> (small_talk)     generate_direct -> answer
+                                   -> (out_of_scope)   decline_out_of_scope -> fixed reply, no LLM call
       grade_documents -> (some relevant) generate -> check_support
                       -> (none relevant, rewrite left) rewrite_query -> retrieve
                       -> (none relevant, no rewrite left) suggest_contact -> answer
@@ -195,25 +196,33 @@ def format_docs(docs: list[Document]) -> str:
                        for d in docs)
 
 
-# retrieval decision (Self-RAG's "Retrieve" step), returned as a Pydantic object
-class RetrievalDecision(BaseModel):
-    """Decide whether the question needs Orbitra's knowledge base."""
-    should_retrieve: bool = Field(description="True if answering needs Orbitra's internal documents "
-        "(policies, processes, people, products, company facts); False for greetings, small talk, "
-        "or general knowledge unrelated to Orbitra.")
+# routing decision (Self-RAG's "Retrieve" step plus a scope check), returned as a Pydantic object
+class RouteDecision(BaseModel):
+    """Decide how OrbitBot should handle the question."""
+    route: Literal["knowledge_base", "small_talk", "out_of_scope"] = Field(description=
+        "'knowledge_base' for anything an employee could ask about Orbitra or their work there (policies, "
+        "benefits, processes, tools, data handling, people, products, company facts), even if the documents "
+        "may not cover it; 'small_talk' for greetings, thanks or what OrbitBot can do; 'out_of_scope' only "
+        "if the topic has nothing to do with Orbitra or working there.")
     reason: str = Field(description="One short sentence explaining the decision.")
 
 
 decide_prompt = ChatPromptTemplate.from_messages([
     ("system",
-     "You decide whether a question to OrbitBot, the internal assistant of Orbitra Technologies, "
-     "needs a search of the company knowledge base (HR, IT, security, finance, admin, legal, "
-     "engineering, product and sales documents). Retrieve for anything about Orbitra or how things "
-     "work there, even if it sounds general (e.g. 'how do I reset my password?'). Do not retrieve "
-     "for greetings, thanks, small talk, or general knowledge unrelated to Orbitra. When unsure, retrieve."),
+     "You route questions sent to OrbitBot, the internal assistant of Orbitra Technologies. Its "
+     "company knowledge base covers HR, IT, security, finance, admin, legal, engineering, product and "
+     "sales documents. Choose knowledge_base for anything about Orbitra or how things work there, even "
+     "if it sounds general (e.g. 'how do I reset my password?'). This includes employee benefits, pay, "
+     "workplace tools and how work data may be handled. You cannot see the documents, so never reject a "
+     "question because you think they may not cover it; judge only its topic. Choose small_talk only for "
+     "greetings, thanks, brief pleasantries, or questions about what OrbitBot can do. Choose out_of_scope "
+     "only if the topic has nothing to do with Orbitra or working there, such as general knowledge, "
+     "personal plans, or writing and coding help. Examples of out_of_scope: 'plan a trip to Jaipur', "
+     "'give me the constitution of India'. Examples of knowledge_base: 'what's the hotel limit for a "
+     "business trip to Jaipur?', 'does Orbitra pay for a gym membership?'. When unsure, choose knowledge_base."),
     ("human", "{question}"),
 ])
-decider = decide_prompt | judge_llm.with_structured_output(RetrievalDecision).with_retry(**RETRY_BAD_OUTPUT)
+decider = decide_prompt | judge_llm.with_structured_output(RouteDecision).with_retry(**RETRY_BAD_OUTPUT)
 
 direct_prompt = ChatPromptTemplate.from_messages([
     ("system",
@@ -222,6 +231,10 @@ direct_prompt = ChatPromptTemplate.from_messages([
      "facts or policies; if the user needs those, suggest they ask about them directly."),
     ("human", "{question}"),
 ])
+
+# fixed text, so refusing an out-of-scope question costs no LLM call beyond the decider
+OUT_OF_SCOPE_REPLY = ("I can only help with questions about Orbitra and working here, such as HR, IT, "
+                      "finance, security, legal and company policies. Please ask me about one of those.")
 
 
 # query planning: split a question into the separate facts it needs (one search each)
@@ -393,8 +406,8 @@ contact_picker = contact_prompt | judge_llm.with_structured_output(ContactChoice
 # the graph(state,nodes,edges)
 class GraphState(TypedDict):
     question: str
-    should_retrieve: bool
-    retrieval_reason: str
+    route: str  # knowledge_base, small_talk or out_of_scope
+    route_reason: str
     documents: list[Document]
     doc_grades: list[dict]
     answer: str
@@ -410,12 +423,14 @@ class GraphState(TypedDict):
 
 def decide_retrieval(state: GraphState) -> dict:
     decision = decider.invoke({"question": state["question"]})
-    return {"should_retrieve": decision.should_retrieve, "retrieval_reason": decision.reason}
+    return {"route": decision.route, "route_reason": decision.reason}
 
 
 # router, not a node: only reads the state and names the next node
-def route_after_decision(state: GraphState) -> Literal["plan_queries", "generate_direct"]:
-    return "plan_queries" if state["should_retrieve"] else "generate_direct"
+def route_after_decision(state: GraphState) -> Literal["plan_queries", "generate_direct", "decline_out_of_scope"]:
+    if state["route"] == "knowledge_base":
+        return "plan_queries"
+    return "generate_direct" if state["route"] == "small_talk" else "decline_out_of_scope"
 
 
 def plan_queries(state: GraphState) -> dict:
@@ -558,6 +573,10 @@ def generate_direct(state: GraphState) -> dict:
     return {"answer": response.content}
 
 
+def decline_out_of_scope(state: GraphState) -> dict:
+    return {"answer": OUT_OF_SCOPE_REPLY}
+
+
 builder = StateGraph(GraphState)
 builder.add_node("decide_retrieval", decide_retrieval)
 builder.add_node("plan_queries", plan_queries)
@@ -571,6 +590,7 @@ builder.add_node("check_useful", check_useful)
 builder.add_node("rewrite_query", rewrite_query)
 builder.add_node("suggest_contact", suggest_contact)
 builder.add_node("generate_direct", generate_direct)
+builder.add_node("decline_out_of_scope", decline_out_of_scope)
 builder.add_edge(START, "decide_retrieval")
 builder.add_conditional_edges("decide_retrieval", route_after_decision)
 builder.add_edge("plan_queries", "retrieve")
@@ -584,6 +604,7 @@ builder.add_edge("rewrite_query", "retrieve")  # loop back with the new search q
 builder.add_edge("flag_unsupported", END)
 builder.add_edge("suggest_contact", END)
 builder.add_edge("generate_direct", END)
+builder.add_edge("decline_out_of_scope", END)
 app = builder.compile()
 
 
@@ -592,7 +613,7 @@ def ask(question: str):
         for node, update in step.items():
             print(f"--- {node} ---")
             if node == "decide_retrieval":
-                print(f"  retrieve={update['should_retrieve']}  ({update['retrieval_reason']})")
+                print(f"  route={update['route']}  ({update['route_reason']})")
             elif node == "plan_queries":
                 print(f"  🧩 parts: {update['sub_questions']}")
             elif node == "retrieve":

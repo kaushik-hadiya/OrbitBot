@@ -48,8 +48,10 @@ company knowledge base. Internal policy questions shouldn't be answered from the
 ```mermaid
 flowchart TD
     Q([Question]) --> D{decide_retrieval<br/>needs the knowledge base?}
-    D -->|no| GD[generate_direct<br/>short reply, no company facts] --> E1([Answer])
-    D -->|yes| P[plan_queries<br/>split into 1-3 sub-questions]
+    D -->|small talk| GD[generate_direct<br/>short reply, no company facts] --> E1([Answer])
+    D -->|out of scope| OOS[decline_out_of_scope<br/>fixed reply, no LLM call] --> E1
+    D -->|distress| WB[support_wellbeing<br/>fixed support reply, no LLM call] --> E1
+    D -->|knowledge base| P[plan_queries<br/>split into 1-3 sub-questions]
     P --> R[retrieve<br/>hybrid search per sub-question: vector + BM25<br/>RRF merge, cross-encoder rerank]
     R --> G{grade_documents<br/>LLM grades each chunk}
     G -->|some relevant| GEN[generate<br/>answer with doc_id citations]
@@ -71,9 +73,12 @@ The longest possible path is 18 steps, well below LangGraph's default `recursion
 
 ### Step by step
 
-1. **`decide_retrieval`** (Self-RAG *Retrieve*): returns `RetrievalDecision(should_retrieve, reason)`. Anything about
+1. **`decide_retrieval`** (Self-RAG *Retrieve*): returns `RouteDecision(route, reason)`. Anything about
    Orbitra, even if it sounds general ("how do I reset my password?"), is retrieved. Greetings and small talk go to
-   **`generate_direct`**, which is told not to state any company facts.
+   **`generate_direct`**, which is told not to state any company facts. Anything else unrelated to Orbitra goes to
+   **`decline_out_of_scope`**, which returns a fixed reply without calling the LLM. A message showing emotional
+   distress goes to **`support_wellbeing`**, a fixed reply with the EAP counselling line and crisis numbers, so a
+   safety answer never depends on retrieval.
 2. **`plan_queries`**: splits a multi-part question into 1-3 sub-questions (`QueryPlan(sub_questions)`), so
    each fact gets its own search. "Can I deploy a feature on 9 November?" becomes "What are the deployment
    windows and freeze periods?" + "Is 9 November 2026 a holiday?". Simple questions come back unchanged as one part.
@@ -129,11 +134,11 @@ retrieved chunks for only the relevant ones.
 | State field | Written by | Read by |
 |---|---|---|
 | `question` | the caller (the user's question) | almost every node |
-| `should_retrieve`, `retrieval_reason` | `decide_retrieval` | `route_after_decision` |
+| `route`, `route_reason` | `decide_retrieval` | `route_after_decision` |
 | `sub_questions` | `plan_queries` | `retrieve`, `grade_documents` |
 | `documents` | `retrieve` (all found), then `grade_documents` (only relevant) | `generate`, `revise_answer`, `check_support`, `suggest_contact` |
 | `doc_grades` | `grade_documents` (with each chunk's title, department, owner) | `suggest_contact` |
-| `answer` | `generate`, `revise_answer`, `flag_unsupported`, `suggest_contact`, `generate_direct` | `check_support`, `check_useful`, `revise_answer` |
+| `answer` | `generate`, `revise_answer`, `flag_unsupported`, `suggest_contact`, `generate_direct`, `decline_out_of_scope`, `support_wellbeing` | `check_support`, `check_useful`, `revise_answer` |
 | `generation_attempts` | `generate` (sets 1), `revise_answer` (+1) | `route_after_support` |
 | `support`, `unsupported_claims` | `check_support` | `route_after_support`, `revise_answer`, `flag_unsupported` |
 | `is_useful`, `usefulness_reason` | `check_useful` | `route_after_useful` |
@@ -144,6 +149,8 @@ retrieved chunks for only the relevant ones.
 | Path | LLM calls |
 |---|---|
 | Small talk ("hi") | 2: decide + direct reply |
+| Out of scope ("plan a trip to Jaipur") | 1: decide only |
+| Distress ("I can't cope anymore") | 1: decide only |
 | Normal question | 9: decide, plan, 4 chunk grades, generate, support check, usefulness check |
 | Split into 2 parts | 11: 6 chunk grades instead of 4 |
 | A revision after a failed support check | +2: revise + support check again |

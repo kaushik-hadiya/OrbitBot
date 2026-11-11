@@ -125,5 +125,5 @@ Columns: `ticket_id, created_at, requester_id, requester_location, category, sub
 | PRD-001 | Product Overview and Plans |
 | PRD-002 | Release Notes 2026 |
 | CS-001 | Customer Support SLAs and Escalation |
-| SAL-001 | Pricing, Discounts, Deal Desk |
+| SAL-001 | Pricing, Discounts, Deal Desk (not loaded by OrbitBot: Confidential and team-restricted) |
 | LND-001 | Learning & Development |
