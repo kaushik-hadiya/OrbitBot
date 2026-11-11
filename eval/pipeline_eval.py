@@ -115,6 +115,8 @@ def outcome(route: list[str], has_answer: bool) -> str:
         label = "wellbeing support"
     elif "generate_direct" in route:
         label = "direct (no retrieval)"
+    elif "agent" in route:
+        label = "agent (tools)"
     elif "suggest_contact" in route:
         label = "contact + answer" if has_answer else "contact (no answer)"
     elif "flag_unsupported" in route:

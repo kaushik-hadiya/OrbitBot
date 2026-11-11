@@ -3,7 +3,9 @@ with query rewriting, over the Orbitra knowledge base.
 Retrieval is hybrid: vector + BM25 keyword search, merged with RRF, then reranked by a cross-encoder.
 
 Flow: question -> decide_retrieval -> (knowledge_base) plan_queries -> retrieve -> grade_documents
+                                   -> (action)         agent <-> tools (search_kb + agent_tools.py) -> answer
                                    -> (small_talk)     generate_direct -> answer
+                                   -> (distress)       support_wellbeing -> fixed reply, no LLM call
                                    -> (out_of_scope)   decline_out_of_scope -> fixed reply, no LLM call
       grade_documents -> (some relevant) generate -> check_support
                       -> (none relevant, rewrite left) rewrite_query -> retrieve
@@ -15,10 +17,13 @@ Flow: question -> decide_retrieval -> (knowledge_base) plan_queries -> retrieve 
                    -> (not useful, rewrite left) rewrite_query -> retrieve
                    -> (not useful, no rewrite left) suggest_contact -> answer
 """
+import argparse
+import hashlib
+import json
 import re
 import os
 from pathlib import Path
-from typing import Literal, TypedDict
+from typing import Annotated, Literal, TypedDict
 
 import yaml
 from dotenv import load_dotenv
@@ -28,11 +33,17 @@ from langchain_chroma import Chroma
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
+from langchain_core.messages import AnyMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.tools import tool
 #from langchain_groq import ChatGroq
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph.message import add_messages
+from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel, Field
+
+import agent_tools
 
 from openai import BadRequestError
 from langchain_openai import ChatOpenAI
@@ -72,8 +83,21 @@ def parse_markdown(path: Path) -> Document:
     return Document(page_content=text.strip(), metadata=metadata)
 
 
+def is_loaded(doc: Document) -> bool:
+    """Keep out of the index what OrbitBot must never answer from:
+    - superseded versions: a newer one exists, so they would only take search slots from it
+    - Confidential documents restricted to particular teams (SAL-001 is for Sales, CS and Finance only);
+      a Confidential document meant for all employees (HR-COMP-001) stays in"""
+    meta = doc.metadata
+    if meta.get("status") == "superseded":
+        return False
+    restricted = "all employees" not in str(meta.get("applies_to", "")).lower()
+    return not (meta.get("classification") == "Confidential" and restricted)
+
+
 def load_documents() -> list[Document]:
-    return [parse_markdown(p) for p in sorted(DOCS_DIR.rglob("*.md"))]
+    docs = [parse_markdown(p) for p in sorted(DOCS_DIR.rglob("*.md"))]
+    return [d for d in docs if is_loaded(d)]
 
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
 
@@ -82,27 +106,35 @@ splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
 embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5", cache_dir=MODELS_DIR, batch_size=16)
 
 
+def chunk_id(chunk: Document) -> str:
+    """A fingerprint of the chunk's text and metadata: any edit to a document changes its chunks' ids."""
+    payload = json.dumps([chunk.page_content, chunk.metadata], sort_keys=True, default=str)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:32]
+
+
 # embeddings and the vectorstore (build once, and then load)
 def get_vectorstore(chunks: list[Document]) -> Chroma:
-    """Load the saved Chroma DB, or (re)build it if it is missing or incomplete."""
+    """Load the saved Chroma DB, or (re)build it if it is missing, incomplete or out of date."""
     vectorstore = Chroma(
         collection_name=COLLECTION,
         embedding_function=embeddings,
         persist_directory=CHROMA_DIR,
     )
 
-    # fewer chunks than expected means first run, or an earlier build crashed halfway
-    stored = len(vectorstore.get(include=[])["ids"])
-    if stored == len(chunks):
+    # ids are content fingerprints, so a different set means first run, a build that crashed halfway,
+    # or documents that were edited, added or removed (a count check alone misses edits)
+    ids = [chunk_id(c) for c in chunks]
+    stored = set(vectorstore.get(include=[])["ids"])
+    if stored == set(ids):
         return vectorstore
     if stored:
-        print(f"Vectorstore is incomplete ({stored}/{len(chunks)} chunks), rebuilding...")
+        print(f"Vectorstore is out of date ({len(stored)} stored chunks, {len(ids)} expected), rebuilding...")
         vectorstore.reset_collection()
 
     print(f"Building vectorstore from {len(chunks)} chunks...")
     step = embeddings.batch_size
     for i in range(0, len(chunks), step):
-        vectorstore.add_documents(chunks[i:i + step])
+        vectorstore.add_documents(chunks[i:i + step], ids=ids[i:i + step])
         print(f"\r  embedded {min(i + step, len(chunks))}/{len(chunks)} chunks", end="", flush=True)
     print()
     return vectorstore
@@ -199,11 +231,14 @@ def format_docs(docs: list[Document]) -> str:
 # routing decision (Self-RAG's "Retrieve" step plus a scope check), returned as a Pydantic object
 class RouteDecision(BaseModel):
     """Decide how OrbitBot should handle the question."""
-    route: Literal["knowledge_base", "small_talk", "out_of_scope"] = Field(description=
+    route: Literal["knowledge_base", "action", "small_talk", "distress", "out_of_scope"] = Field(description=
         "'knowledge_base' for anything an employee could ask about Orbitra or their work there (policies, "
         "benefits, processes, tools, data handling, people, products, company facts), even if the documents "
-        "may not cover it; 'small_talk' for greetings, thanks or what OrbitBot can do; 'out_of_scope' only "
-        "if the topic has nothing to do with Orbitra or working there.")
+        "may not cover it; 'action' when the user asks OrbitBot to do something for them or to look up live or "
+        "personal data (their own leave balance, a colleague's contact details, similar past tickets, raising a "
+        "ticket, resetting, booking, applying for or approving something, or a calculation); 'small_talk' for "
+        "greetings, thanks or what OrbitBot can do; 'distress' when the user says they themselves are struggling "
+        "emotionally; 'out_of_scope' only if the topic has nothing to do with Orbitra or working there.")
     reason: str = Field(description="One short sentence explaining the decision.")
 
 
@@ -219,10 +254,19 @@ decide_prompt = ChatPromptTemplate.from_messages([
      "only if the topic has nothing to do with Orbitra or working there, such as general knowledge, "
      "personal plans, or writing and coding help. Examples of out_of_scope: 'plan a trip to Jaipur', "
      "'give me the constitution of India'. Examples of knowledge_base: 'what's the hotel limit for a "
-     "business trip to Jaipur?', 'does Orbitra pay for a gym membership?'. When unsure, choose knowledge_base."),
+     "business trip to Jaipur?', 'does Orbitra pay for a gym membership?'. "
+     "Choose action when the user wants OrbitBot to do something or look something up for them rather than "
+     "explain a rule: 'how many ELs do I have left?', 'what's Priya Nair's email?', 'reset my password for me', "
+     "'raise a ticket for my broken screen', 'book me a flight'. A how-to question ('how do I reset my "
+     "password?') is knowledge_base, and so is describing a problem and asking what happens, what the rules are "
+     "or what to do ('I lost my laptop, what happens now?'): choose action only when the user asks OrbitBot "
+     "itself to act or to look up their own or a colleague's data. Choose distress only when the user describes their own emotional state, "
+     "such as feeling hopeless, unable to cope, overwhelmed or unable to sleep from stress. Reports of "
+     "harassment, fraud, threats or security incidents are knowledge_base, even when the user is upset, "
+     "because the policies say who to contact. When unsure, choose knowledge_base."),
     ("human", "{question}"),
 ])
-decider = decide_prompt | judge_llm.with_structured_output(RouteDecision).with_retry(**RETRY_BAD_OUTPUT)
+decider =decide_prompt | judge_llm.with_structured_output(RouteDecision).with_retry(**RETRY_BAD_OUTPUT)
 
 direct_prompt = ChatPromptTemplate.from_messages([
     ("system",
@@ -235,6 +279,18 @@ direct_prompt = ChatPromptTemplate.from_messages([
 # fixed text, so refusing an out-of-scope question costs no LLM call beyond the decider
 OUT_OF_SCOPE_REPLY = ("I can only help with questions about Orbitra and working here, such as HR, IT, "
                       "finance, security, legal and company policies. Please ask me about one of those.")
+
+# fixed text, so a safety answer never depends on retrieval or generation (EAP details from HR-BEN-001)
+WELLBEING_REPLY = (
+    "I'm sorry you're going through this, and I'm glad you reached out. You don't have to handle it alone.\n\n"
+    "- **Talk to a counsellor:** Orbitra's Employee Assistance Programme gives free, confidential counselling "
+    "with MindHaven, 24x7, at **1800-102-7777** or in the MindHaven app (6 sessions a year for you and each "
+    "family member, India) [HR-BEN-001]. Outside India, your HR Business Partner can connect you with support.\n"
+    "- **If you might harm yourself or are in danger right now,** call your local emergency number (112 in "
+    "India, 911 in the US, 999 in the UK) or a crisis line: Tele-MANAS **14416** (India), **988** (US), "
+    "Samaritans **116 123** (UK).\n\n"
+    "You can also talk to your manager or HRBP. When you're ready, I can help with leave or other support "
+    "Orbitra offers.")
 
 
 # query planning: split a question into the separate facts it needs (one search each)
@@ -403,11 +459,59 @@ contact_prompt = ChatPromptTemplate.from_messages([
 contact_picker = contact_prompt | judge_llm.with_structured_output(ContactChoice).with_retry(**RETRY_BAD_OUTPUT)
 
 
+# the action route: a tool-calling agent (ReAct loop: agent -> tools -> agent -> ... -> answer)
+@tool
+def search_kb(query: str) -> str:
+    """Search Orbitra's knowledge base (HR, IT, security, finance, admin, legal, engineering, product and sales
+    policies and how-to guides). Returns the best passages, each starting with [doc_id: title].
+    Use one search per topic, in policy wording (e.g. 'MFA reset process', 'earned leave carry forward')."""
+    return format_docs(hybrid_search(query)) or "Nothing found."
+
+
+AGENT_TOOLS = [search_kb, *agent_tools.TOOLS]
+MAX_TOOL_ROUNDS = 4   # then the agent must answer with what it has
+agent_llm = llm.bind_tools(AGENT_TOOLS)
+final_llm = llm.bind_tools(AGENT_TOOLS, tool_choice="none")   # same tools in the history, but no more calls
+
+AGENT_SYSTEM = (
+    "You are OrbitBot, an internal assistant for Orbitra Technologies employees. {user}\n\n"
+    "Answer with your tools. Every company rule, number, name, contact or step you state must come from a tool "
+    "result: use search_kb for any policy, process or how-to and cite its doc_ids like [HR-LV-001] (cite only "
+    "doc_ids, never tool names). Before drafting a ticket, search_kb for the issue, so you can tell the user "
+    "what to do first and what the ticket needs. "
+    "Your tools can only read data and draft tickets. You cannot reset passwords, apply for or approve leave, "
+    "book travel, approve expenses or submit tickets. When asked to do one of those, say plainly that you can't "
+    "do it yourself, then use search_kb to give the user the steps or the self-service route, and if a ticket "
+    "is the right way, prepare one with draft_ticket and tell the user to submit it. Never say or imply that "
+    "anything was done, raised, created, submitted, reset, booked, applied for or approved. "
+    "Share only the work contact details the directory returns; never guess anyone's private details. "
+    "Give the direct answer first and keep it short."
+)
+
+
+AGENT_ANSWER_NOW = ("No more tool calls are possible. Answer my question now from the tool results above; "
+                    "if they don't contain the answer, say you don't know.")
+AGENT_EMPTY_REPLY = ("I couldn't find an answer to this with the information I can access. Please raise an "
+                     "OrbitDesk ticket with the relevant team.")
+
+
+def describe_user(employee_id: str | None) -> str:
+    emp = agent_tools.EMPLOYEES_BY_ID.get(employee_id or "")
+    if not emp:
+        return ("The user is not signed in, so you don't know who they are and their personal data (such as "
+                "leave balances) is unavailable.")
+    return (f"The user is {emp['name']} ({emp['employee_id']}), {emp['title']} in {emp['department']}, "
+            f"based in {emp['location']}.")
+
+
 # the graph(state,nodes,edges)
 class GraphState(TypedDict):
     question: str
-    route: str  # knowledge_base, small_talk or out_of_scope
+    employee_id: str | None  # the signed-in user, if any (only get_leave_balance reads it)
+    route: str  # knowledge_base, action, small_talk, distress or out_of_scope
     route_reason: str
+    messages: Annotated[list[AnyMessage], add_messages]  # the agent's conversation (action route only)
+    tool_rounds: int
     documents: list[Document]
     doc_grades: list[dict]
     answer: str
@@ -427,10 +531,13 @@ def decide_retrieval(state: GraphState) -> dict:
 
 
 # router, not a node: only reads the state and names the next node
-def route_after_decision(state: GraphState) -> Literal["plan_queries", "generate_direct", "decline_out_of_scope"]:
-    if state["route"] == "knowledge_base":
-        return "plan_queries"
-    return "generate_direct" if state["route"] == "small_talk" else "decline_out_of_scope"
+ROUTE_TO_NODE = {"knowledge_base": "plan_queries", "action": "agent", "small_talk": "generate_direct",
+                 "distress": "support_wellbeing", "out_of_scope": "decline_out_of_scope"}
+
+
+def route_after_decision(state: GraphState) -> Literal["plan_queries", "agent", "generate_direct",
+                                                       "support_wellbeing", "decline_out_of_scope"]:
+    return ROUTE_TO_NODE[state["route"]]
 
 
 def plan_queries(state: GraphState) -> dict:
@@ -577,6 +684,31 @@ def decline_out_of_scope(state: GraphState) -> dict:
     return {"answer": OUT_OF_SCOPE_REPLY}
 
 
+def support_wellbeing(state: GraphState) -> dict:
+    return {"answer": WELLBEING_REPLY}
+
+
+def agent(state: GraphState) -> dict:
+    new = []
+    if not state.get("messages"):   # first turn: system prompt with who the user is, then their question
+        new = [SystemMessage(AGENT_SYSTEM.format(user=describe_user(state.get("employee_id")))),
+               HumanMessage(state["question"])]
+    rounds = state.get("tool_rounds", 0)
+    history = state.get("messages", []) + new
+    if rounds < MAX_TOOL_ROUNDS:
+        response = agent_llm.invoke(history)
+    else:   # out of tool rounds: ask for the answer (the nudge is only sent, not kept in the state)
+        response = final_llm.invoke(history + [HumanMessage(AGENT_ANSWER_NOW)])
+    if response.tool_calls:
+        return {"messages": new + [response], "tool_rounds": rounds + 1}
+    # the model sometimes ends with an empty message after a long search; never return a blank answer
+    return {"messages": new + [response], "answer": response.content.strip() or AGENT_EMPTY_REPLY}
+
+
+def route_after_agent(state: GraphState) -> Literal["tools", "__end__"]:
+    return "tools" if state["messages"][-1].tool_calls else END
+
+
 builder = StateGraph(GraphState)
 builder.add_node("decide_retrieval", decide_retrieval)
 builder.add_node("plan_queries", plan_queries)
@@ -591,6 +723,9 @@ builder.add_node("rewrite_query", rewrite_query)
 builder.add_node("suggest_contact", suggest_contact)
 builder.add_node("generate_direct", generate_direct)
 builder.add_node("decline_out_of_scope", decline_out_of_scope)
+builder.add_node("support_wellbeing", support_wellbeing)
+builder.add_node("agent", agent)
+builder.add_node("tools", ToolNode(AGENT_TOOLS))
 builder.add_edge(START, "decide_retrieval")
 builder.add_conditional_edges("decide_retrieval", route_after_decision)
 builder.add_edge("plan_queries", "retrieve")
@@ -605,11 +740,14 @@ builder.add_edge("flag_unsupported", END)
 builder.add_edge("suggest_contact", END)
 builder.add_edge("generate_direct", END)
 builder.add_edge("decline_out_of_scope", END)
+builder.add_edge("support_wellbeing", END)
+builder.add_conditional_edges("agent", route_after_agent)
+builder.add_edge("tools", "agent")   # tool results go back to the agent
 app = builder.compile()
 
 
-def ask(question: str):
-    for step in app.stream({"question": question}, stream_mode="updates"):
+def ask(question: str, employee_id: str | None = None):
+    for step in app.stream({"question": question, "employee_id": employee_id}, stream_mode="updates"):
         for node, update in step.items():
             print(f"--- {node} ---")
             if node == "decide_retrieval":
@@ -631,11 +769,25 @@ def ask(question: str):
                 print(f"  useful={update['is_useful']}  ({update['usefulness_reason']})")
             elif node == "rewrite_query":
                 print(f"  🔁 new query: {update['search_query']!r}")
+            elif node == "tools":
+                for m in update["messages"]:
+                    print(f"  ⇐ {m.name}: {m.content[:150]!r}")
+            elif node == "agent" and "answer" not in update:
+                for call in update["messages"][-1].tool_calls:
+                    print(f"  🔧 {call['name']}({call['args']})")
             else:
                 print(update["answer"])
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Chat with OrbitBot.")
+    parser.add_argument("--employee-id", help="sign in as this employee (e.g. ORB01001) for personal data "
+                                              "such as leave balances")
+    args = parser.parse_args()
+    if args.employee_id and args.employee_id not in agent_tools.EMPLOYEES_BY_ID:
+        parser.error(f"no employee {args.employee_id!r} in data/employee_directory.csv")
+    if args.employee_id:
+        print(f"Signed in as {agent_tools.EMPLOYEES_BY_ID[args.employee_id]['name']} ({args.employee_id}).")
     print("OrbitBot is ready. Ask a question, or type 'exit' to quit.")
     while True:
         try:
@@ -645,7 +797,7 @@ def main():
         if question.lower() in {"exit", "quit"}:
             break
         if question:
-            ask(question)
+            ask(question, args.employee_id)
     print("\nBye!")
 
 

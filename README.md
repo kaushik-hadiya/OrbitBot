@@ -51,6 +51,8 @@ flowchart TD
     D -->|small talk| GD[generate_direct<br/>short reply, no company facts] --> E1([Answer])
     D -->|out of scope| OOS[decline_out_of_scope<br/>fixed reply, no LLM call] --> E1
     D -->|distress| WB[support_wellbeing<br/>fixed support reply, no LLM call] --> E1
+    D -->|action| AG[agent<br/>tool-calling LLM] -->|tool calls| T[tools<br/>search_kb, lookup_employee,<br/>get_leave_balance, ...] --> AG
+    AG -->|final answer| E1
     D -->|knowledge base| P[plan_queries<br/>split into 1-3 sub-questions]
     P --> R[retrieve<br/>hybrid search per sub-question: vector + BM25<br/>RRF merge, cross-encoder rerank]
     R --> G{grade_documents<br/>LLM grades each chunk}
@@ -78,7 +80,10 @@ The longest possible path is 18 steps, well below LangGraph's default `recursion
    **`generate_direct`**, which is told not to state any company facts. Anything else unrelated to Orbitra goes to
    **`decline_out_of_scope`**, which returns a fixed reply without calling the LLM. A message showing emotional
    distress goes to **`support_wellbeing`**, a fixed reply with the EAP counselling line and crisis numbers, so a
-   safety answer never depends on retrieval.
+   safety answer never depends on retrieval. Reports of harassment, fraud or threats go to the knowledge base
+   instead, because the policies name the right contact (the ICC, the ethics hotline). A request to *do* or *look
+   up* something ("how many ELs do I have?", "raise a ticket", "what's Priya's email?") goes to the **`agent`**
+   (see [Tools](#tools-the-action-route)).
 2. **`plan_queries`**: splits a multi-part question into 1-3 sub-questions (`QueryPlan(sub_questions)`), so
    each fact gets its own search. "Can I deploy a feature on 9 November?" becomes "What are the deployment
    windows and freeze periods?" + "Is 9 November 2026 a holiday?". Simple questions come back unchanged as one part.
@@ -107,6 +112,29 @@ The longest possible path is 18 steps, well below LangGraph's default `recursion
    rewrite. The LLM picks the retrieved document closest to the question (`ContactChoice(doc_id)`), and the reply
    points to that document's owner, e.g. "The closest policy is Employee Benefits and Insurance - India
    [HR-BEN-001], owned by People Operations - Total Rewards: you can ask them at benefits@orbitra.io."
+
+### Tools: the action route
+
+The `action` route is a ReAct loop: `agent` (the LLM with tools bound) calls tools, `tools` (LangGraph's
+`ToolNode`) runs them, and the results go back to the agent until it answers. It gets at most 4 rounds of tool
+calls (`MAX_TOOL_ROUNDS`); after that, it has to answer with what it has. The tools are in `agent_tools.py`, apart
+from `search_kb`, which is in `main.py` because it wraps `hybrid_search`.
+
+| Tool | Backed by | Notes |
+|---|---|---|
+| `search_kb(query)` | the hybrid search above (top 4 chunks, with `[doc_id: title]`) | no grading step: the agent searches as often as it needs |
+| `get_current_date()` | fixed to Monday 19 October 2026, the date the knowledge base is written for | reproducible evals |
+| `lookup_employee(query)` | `data/employee_directory.csv` | public fields only; level and joining date stay private |
+| `get_leave_balance()` | mock PeopleHub: balances from the region's leave policy, with stable random usage per employee | no arguments: the employee ID comes from the graph state, so it can only show the signed-in user's own balance |
+| `search_similar_tickets(description)` | BM25 over resolved tickets in `data/ticket_history_2026.csv` | returns resolution and KB article, never who raised it |
+| `draft_ticket(category, subcategory, ...)` | OrbitDesk categories and subcategories from the ticket history | only drafts: the user submits it. An unknown subcategory is rejected |
+| `calculator(expression)` | a small arithmetic evaluator (no `eval`) | numbers, `+ - * / // % **`, brackets |
+
+No tool changes anything, so the bot can't truthfully say it reset, booked or submitted something, and the prompt
+tells it never to claim it did. Submitting tickets will need a human-approval step first.
+
+Sign in to see your own data: `uv run main.py --employee-id ORB01001`. Without it, `get_leave_balance` points the
+user to PeopleHub.
 
 ### Example: one multi-part question, end to end
 
@@ -198,8 +226,11 @@ question ─┬─> vector search (bge-small, Chroma)  top 12 ─┐
 - **Separate nodes for separate jobs.** Revising an unsupported answer is its own node (`revise_answer`), not a hidden
   "retry mode" inside `generate`. The graph picture then shows exactly what happens.
 - **Metadata does the version-conflict work.** Every Markdown file has YAML front-matter (`doc_id`, `status`,
-  `applies_to`, ...). It is copied into each chunk's metadata, and the grader uses it to reject superseded and
-  wrong-region chunks.
+  `applies_to`, ...). It is copied into each chunk's metadata, and the grader uses it to reject wrong-region chunks.
+  Superseded documents and team-restricted Confidential documents (SAL-001) are never indexed at all
+  (`is_loaded`), so they can't take a search slot or leak into an answer.
+- **The vector store rebuilds when a document changes.** Chunk ids are hashes of each chunk's text and metadata,
+  so an edited, added or removed document no longer matches the stored ids and triggers a rebuild.
 - **The rewriter must not copy the user's numbers.** An early version put the user's salary into the search query,
   which made retrieval worse. The prompt now says so explicitly.
 - **The LLM decides when to split, before searching.** Simple rules (look for "and") miss hidden multi-part
@@ -220,12 +251,12 @@ question ─┬─> vector search (bge-small, Chroma)  top 12 ─┐
 `documents/` holds a **synthetic** company knowledge base. Everything in it is invented, so it is safe to publish.
 
 - **46 Markdown documents** in 11 departments (HR, IT, security, finance, admin, legal, engineering, product, sales/CS,
-  learning). They are split into **154 chunks** (1,000 characters, 150 overlap).
+  learning). The 45 that OrbitBot may answer from (all but SAL-001) are split into **151 chunks** (1,000 characters,
+  150 overlap).
 - **Built-in traps:** a superseded leave policy (`01_hr/archive/…v4_SUPERSEDED.md`), region-specific rules
   (India / US / UK), similar-but-different facts (internal IT P1 SLA 15 min vs customer P1 30 min), multi-hop questions,
   calculations, and unanswerable questions.
-- `data/`: an employee directory and ticket history CSVs. They are not used here; they're meant for an Agentic RAG
-  version with tools.
+- `data/`: an employee directory and ticket history CSVs, used by the agent's tools (`agent_tools.py`).
 - `eval/eval_questions.jsonl`: 50 graded test questions, used by `eval/run_eval.py`.
 
 See [`KB_README.md`](KB_README.md) for the full description and document index.
@@ -313,7 +344,8 @@ GROQ_API_KEY=your_groq_key
 uv run main.py
 ```
 
-Type a question at the `You:` prompt, or `exit` to quit. The knowledge base is already in `documents/`, so there is
+Add `--employee-id ORB01001` (any ID from `data/employee_directory.csv`) to sign in, so the bot can show your
+own leave balance. Type a question at the `You:` prompt, or `exit` to quit. The knowledge base is already in `documents/`, so there is
 nothing else to add.
 
 **Notebook version:** `main.ipynb` has the same code as `main.py`, split into sections (loading, vector store,
@@ -397,13 +429,14 @@ All in `main.py` (and the matching notebook cells):
 
 ```
 SelfRAG/
-├── main.py               # the full Self-RAG graph + command-line chat loop
+├── main.py               # the full Self-RAG graph, the tool-calling agent + command-line chat loop
+├── agent_tools.py        # the agent's tools over data/ (directory, leave balance, tickets, calculator, date)
 ├── main.ipynb            # same code as notebook sections, with the graph diagram and examples
 ├── eval/
 │   ├── eval_questions.jsonl  # 50 graded test questions (reference answers + gold documents)
 │   └── run_eval.py           # resumable eval: runs the graph, LLM-judges each answer
 ├── documents/            # synthetic Orbitra knowledge base (46 Markdown docs)
-├── data/                 # employee directory + ticket history CSVs (meant for an Agentic RAG version)
+├── data/                 # employee directory + ticket history CSVs (used by agent_tools.py)
 ├── KB_README.md          # description of the knowledge base and its built-in challenges
 ├── pyproject.toml        # dependencies
 ├── uv.lock               # exact pinned versions
@@ -432,9 +465,9 @@ SelfRAG/
 - ~~Follow the pointer~~ (tried, not added): 34% of chunks mention another document, but in a check over all
   50 questions only 2 of 64 followed pointers led to a missing document; most are "see also" links, and even
   scoring the pointer's line against the question couldn't tell the useful ones apart.
-- **Tools** from `data/` (employee lookup, leave balance, ticket creation, a calculator) belong in an
-  **Agentic RAG** project rather than here: they turn the bot into an agent that takes actions, which is a
-  different pattern from Self-RAG's retrieve-and-check loop. Until then, `suggest_contact` points to the right team.
+- **Next agentic steps:** conversation memory (a checkpointer and message history), human approval
+  (`interrupt()`) before a tool submits anything such as a ticket, and a support check on the agent's answers
+  like the one the knowledge-base route has.
 
 ## Tech stack
 
