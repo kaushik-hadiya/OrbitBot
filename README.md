@@ -136,6 +136,27 @@ tells it never to claim it did. Submitting tickets will need a human-approval st
 Sign in to see your own data: `uv run main.py --employee-id ORB01001`. Without it, `get_leave_balance` points the
 user to PeopleHub.
 
+### Conversation memory
+
+The chat loop runs `chat_app`, the same graph compiled with LangGraph's `InMemorySaver` checkpointer. Each
+conversation is a `thread_id`; typing `new` starts another. `app`, without a checkpointer, answers one question per
+run and is what the evals use.
+
+- **`start_turn`** (the first node) resets the per-turn fields. With a checkpointer every field survives into the
+  next turn, so otherwise last turn's `search_query` would replace this turn's search, and its `rewrite_count` would
+  block a rewrite. On a follow-up it also makes the message standalone: `StandaloneQuestion(question, user_facts)`
+  turns "and in India?" into "How many sick days do employees in India get?". Facts about the user ("I have 18.5
+  days of Earned Leave left") are attached in brackets. The first message of a conversation skips this LLM call.
+- **Why two fields:** a single free-text rewrite kept copying company rules from OrbitBot's own earlier answers
+  ("given the INR 7,000 limit") into the question. The support check accepts what the user states, so those
+  rules would have skipped the grounding check. Now `question` may not hold policy figures, and `user_facts` may
+  hold only facts about the user. It runs at medium reasoning effort: at low effort it left follow-ups unchanged.
+- **`finish`** (the last node) adds the answer to `messages` and removes this turn's tool calls and results, so the
+  saved conversation is just user and OrbitBot messages. The agent sees the last 3 exchanges
+  (`MAX_HISTORY_MESSAGES`).
+
+Memory lasts until the process exits. A `SqliteSaver` would keep it across restarts.
+
 ### Example: one multi-part question, end to end
 
 A real run of "Can I deploy a non-urgent feature to production on 9 November 2026?":
@@ -345,7 +366,8 @@ uv run main.py
 ```
 
 Add `--employee-id ORB01001` (any ID from `data/employee_directory.csv`) to sign in, so the bot can show your
-own leave balance. Type a question at the `You:` prompt, or `exit` to quit. The knowledge base is already in `documents/`, so there is
+own leave balance. Type a question at the `You:` prompt. Follow-ups work ("what about the UK?"); type `new` to start
+a new conversation, or `exit` to quit. The knowledge base is already in `documents/`, so there is
 nothing else to add.
 
 **Notebook version:** `main.ipynb` has the same code as `main.py`, split into sections (loading, vector store,
@@ -465,9 +487,9 @@ SelfRAG/
 - ~~Follow the pointer~~ (tried, not added): 34% of chunks mention another document, but in a check over all
   50 questions only 2 of 64 followed pointers led to a missing document; most are "see also" links, and even
   scoring the pointer's line against the question couldn't tell the useful ones apart.
-- **Next agentic steps:** conversation memory (a checkpointer and message history), human approval
-  (`interrupt()`) before a tool submits anything such as a ticket, and a support check on the agent's answers
-  like the one the knowledge-base route has.
+- **Next agentic steps:** human approval (`interrupt()`, which the checkpointer now makes possible) before a tool
+  submits anything such as a ticket, and a support check on the agent's answers like the one the knowledge-base
+  route has.
 
 ## Tech stack
 

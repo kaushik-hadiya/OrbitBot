@@ -2,6 +2,9 @@
 with query rewriting, over the Orbitra knowledge base.
 Retrieval is hybrid: vector + BM25 keyword search, merged with RRF, then reranked by a cross-encoder.
 
+Each turn starts with start_turn (a follow-up is rewritten into a standalone question using the conversation)
+and ends with finish (the answer is added to the conversation, kept per thread_id by chat_app's checkpointer).
+
 Flow: question -> decide_retrieval -> (knowledge_base) plan_queries -> retrieve -> grade_documents
                                    -> (action)         agent <-> tools (search_kb + agent_tools.py) -> answer
                                    -> (small_talk)     generate_direct -> answer
@@ -22,6 +25,7 @@ import hashlib
 import json
 import re
 import os
+import uuid
 from pathlib import Path
 from typing import Annotated, Literal, TypedDict
 
@@ -33,11 +37,12 @@ from langchain_chroma import Chroma
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
-from langchain_core.messages import AnyMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, RemoveMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import tool
 #from langchain_groq import ChatGroq
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
@@ -504,13 +509,82 @@ def describe_user(employee_id: str | None) -> str:
             f"based in {emp['location']}.")
 
 
+# conversation memory: a follow-up ("what about the US?") is rewritten into a standalone question first,
+# so routing, search, grading and the checks all keep working on one self-contained question
+MAX_HISTORY_MESSAGES = 6   # the last 3 exchanges are enough context for a follow-up
+HISTORY_CHARS = 800        # per message: long answers are cut, the start carries the topic
+
+# two fields, because one free-text rewrite kept mixing them up: it dropped facts about the user (their
+# balance, level) and copied policy figures from OrbitBot's answers into the question, where the support
+# check would then accept them as "stated by the user" without checking them against the documents
+class StandaloneQuestion(BaseModel):
+    """The latest message, made understandable without the conversation."""
+    question: str = Field(description="The latest message rewritten to stand on its own: fill in the topic, "
+        "region, leave type, person or thing it refers to ('it', 'she', 'what about...', 'and for...'). Keep "
+        "the user's own words and intent. Never include company rules, limits or policy figures from OrbitBot's "
+        "earlier answers. Unchanged if it already stands on its own or starts a new topic.")
+    user_facts: list[str] = Field(description="Facts about the user themselves, from earlier in the "
+        "conversation, that the answer depends on: e.g. 'I am an L4 engineer in Pune', 'I have 18.5 days of "
+        "Earned Leave left'. Only facts about the user (their location, level, role, balances, amounts), never "
+        "company rules or earlier questions and answers. Empty if the message is not about their own situation, "
+        "if none are known, and always for thanks, greetings and other messages that ask nothing.")
+
+
+condense_prompt = ChatPromptTemplate.from_messages([
+    ("system",
+     "You prepare the latest message in a conversation with OrbitBot, Orbitra's internal assistant, so it can "
+     "be answered without the conversation. Don't answer it. Examples:\n"
+     "1. User: 'How many sick days do UK employees get?' OrbitBot: '20 working days.' Latest: 'and in India?'\n"
+     "   -> question 'How many sick days do employees in India get?', user_facts []\n"
+     "2. User: 'My EL balance?' OrbitBot: 'You have 18.5 days of EL left.' Latest: 'Can I take 20 days off in "
+     "December?'\n"
+     "   -> question 'Can I take 20 days of Earned Leave in December?', user_facts ['I have 18.5 days of Earned "
+     "Leave left']\n"
+     "3. User: 'I'm L4 in Pune. Hotel limit in Mumbai?' OrbitBot: 'INR 7,000 a night.' Latest: 'Can I book a "
+     "9000 rupee hotel then?'\n"
+     "   -> question 'Can I book a 9,000 rupee per night hotel in Mumbai?', user_facts ['I am L4, based in "
+     "Pune'] (the 7,000 limit is a company rule from OrbitBot's answer: it goes nowhere)\n"
+     "4. User: 'Who approves a 2 lakh purchase?' OrbitBot: 'Your L8 Director.' Latest: 'thanks!'\n"
+     "   -> question 'thanks!', user_facts []"),
+    ("human", "Conversation so far:\n{history}\n\nLatest message: {message}"),
+])
+# medium effort: at low effort it left follow-ups like "and in India?" unchanged and copied policy limits into
+# the question; one call per follow-up turn only (the first message of a conversation skips it)
+condenser = (condense_prompt | support_llm.with_structured_output(StandaloneQuestion)
+             .with_retry(**RETRY_BAD_OUTPUT))
+
+
+def condense(history: list[AnyMessage], message: str) -> str:
+    result = condenser.invoke({"history": format_history(history), "message": message})
+    question = result.question.strip() or message
+    facts = [f.strip().rstrip(".") for f in result.user_facts if f.strip()]
+    return f"{question} ({'; '.join(facts)})" if facts else question
+
+
+def turn_start(messages: list[AnyMessage]) -> int:
+    """Index of the current turn's user message (the last HumanMessage)."""
+    return max((i for i, m in enumerate(messages) if isinstance(m, HumanMessage)), default=0)
+
+
+def recent_history(messages: list[AnyMessage]) -> list[AnyMessage]:
+    """The last few user/assistant messages of earlier turns (finish leaves nothing else in the state)."""
+    return [m for m in messages if isinstance(m, (HumanMessage, AIMessage))][-MAX_HISTORY_MESSAGES:]
+
+
+def format_history(messages: list[AnyMessage]) -> str:
+    return "\n".join(f"{'User' if isinstance(m, HumanMessage) else 'OrbitBot'}: {m.content[:HISTORY_CHARS]}"
+                     for m in messages)
+
+
 # the graph(state,nodes,edges)
 class GraphState(TypedDict):
-    question: str
+    question: str  # the user's message, then (from start_turn on) its standalone version
     employee_id: str | None  # the signed-in user, if any (only get_leave_balance reads it)
     route: str  # knowledge_base, action, small_talk, distress or out_of_scope
     route_reason: str
-    messages: Annotated[list[AnyMessage], add_messages]  # the agent's conversation (action route only)
+    # the conversation: one user and one OrbitBot message per earlier turn, plus the current turn's
+    # messages (the agent's tool calls and results while it works; finish removes them)
+    messages: Annotated[list[AnyMessage], add_messages]
     tool_rounds: int
     documents: list[Document]
     doc_grades: list[dict]
@@ -525,8 +599,32 @@ class GraphState(TypedDict):
     usefulness_reason: str
 
 
+# with a checkpointer, every field survives into the next turn, so the per-turn ones start fresh here
+# (otherwise e.g. last turn's search_query would replace this turn's search, and rewrite_count would block a rewrite)
+TURN_RESET = {"documents": [], "doc_grades": [], "answer": "", "generation_attempts": 0, "support": "",
+              "unsupported_claims": [], "sub_questions": [], "search_query": "", "rewrite_count": 0,
+              "is_useful": False, "usefulness_reason": "", "tool_rounds": 0}
+
+
+def start_turn(state: GraphState) -> dict:
+    message = state["question"]
+    history = recent_history(state.get("messages", []))
+    question = message
+    if history:   # the first message of a conversation has nothing to refer back to: no LLM call
+        question = condense(history, message)
+    return {**TURN_RESET, "question": question, "messages": [HumanMessage(message)]}
+
+
+def finish(state: GraphState) -> dict:
+    """Keep only the answer in the conversation: drop this turn's tool calls and results, which are bulky
+    and would otherwise be re-sent to the agent on every later turn."""
+    messages = state["messages"]
+    scratch = [RemoveMessage(id=m.id) for m in messages[turn_start(messages) + 1:]]
+    return {"messages": scratch + [AIMessage(state["answer"])]}
+
+
 def decide_retrieval(state: GraphState) -> dict:
-    decision = decider.invoke({"question": state["question"]})
+    decision =decider.invoke({"question": state["question"]})
     return {"route": decision.route, "route_reason": decision.reason}
 
 
@@ -659,9 +757,9 @@ def check_useful(state: GraphState) -> dict:
 
 
 # not useful after the rewrite (e.g. "I don't know"): point the user to a contact instead
-def route_after_useful(state: GraphState) -> Literal["__end__", "rewrite_query", "suggest_contact"]:
+def route_after_useful(state: GraphState) -> Literal["finish", "rewrite_query", "suggest_contact"]:
     if state["is_useful"]:
-        return END
+        return "finish"
     if state.get("rewrite_count", 0) < MAX_REWRITES:
         return "rewrite_query"
     return "suggest_contact"
@@ -689,27 +787,29 @@ def support_wellbeing(state: GraphState) -> dict:
 
 
 def agent(state: GraphState) -> dict:
-    new = []
-    if not state.get("messages"):   # first turn: system prompt with who the user is, then their question
-        new = [SystemMessage(AGENT_SYSTEM.format(user=describe_user(state.get("employee_id")))),
-               HumanMessage(state["question"])]
+    messages = state["messages"]
+    start = turn_start(messages)
+    # system prompt (rebuilt each call, not stored) + recent earlier turns + this turn's question and tool work
+    history = ([SystemMessage(AGENT_SYSTEM.format(user=describe_user(state.get("employee_id"))))]
+               + recent_history(messages[:start]) + messages[start:])
     rounds = state.get("tool_rounds", 0)
-    history = state.get("messages", []) + new
     if rounds < MAX_TOOL_ROUNDS:
         response = agent_llm.invoke(history)
     else:   # out of tool rounds: ask for the answer (the nudge is only sent, not kept in the state)
         response = final_llm.invoke(history + [HumanMessage(AGENT_ANSWER_NOW)])
     if response.tool_calls:
-        return {"messages": new + [response], "tool_rounds": rounds + 1}
+        return {"messages": [response], "tool_rounds": rounds + 1}
     # the model sometimes ends with an empty message after a long search; never return a blank answer
-    return {"messages": new + [response], "answer": response.content.strip() or AGENT_EMPTY_REPLY}
+    return {"messages": [response], "answer": response.content.strip() or AGENT_EMPTY_REPLY}
 
 
-def route_after_agent(state: GraphState) -> Literal["tools", "__end__"]:
-    return "tools" if state["messages"][-1].tool_calls else END
+def route_after_agent(state: GraphState) -> Literal["tools", "finish"]:
+    return "tools" if state["messages"][-1].tool_calls else "finish"
 
 
 builder = StateGraph(GraphState)
+builder.add_node("start_turn", start_turn)
+builder.add_node("finish", finish)
 builder.add_node("decide_retrieval", decide_retrieval)
 builder.add_node("plan_queries", plan_queries)
 builder.add_node("retrieve", retrieve)
@@ -726,7 +826,8 @@ builder.add_node("decline_out_of_scope", decline_out_of_scope)
 builder.add_node("support_wellbeing", support_wellbeing)
 builder.add_node("agent", agent)
 builder.add_node("tools", ToolNode(AGENT_TOOLS))
-builder.add_edge(START, "decide_retrieval")
+builder.add_edge(START, "start_turn")
+builder.add_edge("start_turn", "decide_retrieval")
 builder.add_conditional_edges("decide_retrieval", route_after_decision)
 builder.add_edge("plan_queries", "retrieve")
 builder.add_edge("retrieve", "grade_documents")
@@ -736,21 +837,32 @@ builder.add_conditional_edges("check_support", route_after_support)
 builder.add_edge("revise_answer", "check_support")
 builder.add_conditional_edges("check_useful", route_after_useful)
 builder.add_edge("rewrite_query", "retrieve")  # loop back with the new search query
-builder.add_edge("flag_unsupported", END)
-builder.add_edge("suggest_contact", END)
-builder.add_edge("generate_direct", END)
-builder.add_edge("decline_out_of_scope", END)
-builder.add_edge("support_wellbeing", END)
+builder.add_edge("flag_unsupported", "finish")
+builder.add_edge("suggest_contact", "finish")
+builder.add_edge("generate_direct", "finish")
+builder.add_edge("decline_out_of_scope", "finish")
+builder.add_edge("support_wellbeing", "finish")
 builder.add_conditional_edges("agent", route_after_agent)
 builder.add_edge("tools", "agent")   # tool results go back to the agent
+builder.add_edge("finish", END)
+# app: one question per run, no memory (what the evals use); chat_app: remembers each conversation
+# (thread_id) in memory until the process exits
 app = builder.compile()
+chat_app = builder.compile(checkpointer=InMemorySaver())
 
 
-def ask(question: str, employee_id: str | None = None):
-    for step in app.stream({"question": question, "employee_id": employee_id}, stream_mode="updates"):
+def ask(question: str, employee_id: str | None = None, thread_id: str | None = None):
+    """Answer one message; with a thread_id it is a turn in that conversation."""
+    graph, config = (chat_app, {"configurable": {"thread_id": thread_id}}) if thread_id else (app, None)
+    for step in graph.stream({"question": question, "employee_id": employee_id}, config, stream_mode="updates"):
         for node, update in step.items():
+            if node == "finish":
+                continue
             print(f"--- {node} ---")
-            if node == "decide_retrieval":
+            if node == "start_turn":
+                if update["question"] != question:
+                    print(f"  💬 as a standalone question: {update['question']!r}")
+            elif node == "decide_retrieval":
                 print(f"  route={update['route']}  ({update['route_reason']})")
             elif node == "plan_queries":
                 print(f"  🧩 parts: {update['sub_questions']}")
@@ -788,7 +900,8 @@ def main():
         parser.error(f"no employee {args.employee_id!r} in data/employee_directory.csv")
     if args.employee_id:
         print(f"Signed in as {agent_tools.EMPLOYEES_BY_ID[args.employee_id]['name']} ({args.employee_id}).")
-    print("OrbitBot is ready. Ask a question, or type 'exit' to quit.")
+    print("OrbitBot is ready. Ask a question, type 'new' to start a new conversation, or 'exit' to quit.")
+    thread_id = str(uuid.uuid4())
     while True:
         try:
             question = input("\nYou: ").strip()
@@ -796,8 +909,11 @@ def main():
             break
         if question.lower() in {"exit", "quit"}:
             break
-        if question:
-            ask(question, args.employee_id)
+        if question.lower() == "new":
+            thread_id = str(uuid.uuid4())
+            print("Started a new conversation.")
+        elif question:
+            ask(question, args.employee_id, thread_id)
     print("\nBye!")
 
 
