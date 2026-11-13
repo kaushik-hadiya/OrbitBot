@@ -1,0 +1,1153 @@
+{
+  "stage": "generator",
+  "run_at": "2026-11-12T21:56:50",
+  "config": {
+    "judge": "openai/gpt-oss-120b",
+    "generator_llm": "openai/gpt-oss-120b",
+    "context_from": "evalres/before_vs_after_grading_20261112_215338.json",
+    "answers_from": null,
+    "scoring_seconds": 155.5
+  },
+  "summary": {
+    "overall": {
+      "n": 46,
+      "Faithfulness": 0.96,
+      "Faithfulness errors": 0,
+      "Answer Relevancy": 0.951,
+      "Answer Relevancy errors": 0
+    },
+    "by_type": {
+      "action_redirect": {
+        "n": 2,
+        "Faithfulness": 0.75,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 0.875,
+        "Answer Relevancy errors": 0
+      },
+      "ambiguous": {
+        "n": 1,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 1.0,
+        "Answer Relevancy errors": 0
+      },
+      "multi_hop": {
+        "n": 14,
+        "Faithfulness": 0.905,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 0.986,
+        "Answer Relevancy errors": 0
+      },
+      "numerical": {
+        "n": 3,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 0.933,
+        "Answer Relevancy errors": 0
+      },
+      "policy_judgment": {
+        "n": 3,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 0.833,
+        "Answer Relevancy errors": 0
+      },
+      "procedural": {
+        "n": 1,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 1.0,
+        "Answer Relevancy errors": 0
+      },
+      "region_specific": {
+        "n": 2,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 0.75,
+        "Answer Relevancy errors": 0
+      },
+      "single_hop": {
+        "n": 16,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 0.964,
+        "Answer Relevancy errors": 0
+      },
+      "temporal": {
+        "n": 1,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 1.0,
+        "Answer Relevancy errors": 0
+      },
+      "version_conflict": {
+        "n": 3,
+        "Faithfulness": 1.0,
+        "Faithfulness errors": 0,
+        "Answer Relevancy": 1.0,
+        "Answer Relevancy errors": 0
+      }
+    }
+  },
+  "failures": {},
+  "results": [
+    {
+      "qid": "Q001",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "How many sick leaves do India employees get per year?",
+      "context_doc_ids": [
+        "HR-LV-001"
+      ],
+      "answer": "12 days of Sick Leave per year.  \nCredited in full on 1 January (pro‑rated for joiners) [HR-LV-001].",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about India's employee sick leave entitlement with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q002",
+      "type": "version_conflict",
+      "difficulty": "medium",
+      "question": "How many days of paternity leave can I take in Bengaluru?",
+      "context_doc_ids": [
+        "HR-LV-001",
+        "HR-LV-001"
+      ],
+      "answer": "10 working days per child [HR-LV-001]  \nMust be taken within 6 months of the child’s birth.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about paternity leave in Bengaluru with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q003",
+      "type": "version_conflict",
+      "difficulty": "medium",
+      "question": "What is the maximum earned leave I can carry forward?",
+      "context_doc_ids": [
+        "HR-LV-001",
+        "HR-LV-001",
+        "HR-LV-003",
+        "HR-LV-002"
+      ],
+      "answer": "30 days maximum EL carry‑forward.  \n- Applies to India employees per HR‑LV‑001; total balance cannot exceed 30 days at year‑end.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the answer directly addressed the question about maximum earned leave carry‑forward with no irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q004",
+      "type": "version_conflict",
+      "difficulty": "medium",
+      "question": "Within how many days must I use a comp-off?",
+      "context_doc_ids": [
+        "HR-LV-001",
+        "HR-LV-002"
+      ],
+      "answer": "**India employees:** A comp‑off must be used within **60 days** of earning it.  \n**US employees:** Comp‑off is not offered under the US leave policy.  \n\n- Must be approved by your manager before use.  \n- If you are in India, request the comp‑off within the 60‑day window.  \n\nWhich location/region applies to you?",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about the comp‑off usage timeframe with no irrelevant material.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q005",
+      "type": "region_specific",
+      "difficulty": "medium",
+      "question": "I work in the Austin office. How many PTO days do I get in my first year?",
+      "context_doc_ids": [
+        "HR-LV-002"
+      ],
+      "answer": "**You receive 20 PTO days in your first year.**  \n- PTO accrues each semi‑monthly pay period (24 periods per year) [HR-LV-002].  \n- Up to 5 unused PTO days can be carried over to the next calendar year, but they expire on 31 March [HR-LV-002].  \n- If you leave the company, Orbitra will pay out up to 10 unused PTO days (Texas law does not require payout) [HR-LV-002].",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness to the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 0.5,
+          "reason": "The score is 0.50 because the response included unrelated details about carry‑over rules and termination payout, which do not answer the question about first‑year PTO days, preventing a higher relevance rating.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q006",
+      "type": "region_specific",
+      "difficulty": "medium",
+      "question": "How much paternity leave do London employees get?",
+      "context_doc_ids": [
+        "HR-LV-003"
+      ],
+      "answer": "6 weeks of paternity/partner leave at full pay.  \n- Book the leave in PeopleHub.  \n- For any questions or approval, contact Hannah Price (hannah.price@orbitra.io), HRBP UK. [HR-LV-003]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about London paternity leave without any irrelevant material.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q007",
+      "type": "ambiguous",
+      "difficulty": "medium",
+      "question": "What is my notice period?",
+      "context_doc_ids": [
+        "HR-EXIT-001",
+        "HR-ONB-001"
+      ],
+      "answer": "I can’t determine your exact notice period without knowing your level, location, and whether you’re still on probation.  \n\n- If you’re on probation (any level): 15 days [HR-EXIT-001]  \n- If you’re a confirmed L1–L5 employee in India: 60 days [HR-EXIT-001]  \n- If you’re a confirmed L6–L10 employee in India: 90 days [HR-EXIT-001]  \n- If you’re in the US (at‑will): 2 weeks (requested) [HR-EXIT-001]  \n- If you’re in the UK: as per contract – 1 month for L1–L5, 3 months for L6+ [HR-EXIT-001]  \n\nPlease let me know your level, country, and if you’re still in probation so I can give the precise notice period.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness to the retrieval context. Great job!",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully answered the question about the notice period with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q008",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm an L6 in Pune and want to resign. If I have 40 days of EL, can I use them to shorten my notice?",
+      "context_doc_ids": [
+        "HR-EXIT-001"
+      ],
+      "answer": "No – your earned leave balance cannot be used to reduce the required notice period.  \n- The notice period for an L6 employee in India is 90 days (HR‑EXIT‑001).  \n- Earned leave (EL) may not be adjusted against the notice period (HR‑EXIT‑001).  ",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question about using EL to shorten notice without any irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q009",
+      "type": "numerical",
+      "difficulty": "hard",
+      "question": "My Basic is INR 60,000 and HRA is INR 30,000 per month. How much would I pay to buy out 20 days of notice?",
+      "context_doc_ids": [
+        "HR-EXIT-001"
+      ],
+      "answer": "You would pay **₹60,000** to buy out 20 days of notice.  \n\n- The buy‑out amount is calculated as (Basic + HRA) ÷ 30 × days short = (60,000 + 30,000) ÷ 30 × 20 = ₹60,000.  \n- This applies only if you are **not granted an early release** by your manager (early release is at the manager’s discretion and requires knowledge transfer).  \n- The notice‑buyout amount is **recovered in your final settlement (FnF)**.  \n- Your **EL balance cannot be used** to offset the notice period.  \n\n[HR-EXIT-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating a perfectly faithful output—great job!",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response contains no irrelevant statements and fully addresses the query.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q010",
+      "type": "numerical",
+      "difficulty": "hard",
+      "question": "I'm an L5 travelling Bengaluru to Delhi for 3 nights, flying out at 4 PM on day 1 and returning at 10 AM on day 4. What per diem can I claim?",
+      "context_doc_ids": [
+        "FIN-002",
+        "FIN-002"
+      ],
+      "answer": "**INR 4,500** total per‑diem (Day 1 ½ × 1,500 + Day 2 1 × 1,500 + Day 3 1 × 1,500 + Day 4 ½ × 1,500).  \n- Claim in SpendWise under “Per diem” with the travel dates; no receipts required. [FIN-002]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 0.8,
+          "reason": "The score is 0.80 because the answer included the unrelated reference code FIN-002, which does not pertain to the per‑diem calculation.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q011",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm an L4 in Hyderabad going to a client in Mumbai. What flight class and hotel limit apply, and who books it?",
+      "context_doc_ids": [
+        "FIN-002",
+        "FIN-002"
+      ],
+      "answer": "**Flight class:** Economy – domestic travel for L4.  \n**Hotel limit:** INR 6,000 per night (Tier 1 India, L1–L5).  \n**Booking:** Must be booked through Orbitra Travel (travel.orbitra.internal).  \n\n*Approval:* Manager approval is required for domestic travel. [FIN-002]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the answer directly addressed the flight class, hotel limit, and booking responsibility without any irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q012",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm an L7 taking a client for dinner in Pune with 3 client people and me. What is the maximum I can claim and what must I include?",
+      "context_doc_ids": [
+        "FIN-001",
+        "COM-002",
+        "FIN-001"
+      ],
+      "answer": "**Maximum claim:** INR 12,000 (INR 3,000 × 4 heads).  \n\n- Include the client’s name and company on the claim.  \n- Alcohol charges may not exceed 30 % of the total bill.  \n- Attach a valid receipt (expense > INR 500).  \n- Submit the claim in SpendWise within 30 days of the dinner.  \n- Your L7 manager can approve the claim (within INR 50,000 authority). [FIN-001] [COM-002]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the query about the maximum claimable amount and required inclusions without any irrelevant information.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q013",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the deadline for submitting tax investment proofs?",
+      "context_doc_ids": [
+        "HR-PAY-001"
+      ],
+      "answer": "31 January [HR-PAY-001]\n\n- Must be submitted within the 5 January – 31 January window; otherwise higher TDS is deducted in February and March.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the tax investment proof deadline without any irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q014",
+      "type": "temporal",
+      "difficulty": "medium",
+      "question": "Is tomorrow a holiday in the Bengaluru office? (asked on 19 Oct 2026)",
+      "context_doc_ids": [
+        "HR-HOL-2026"
+      ],
+      "answer": "Yes, tomorrow (20 Oct 2026) is a holiday in the Bengaluru office. 【HR-HOL-2026】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the query about the Bengaluru office holiday on the specified date with no irrelevant information.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q015",
+      "type": "multi_hop",
+      "difficulty": "medium",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "context_doc_ids": [
+        "COM-004",
+        "HR-HOL-2026",
+        "HR-HOL-2026"
+      ],
+      "answer": "No, the Hyderabad office is open on 9 November 2026.  \n- Hyderabad is closed only on 8 Nov 2026 (per the holiday calendar and announcement)【COM-004】【HR-HOL-2026】.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 0.0,
+          "reason": "The score is 0.00 because the actual output says the Hyderabad office is open on 9 November 2026 (or closed only on 8 November 2026), directly contradicting the retrieval context which clearly states the office is closed on both 8 and 9 November 2026.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q016",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "Can I deploy a non-urgent feature to production on 9 November 2026?",
+      "context_doc_ids": [
+        "ENG-003",
+        "COM-004",
+        "HR-HOL-2026",
+        "COM-003"
+      ],
+      "answer": "No, you cannot deploy a non‑urgent feature to production on 9 Nov 2026.\n\n- A deployment freeze is in effect from 6 Nov to 10 Nov (ENG‑004), so production changes are blocked during that period. [COM-004]  \n- Only an approved exception would allow a production deploy during the freeze; such an exception must be obtained from the appropriate authority. [ENG-003]  \n- To proceed, submit a request for a deployment‑freeze exception (e.g., to the on‑call Engineering Manager) and obtain approval before attempting the deploy. [ENG-003]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness to the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q017",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the IT hotline number?",
+      "context_doc_ids": [
+        "IT-001",
+        "IT-002"
+      ],
+      "answer": "The IT hotline number is Ext. 4000 or +91‑80‑4719‑4000. 【IT-001】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question with no irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q018",
+      "type": "procedural",
+      "difficulty": "medium",
+      "question": "My VPN is connected but Confluence won't open. What should I try?",
+      "context_doc_ids": [
+        "IT-003",
+        "IT-003",
+        "IT-003",
+        "IT-001"
+      ],
+      "answer": "Flush your DNS cache (Mac: `sudo dscacheutil -flushcache`; Windows: `ipconfig /flushdns`) and try switching the VPN gateway to a nearer location (e.g., the one closest to your current region).【IT-003】  \n\nIf the issue persists, raise an OrbitDesk “VPN issue” ticket with a screenshot and the output of **Help → Collect Logs**.【IT-003】  \n\nIf you are completely blocked from accessing any internal site, call Ext. 4000 (treated as a P2).【IT-003】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response contained no irrelevant statements and fully addressed the user's query.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q019",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I lost my laptop for the second time in two years and I left it in my car. What will happen and what do I need to do?",
+      "context_doc_ids": [
+        "SEC-002",
+        "SEC-002",
+        "IT-002"
+      ],
+      "answer": "You’ll be charged 50 % of the laptop’s book value because it’s the second loss within three years and it was due to negligence (left in a car).  \n\n- Report the loss within 4 hours by calling the IT hotline (Ext. 4000) **and** emailing security@orbitra.io.  \n- File a police report (FIR) within 48 hours and upload it to an OrbitDesk ticket.  \n- After the police report is uploaded, a replacement laptop will be issued within 2 business days.  \n\n[IT-002]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness to the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the answer directly addressed the user's concern about the lost laptop with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q020",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "How long does my account stay locked after too many wrong passwords?",
+      "context_doc_ids": [
+        "IT-004"
+      ],
+      "answer": "30 minutes.  \n- Lockout occurs after **5 failed attempts**.  \n- You can unlock immediately via the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness to the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about account lockout duration with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q021",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "Who approves my request for production AWS console access and for how long?",
+      "context_doc_ids": [
+        "IT-004",
+        "CS-001"
+      ],
+      "answer": "Approved by the VP Engineering and Security, and the access is time‑bound to a maximum of 8 hours.  \n- Request must be submitted via OrbitDesk using the “Break‑glass” workflow.  \n- Access will be automatically revoked after the 8‑hour limit expires. 【IT-004】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 0.6666666666666666,
+          "reason": "The score is 0.67 because the output included a description of the submission workflow, which does not directly answer who approves the request or the access duration, making part of the response irrelevant.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q022",
+      "type": "policy_judgment",
+      "difficulty": "medium",
+      "question": "Can I paste a customer's export file with emails into a public AI chatbot to clean it up?",
+      "context_doc_ids": [
+        "SEC-001",
+        "HR-COC-001",
+        "LEG-002",
+        "PRD-001"
+      ],
+      "answer": "No – you may not paste a customer export file containing emails into a public AI chatbot.\n\n- The file contains personal data (customer emails), which is classified as **Restricted** and must never be shared in unapproved tools or public services. [SEC-001]  \n- To process that data you must use an **approved Orbitra system** (e.g., Orbitra Copilot within your Enterprise plan) or a tool that has been vetted and approved by Security/IT. [SEC-001]  \n- If you need to share the data externally, you must have a **need‑to‑know justification, a signed NDA**, and the transfer must be **encrypted in transit**. [SEC-001]  ",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating a perfectly faithful output. Great job!",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question without any irrelevant statements, fully addressing the user's concern.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q023",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "context_doc_ids": [
+        "SEC-002",
+        "SEC-002",
+        "SEC-002"
+      ],
+      "answer": "Click the **“Report Phish”** button in Gmail.  \n\n- Do it within 1 hour of noticing the email.  \n- You won’t be penalised for reporting in good faith.  \n\n[SEC-002]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about handling a suspicious email with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q024",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "A vendor emailed asking us to update their bank account. What's the correct process?",
+      "context_doc_ids": [
+        "SEC-002",
+        "FIN-003"
+      ],
+      "answer": "Verify the change by calling the vendor on a known number (not the one in the email) and then process it through Finance using the vendor‑bank‑change procedure (letter‑head request, cancelled cheque, and AP call‑back verification).  \n\n- Use only a pre‑existing vendor phone number, not the one supplied in the email. [SEC-002]  \n- Require a formal request on vendor letterhead plus a cancelled cheque. [FIN-003]  \n- AP must perform a call‑back verification using the number stored in the vendor master file. [FIN-003]  ",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the answer directly addressed the vendor bank‑account update process with no irrelevant content, earning a perfect relevancy rating.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q025",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the gift limit from a vendor?",
+      "context_doc_ids": [
+        "HR-COC-001",
+        "LEG-002"
+      ],
+      "answer": "The gift limit from a vendor is **INR 5,000 / USD 75 / GBP 60 per person per year**【HR-COC-001】.  \n- Cash or cash‑equivalent gifts (gift cards, vouchers) are never allowed【HR-COC-001】.  \n- Gifts exceeding the limit must be entered in the Gift Register within 7 days and may need to be returned【HR-COC-001】.  \n- No gifts to government officials (including state‑owned enterprises) are permitted without prior written Legal approval【LEG-002】.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 0.75,
+          "reason": "The score is 0.75 because the output included an irrelevant statement about gifts to government officials and legal approval, which does not address the vendor gift‑limit question.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q026",
+      "type": "policy_judgment",
+      "difficulty": "medium",
+      "question": "Can I take a freelance project on weekends?",
+      "context_doc_ids": [
+        "HR-COC-001"
+      ],
+      "answer": "No, you cannot take a paid freelance project on weekends without prior written approval.  \n- You must obtain written approval from your HR Business Partner and department head before starting any paid outside work. [HR-COC-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 0.5,
+          "reason": "The score is 0.50 because the response added an unrelated rule about not taking paid freelance projects on weekends, which fails to directly answer the user's question about whether they can take a freelance project on weekends.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q027",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "How do I report sexual harassment and how long do I have?",
+      "context_doc_ids": [
+        "LEG-003",
+        "HR-POSH-001"
+      ],
+      "answer": "Report the harassment to the Internal Committee by emailing icc@orbitra.io (and, if you’re in the US or UK, you may also contact your HRBP).  \n\n- No specific reporting deadline is stated in the policy.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness to the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about reporting sexual harassment and the time frame without any irrelevant information.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q028",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "When do ESOPs vest?",
+      "context_doc_ids": [
+        "HR-COMP-001",
+        "HR-BEN-001"
+      ],
+      "answer": "ESOPs vest over 4 years with a 1‑year cliff – 25 % vests on the first anniversary of the grant date, and the remaining 75 % vests quarterly (6.25 % per quarter) over the next three years. Refresh grants vest over 4 years with no cliff. [HR-COMP-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question about ESOP vesting without any irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q029",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I'm leaving Orbitra after 3 years. What happens to my ESOPs and gratuity?",
+      "context_doc_ids": [
+        "HR-COMP-001"
+      ],
+      "answer": "You can exercise any options that have already vested, and you have up to 5 years from your last working day to do so; any options that are still unvested will lapse on your last working day.  \n\n- Gratuity details are not covered in the provided policy, so I don’t have that information.   [HR-COMP-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the query about ESOPs and gratuity with no irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q030",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I referred a friend who joined as L5 on 1 August 2026. When and how much will I get?",
+      "context_doc_ids": [
+        "HR-TA-001"
+      ],
+      "answer": "You’ll receive the referral bonus 90 days after your friend’s start date (around 30 September 2026), provided you are still employed and not serving notice.  \n\n**Bonus amount depends on the employee’s work location:**  \n- **India:** INR 1,00,000 (L5‑L7) – plus 50 % extra if the role is marked “hard‑to‑fill” 🔥.  \n- **United States:** USD 2,000 (L1‑L5).  \n- **United Kingdom:** GBP 1,500 (L1‑L5).  \n\nWhich of these locations applies to your friend’s role? [HR-TA-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response was completely on-topic and contained no irrelevant statements, fully addressing the query.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q031",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I passed my CKA exam and I'm planning to resign in 6 months. Will the company reimburse it and will they recover it?",
+      "context_doc_ids": [
+        "LND-001",
+        "LND-001",
+        "FIN-001"
+      ],
+      "answer": "Yes, the CKA exam fee will be reimbursed, but because you plan to resign within 12 months, the reimbursed amount will be claw‑backed pro‑rata from your final settlement.  \n\n- Manager pre‑approval must be recorded in LearnSphere before booking the exam. [LND-001]  \n- Submit the claim in SpendWise with the certificate and invoice within 60 days of passing. [LND-001]  \n- CKA is a priority certification, so reimbursement is outside the annual L&D budget. [LND-001]  \n- Resignation within 12 months triggers the clawback provision, requiring repayment of the reimbursed amount pro‑rata. [LND-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 0.8,
+          "reason": "The score is 0.80 because the output included unrelated details about manager pre‑approval in LearnSphere, which do not address the reimbursement and claw‑back question, preventing a higher relevancy rating.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q032",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "context_doc_ids": [
+        "ENG-002"
+      ],
+      "answer": "2 approvals are required for a PR in orbitra/infra.  \nAt least one of the approvals must come from a code‑owner of the changed path. 【ENG-002】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about the required approvals for a PR in orbitra/infra with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q033",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "What is the acknowledgement time for a SEV2 incident?",
+      "context_doc_ids": [
+        "ENG-004",
+        "ENG-004"
+      ],
+      "answer": "15 minutes [ENG-004]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness to the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response was completely on-topic and contained no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q034",
+      "type": "numerical",
+      "difficulty": "medium",
+      "question": "I was on-call in India for a full week including the weekend. What allowance do I get?",
+      "context_doc_ids": [
+        "ENG-004",
+        "FIN-001"
+      ],
+      "answer": "You’ll receive INR 25,000 for the week (5 × ₹3,000 for weekdays + 2 × ₹5,000 for the weekend days).  \n\n- If you were paged for more than 2 hours on a weekend/holiday, you also earn 1 comp‑off day.  \n- Claim the allowance via PeopleHub → Payroll → “On‑call allowance” by the 20th of the month. [ENG-004]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about on‑call allowance in India with no irrelevant statements, so it couldn't be any higher.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q035",
+      "type": "single_hop",
+      "difficulty": "medium",
+      "question": "What is the first response SLA for a P1 ticket from an Enterprise customer?",
+      "context_doc_ids": [
+        "IT-001",
+        "CS-001"
+      ],
+      "answer": "30 minutes. [CS-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, showing the actual output perfectly aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question with no irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q037",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "When is Legacy Forms v1 being retired?",
+      "context_doc_ids": [
+        "PRD-002"
+      ],
+      "answer": "Legacy Forms v1 will be retired on **31 January 2027**.【PRD-002】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question with no irrelevant statements, leaving no room for a higher rating.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q041",
+      "type": "action_redirect",
+      "difficulty": "medium",
+      "question": "What's my current EL balance?",
+      "context_doc_ids": [
+        "HR-LV-001"
+      ],
+      "answer": "I don’t have access to your current EL balance.  \nCheck it in PeopleHub → Leave → My Balances; if it appears incorrect, raise an OrbitDesk ticket to HR with the request “Leave balance correction.”【HR-LV-001】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 0.5,
+          "reason": "The score is 0.50 because the actual output incorrectly claims employees cannot directly access their EL balance, contradicting the retrieval context which states leave balances are viewable in PeopleHub under Leave → My Balances.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the query about the EL balance with no irrelevant statements, so it couldn't be any higher.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q042",
+      "type": "action_redirect",
+      "difficulty": "medium",
+      "question": "My Okta Verify stopped working because I changed phones. Please raise a ticket for me.",
+      "context_doc_ids": [
+        "IT-004",
+        "IT-003",
+        "IT-002"
+      ],
+      "answer": "Raise an OrbitDesk ticket to IT → “MFA reset”. [IT-004]  \n- IT will verify your identity on a video call (have your employee ID card ready).  \n- The MFA factor will be reset within 4 business hours.  \n- Do not ask colleagues to share MFA codes.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 0.75,
+          "reason": "The score is 0.75 because the response included irrelevant advice about MFA code sharing, which does not address the user's request to raise a ticket for the Okta Verify issue.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q043",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "I joined on 1 September 2026 and I'm on probation. Can I take 8 days of EL in December?",
+      "context_doc_ids": [
+        "HR-ONB-001",
+        "HR-LV-001",
+        "HR-LV-001",
+        "HR-LV-001"
+      ],
+      "answer": "No – you can’t take 8 days of Earned Leave in December while you’re still on probation.  \n\n- You may use **a maximum of 6 EL days** during the first 6 months of probation【HR-LV-001】.  \n- By December you will have accrued **6 EL days** (1.5 days each month from September 1)【HR-LV-001】, so you don’t have enough balance for 8 days.  \n- Any leave of more than 3 consecutive working days must be applied **at least 7 calendar days in advance** in PeopleHub, with your manager as approver【HR-LV-001】.  ",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response was completely on-topic and contained no irrelevant statements, fully addressing the user's query.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q044",
+      "type": "multi_hop",
+      "difficulty": "medium",
+      "question": "What should I bring on my first day and when will I get my ID card?",
+      "context_doc_ids": [
+        "HR-ONB-001",
+        "ADM-001"
+      ],
+      "answer": "Your ID card will be ready within 3 working days of your start date; until then you should use a temporary visitor badge from reception (you’ll need a photo ID to obtain it)【HR-ONB-001】.  \n\n- Bring a government‑issued photo ID on day 1 to get the temporary badge.  \n- The ID card is issued within 3 working days after you join.  ",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully answered the question about what to bring on the first day and when the ID card will be received, with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q045",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "When is the next town hall? (asked on 19 Oct 2026)",
+      "context_doc_ids": [
+        "COM-004"
+      ],
+      "answer": "The next town hall is on **Thursday 29 October 2026 at 5:00 PM IST** (held in the Bengaluru Auditorium and on Zoom)【COM-004】.",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question about the next town hall with no irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q046",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "Who should approve an expense claim of INR 1,20,000 submitted by someone whose manager is an L7?",
+      "context_doc_ids": [
+        "COM-002"
+      ],
+      "answer": "L8 Director must approve the INR 1,20,000 expense claim.  \n- The amount is within the L8 Director’s approval limit (up to INR 2,00,000) [COM-002].",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, showing the actual output perfectly aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question with no irrelevant content, so it cannot be higher.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q047",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "Who is my HRBP if I work in Sales in India?",
+      "context_doc_ids": [
+        "COM-002"
+      ],
+      "answer": "Pooja Reddy is your HR Business Partner for Sales in India. 【COM-002】",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating the actual output fully aligns with the retrieval context.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly answered the question with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q048",
+      "type": "policy_judgment",
+      "difficulty": "medium",
+      "question": "Can I work from Dubai for 3 weeks next month?",
+      "context_doc_ids": [
+        "HR-WFH-001"
+      ],
+      "answer": "No.  \n\n- Working from another country requires HRBP **and** Legal approval.  \n- The request must be submitted **30 days in advance**.  \n- WFA outside the employee’s country is limited to **14 days per year**.  \n- Dubai (UAE) is a different country, so the 3‑week (≈21 days) request exceeds the 14‑day cap and the notice period.  \n\n[HR-WFH-001]",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question with no irrelevant statements.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q049",
+      "type": "multi_hop",
+      "difficulty": "hard",
+      "question": "My wife delivered a baby 40 days ago. Can I still add the baby to insurance and take paternity leave?",
+      "context_doc_ids": [
+        "HR-BEN-001",
+        "HR-LV-001",
+        "HR-LV-003",
+        "HR-BEN-001"
+      ],
+      "answer": "You can still take paternity leave, but you cannot add the baby to insurance now; you must wait for the March enrollment window.\n\n- Paternity leave: 10 working days per child, must be used within 6 months of birth [HR-LV-001].  \n- Adding a newborn: must be done within 30 days of the event; after that you must wait for the annual window 1–15 March [HR-BEN-001].",
+      "metrics": {
+        "Faithfulness": {
+          "score": 0.6666666666666666,
+          "reason": "The score is 0.67 because the actual output incorrectly says you must wait for the March enrollment window to add the baby, contradicting the context which permits adding a newborn within 30 days of birth.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question with no irrelevant content.",
+          "error": null
+        }
+      }
+    },
+    {
+      "qid": "Q050",
+      "type": "single_hop",
+      "difficulty": "easy",
+      "question": "What is the free cab cut-off time?",
+      "context_doc_ids": [
+        "ADM-002",
+        "FIN-001"
+      ],
+      "answer": "The free cab must be booked by 6 PM on the same day you plan to leave after 9 PM.  \n- Booking is done through the Orbitra Spaces → Cab module (or via the transport desk after 6 PM, subject to availability) [ADM-002].",
+      "metrics": {
+        "Faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions, indicating perfect faithfulness.",
+          "error": null
+        },
+        "Answer Relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response fully addressed the question with no irrelevant statements.",
+          "error": null
+        }
+      }
+    }
+  ]
+}

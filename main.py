@@ -39,6 +39,7 @@ from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, RemoveMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableLambda
 from langchain_core.tools import tool
 #from langchain_groq import ChatGroq
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -176,9 +177,16 @@ def reciprocal_rank_fusion(*ranked_lists: list[Document], k: int = 60) -> list[D
     return [docs[key] for key in sorted(scores, key=scores.get, reverse=True)]
 
 
+# every chunk is Orbitra's, but few say so, and the reranker scores the word itself: for "What is the notice
+# period at Orbitra?" it ranked chunks that mention Orbitra above HR-EXIT-001's notice table, which doesn't.
+# Naming the company on every chunk makes that match equal for all of them. (Removing the name from the query
+# instead broke questions about the company itself, e.g. "Tell me about Orbitra".)
+RERANK_PREFIX = "Orbitra Technologies\n"
+
+
 def hybrid_search(query: str, top_k: int = TOP_K) -> list[Document]:
     candidates = reciprocal_rank_fusion(vector_retriever.invoke(query), bm25_retriever.invoke(query))[:CANDIDATES]
-    scores = reranker.rerank(query, [d.page_content for d in candidates], batch_size=4)
+    scores = reranker.rerank(query, [RERANK_PREFIX + d.page_content for d in candidates], batch_size=4)
     ranked = sorted(zip(scores, candidates), key=lambda pair: pair[0], reverse=True)
     return [doc for _, doc in ranked[:top_k]]
 
@@ -201,6 +209,20 @@ judge_llm = ChatOpenAI(**OPENROUTER, extra_body={"reasoning": {"effort": "low"}}
 # - ValueError: the provider failed mid-answer and OpenRouter sent back an empty 200
 #   (finish_reason 'error'), so LangChain found no parsed output
 RETRY_BAD_OUTPUT = dict(retry_if_exception_type=(BadRequestError, ValueError), stop_after_attempt=3)
+
+
+def require_text(message: AIMessage) -> str:
+    """The reply's text; an empty reply (the same empty 200 as above, on a plain-text call) raises ValueError,
+    so .with_retry(**RETRY_BAD_OUTPUT) asks again instead of passing on a blank answer or search query."""
+    text = message.content.strip()
+    if not text:
+        raise ValueError("the LLM returned an empty reply")
+    return text
+
+
+def text_chain(chat_prompt: ChatPromptTemplate, model: ChatOpenAI):
+    """prompt -> model -> non-empty text, retried on bad output like the structured-output chains."""
+    return (chat_prompt | model | RunnableLambda(require_text)).with_retry(**RETRY_BAD_OUTPUT)
 
 prompt = ChatPromptTemplate.from_messages([
     ("system",
@@ -442,7 +464,7 @@ rewrite_prompt = ChatPromptTemplate.from_messages([
      "Return only the query."),
     ("human", "Question: {question}\n\nThis search query did not find the answer: {previous_query}"),
 ])
-rewriter = rewrite_prompt | judge_llm
+rewriter = text_chain(rewrite_prompt, judge_llm)
 
 MAX_REWRITES = 1
 
@@ -554,11 +576,13 @@ condenser = (condense_prompt | support_llm.with_structured_output(StandaloneQues
              .with_retry(**RETRY_BAD_OUTPUT))
 
 
-def condense(history: list[AnyMessage], message: str) -> str:
+def condense(history: list[AnyMessage], message: str) -> tuple[str, str]:
+    """(question with the user's facts, question alone): the nodes that judge or answer need the facts, but
+    the search only needs the question (the facts' amounts and balances are noise to BM25 and the vectors)."""
     result = condenser.invoke({"history": format_history(history), "message": message})
     question = result.question.strip() or message
     facts = [f.strip().rstrip(".") for f in result.user_facts if f.strip()]
-    return f"{question} ({'; '.join(facts)})" if facts else question
+    return (f"{question} ({'; '.join(facts)})" if facts else question), question
 
 
 def turn_start(messages: list[AnyMessage]) -> int:
@@ -579,6 +603,7 @@ def format_history(messages: list[AnyMessage]) -> str:
 # the graph(state,nodes,edges)
 class GraphState(TypedDict):
     question: str  # the user's message, then (from start_turn on) its standalone version
+    search_question: str  # the standalone question without the user's facts: what a one-part plan searches
     employee_id: str | None  # the signed-in user, if any (only get_leave_balance reads it)
     route: str  # knowledge_base, action, small_talk, distress or out_of_scope
     route_reason: str
@@ -609,10 +634,11 @@ TURN_RESET = {"documents": [], "doc_grades": [], "answer": "", "generation_attem
 def start_turn(state: GraphState) -> dict:
     message = state["question"]
     history = recent_history(state.get("messages", []))
-    question = message
+    question = search_question = message
     if history:   # the first message of a conversation has nothing to refer back to: no LLM call
-        question = condense(history, message)
-    return {**TURN_RESET, "question": question, "messages": [HumanMessage(message)]}
+        question, search_question = condense(history, message)
+    return {**TURN_RESET, "question": question, "search_question": search_question,
+            "messages": [HumanMessage(message)]}
 
 
 def finish(state: GraphState) -> dict:
@@ -643,7 +669,7 @@ def plan_queries(state: GraphState) -> dict:
     parts = plan.sub_questions[:MAX_SUB_QUESTIONS]
     # one part = no split: search the user's own words, since a rephrased query can lose
     # the exact terms BM25 matches on (e.g. "comp-off" -> "compensatory off")
-    return {"sub_questions": parts if len(parts) > 1 else [state["question"]]}
+    return {"sub_questions": parts if len(parts) > 1 else [state.get("search_question") or state["question"]]}
 
 
 def retrieve(state: GraphState) -> dict:
@@ -671,7 +697,11 @@ def grade_documents(state: GraphState) -> dict:
         {"question": state["question"], "parts": "; ".join(state["sub_questions"]), "chunk": d.page_content,
          **{k: d.metadata.get(k, "?") for k in ("doc_id", "title", "status", "applies_to")}}
         for d in docs
-    ])  # one LLM call per chunk, sent in parallel
+    ], return_exceptions=True)  # one LLM call per chunk, sent in parallel
+    # a chunk whose grade still failed after the retries is kept (the grader is lenient anyway, and
+    # check_support catches anything it wrongly lets through) rather than failing the whole question
+    grades = [DocGrade(is_relevant=True, reason=f"not graded ({type(g).__name__}), kept")
+              if isinstance(g, Exception) else g for g in grades]
     # no reducer on "documents", so this filtered list replaces the one retrieve wrote
     return {
         "documents": [d for d, g in zip(docs, grades) if g.is_relevant],
@@ -699,29 +729,35 @@ def suggest_contact(state: GraphState) -> dict:
     tip = (f"The closest policy is {contact['title']} [{contact['doc_id']}], owned by "
            f"{contact['department']}: you can ask them at {contact['owner']}." if contact else
            "Try rephrasing, or raise an OrbitDesk ticket with the relevant team.")
-    if state["documents"]:   # an answer was written but didn't help: keep it, add the contact
+    # an answer was written but didn't help: keep it, add the contact (also when the rewrite then found
+    # nothing relevant, so documents is empty but the earlier answer is still in the state)
+    if state.get("answer"):
         return {"answer": state["answer"] + "\n\n" + tip}
     return {"answer": "I couldn't find an answer to this in the Orbitra knowledge base. " + tip}
 
 
+generator = text_chain(prompt, llm)
+reviser = text_chain(revise_prompt, llm)
+direct_answerer = text_chain(direct_prompt, llm)
+
+
 def generate(state: GraphState) -> dict:
-    chain = prompt | llm
-    response = chain.invoke({
+    answer = generator.invoke({
         "context": format_docs(state["documents"]),
         "question": state["question"],
     })
-    return {"answer": response.content, "generation_attempts": 1}
+    return {"answer": answer, "generation_attempts": 1}
 
 
 def revise_answer(state: GraphState) -> dict:
     claims = "\n".join(f"- {c}" for c in state["unsupported_claims"])
-    response = (revise_prompt | llm).invoke({
+    answer = reviser.invoke({
         "context": format_docs(state["documents"]),
         "question": state["question"],
         "answer": state["answer"],
         "claims": claims,
     })
-    return {"answer": response.content, "generation_attempts": state["generation_attempts"] + 1}
+    return {"answer": answer, "generation_attempts": state["generation_attempts"] + 1}
 
 
 def check_support(state: GraphState) -> dict:
@@ -768,14 +804,13 @@ def route_after_useful(state: GraphState) -> Literal["finish", "rewrite_query", 
 def rewrite_query(state: GraphState) -> dict:
     new_query = rewriter.invoke({
         "question": state["question"],
-        "previous_query": state.get("search_query") or state["question"],
-    }).content.strip()
+        "previous_query": state.get("search_query") or state.get("search_question") or state["question"],
+    })
     return {"search_query": new_query, "rewrite_count": state.get("rewrite_count", 0) + 1}
 
 
 def generate_direct(state: GraphState) -> dict:
-    response = (direct_prompt | llm).invoke({"question": state["question"]})
-    return {"answer": response.content}
+    return {"answer": direct_answerer.invoke({"question": state["question"]})}
 
 
 def decline_out_of_scope(state: GraphState) -> dict:
@@ -789,22 +824,27 @@ def support_wellbeing(state: GraphState) -> dict:
 def agent(state: GraphState) -> dict:
     messages = state["messages"]
     start = turn_start(messages)
-    # system prompt (rebuilt each call, not stored) + recent earlier turns + this turn's question and tool work
+    # system prompt (rebuilt each call, not stored) + recent earlier turns + this turn's question and tool work.
+    # The question is sent in its standalone form (with the user's facts) like on the knowledge-base route;
+    # the raw message stays in the state, so the conversation history still shows what the user typed.
     history = ([SystemMessage(AGENT_SYSTEM.format(user=describe_user(state.get("employee_id"))))]
-               + recent_history(messages[:start]) + messages[start:])
+               + recent_history(messages[:start]) + [HumanMessage(state["question"])] + messages[start + 1:])
     rounds = state.get("tool_rounds", 0)
     if rounds < MAX_TOOL_ROUNDS:
         response = agent_llm.invoke(history)
     else:   # out of tool rounds: ask for the answer (the nudge is only sent, not kept in the state)
         response = final_llm.invoke(history + [HumanMessage(AGENT_ANSWER_NOW)])
-    if response.tool_calls:
+    # tool calls past the limit are ignored, even if the provider doesn't honour tool_choice="none"
+    if response.tool_calls and rounds < MAX_TOOL_ROUNDS:
         return {"messages": [response], "tool_rounds": rounds + 1}
     # the model sometimes ends with an empty message after a long search; never return a blank answer
     return {"messages": [response], "answer": response.content.strip() or AGENT_EMPTY_REPLY}
 
 
+# routes on the answer, not on tool_calls, so a tool call the agent ignored above can't loop back to tools
+# (start_turn resets answer to "" each turn)
 def route_after_agent(state: GraphState) -> Literal["tools", "finish"]:
-    return "tools" if state["messages"][-1].tool_calls else "finish"
+    return "finish" if state.get("answer") else "tools"
 
 
 builder = StateGraph(GraphState)
@@ -913,8 +953,26 @@ def main():
             thread_id = str(uuid.uuid4())
             print("Started a new conversation.")
         elif question:
-            ask(question, args.employee_id, thread_id)
+            ask_safely(question, args.employee_id, thread_id)
     print("\nBye!")
+
+
+def ask_safely(question: str, employee_id: str | None, thread_id: str):
+    """ask(), but a failed turn (an LLM error that outlasted the retries, a 429, ...) doesn't end the chat.
+    The failed turn's messages are removed from the conversation, so the next turn starts clean: a half-done
+    turn could leave the user's message without a reply, or an agent tool call without its result, which the
+    LLM API rejects on every later turn."""
+    config = {"configurable": {"thread_id": thread_id}}
+    before = {m.id for m in chat_app.get_state(config).values.get("messages", [])}
+    try:
+        ask(question, employee_id, thread_id)
+    except Exception as e:
+        print(f"\n⚠️ Sorry, something went wrong ({type(e).__name__}: {str(e)[:200]}). "
+              "Please try again; the conversation so far is kept.")
+        added = [RemoveMessage(id=m.id) for m in chat_app.get_state(config).values.get("messages", [])
+                 if m.id not in before]
+        if added:   # as_node="finish": the thread then counts as a finished turn
+            chat_app.update_state(config, {"messages": added}, as_node="finish")
 
 
 if __name__ == "__main__":

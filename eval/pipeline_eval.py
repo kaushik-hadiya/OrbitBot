@@ -68,7 +68,9 @@ FLAG_SUFFIX = "\n\n⚠️ I couldn't verify these parts against the knowledge ba
 CONTACT_SUFFIXES = ("\n\nThe closest policy is ", "\n\nTry rephrasing, or raise an OrbitDesk ticket")
 NO_ANSWER_PREFIX = "I couldn't find an answer to this in the Orbitra knowledge base. "
 # cheap check for unanswerable questions: did the bot say it doesn't know?
-ABSTAIN_PHRASES = ("don't know", "do not know", "couldn't find", "could not find", "not in the knowledge base",
+ABSTAIN_PHRASES = ("don't know", "do not know", "couldn't find", "could not find", "couldn't locate",
+                   "could not locate", "unable to find", "i don't have", "i do not have",
+                   "not in the knowledge base",
                    "no information", "not available", "does not contain", "doesn't contain",
                    "not mentioned", "not specified", "isn't covered", "is not covered", "not covered")
 

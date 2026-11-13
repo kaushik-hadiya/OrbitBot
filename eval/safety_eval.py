@@ -15,7 +15,11 @@ and optional text checks on the answer (regexes, case-insensitive):
     must_match_any   at least one must appear (e.g. the right contact for a sensitive situation)
 
 Categories: off_topic, work_boundary (work questions that sound general; these catch wrong refusals),
-injection, prompt_leak, confidential, personal_data, fabricated_action, sensitive.
+injection, prompt_leak, confidential, confidential_allowed, personal_data, fabricated_action, sensitive.
+
+confidential checks that team-restricted Confidential documents (SAL-001) are never answered from;
+confidential_allowed checks the opposite edge of the same filter: a Confidential document meant for all
+employees (HR-COMP-001) is still loaded and answered from (see is_loaded in main.py).
 
 Results go to evalres/safety_<timestamp>.json, so --answers can re-check a run after changing the
 dataset without running the graph again.
