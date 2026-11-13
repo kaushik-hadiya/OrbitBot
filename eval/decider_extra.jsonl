@@ -1,0 +1,36 @@
+{"qid": "R001", "gold": "small_talk", "question": "hi"}
+{"qid": "R002", "gold": "small_talk", "question": "Good morning OrbitBot!"}
+{"qid": "R003", "gold": "small_talk", "question": "thanks, that helped a lot"}
+{"qid": "R004", "gold": "small_talk", "question": "What can you help me with?"}
+{"qid": "R005", "gold": "small_talk", "question": "ok cool, bye"}
+{"qid": "R006", "gold": "small_talk", "question": "Are you a bot or a real person?"}
+{"qid": "R101", "gold": "distress", "question": "I feel completely hopeless and I can't cope anymore."}
+{"qid": "R102", "gold": "distress", "question": "I haven't slept properly in weeks because of work stress, I'm falling apart."}
+{"qid": "R103", "gold": "distress", "question": "honestly I'm so overwhelmed I just want to disappear"}
+{"qid": "R104", "gold": "distress", "question": "I keep crying at my desk and I don't know what to do"}
+{"qid": "R105", "gold": "distress", "question": "Everything feels pointless lately and I'm struggling to get out of bed."}
+{"qid": "R106", "gold": "distress", "question": "I'm having panic attacks before every team meeting"}
+{"qid": "R201", "gold": "action", "question": "How many sick leaves do I have left this year?"}
+{"qid": "R202", "gold": "action", "question": "What's Priya Nair's email address?"}
+{"qid": "R203", "gold": "action", "question": "Reset my VPN password for me please"}
+{"qid": "R204", "gold": "action", "question": "Raise a ticket, my laptop screen is cracked"}
+{"qid": "R205", "gold": "action", "question": "Have there been similar tickets about Jira being slow?"}
+{"qid": "R206", "gold": "action", "question": "Calculate 18% GST on 42,500 rupees"}
+{"qid": "R207", "gold": "action", "question": "Book me a meeting room for 3pm tomorrow"}
+{"qid": "R208", "gold": "action", "question": "What is today's date?"}
+{"qid": "R301", "gold": "knowledge_base", "question": "How do I reset my VPN password?"}
+{"qid": "R302", "gold": "knowledge_base", "question": "I lost my laptop at the airport, what happens now?"}
+{"qid": "R303", "gold": "knowledge_base", "question": "My manager keeps shouting at me in meetings and I'm upset, who do I report this to?"}
+{"qid": "R304", "gold": "knowledge_base", "question": "How do I apply for earned leave?"}
+{"qid": "R305", "gold": "knowledge_base", "question": "Does Orbitra have an employee counselling programme?"}
+{"qid": "R306", "gold": "knowledge_base", "question": "Who approves a purchase above 5 lakh?"}
+{"qid": "R401", "gold": "out_of_scope", "question": "Write me a Python function to reverse a linked list"}
+{"qid": "R402", "gold": "out_of_scope", "question": "Who won the 2011 cricket world cup?"}
+{"qid": "R501", "gold": "knowledge_base", "question": "Who approves an expense claim above 50,000 rupees?"}
+{"qid": "R502", "gold": "knowledge_base", "question": "How do I file a POSH complaint?"}
+{"qid": "R503", "gold": "knowledge_base", "question": "What are the salary revision rules during probation?"}
+{"qid": "R504", "gold": "knowledge_base", "question": "Can you summarize the remote work policy?"}
+{"qid": "R505", "gold": "knowledge_base", "question": "How does the performance improvement plan process work?"}
+{"qid": "R506", "gold": "action", "question": "What's my manager's work email?"}
+{"qid": "R507", "gold": "knowledge_base", "question": "What does the approval matrix say about software purchases under 1 lakh?"}
+{"qid": "R508", "gold": "action", "question": "Please submit a leave request for me for next Monday"}

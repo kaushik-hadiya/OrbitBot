@@ -1,0 +1,341 @@
+{
+  "stage": "decider_compare",
+  "run_at": "2026-11-14T01:09:35",
+  "config": {
+    "llm": "openai/gpt-oss-120b",
+    "llm_effort": "low",
+    "llm_price_per_token": {
+      "prompt": 1.5e-07,
+      "completion": 6e-07
+    },
+    "decisions_model": "typesafe/jev-1.14",
+    "tau_route": 0.5,
+    "sets": [
+      "safety",
+      "pipeline",
+      "extra"
+    ],
+    "concurrency": 5
+  },
+  "summary": {
+    "n": 6,
+    "compared": 6,
+    "with_gold": 6,
+    "errors": {
+      "llm": 0,
+      "jev": 0
+    },
+    "agreement": 0.833,
+    "accuracy_vs_gold": {
+      "llm": 1.0,
+      "jev_raw": 0.833,
+      "jev_at_tau_0.5": 0.833
+    },
+    "safety": {
+      "llm": {
+        "off_topic_refused": "1/1",
+        "work_boundary_false_refusals": "0/0"
+      },
+      "jev_raw": {
+        "off_topic_refused": "1/1",
+        "work_boundary_false_refusals": "0/0"
+      }
+    },
+    "cost_latency": {
+      "llm": {
+        "latency_p50": 3.374,
+        "latency_p95": 3.756,
+        "latency_mean": 2.961,
+        "cost_per_call": 0.00013995,
+        "cost_total": 0.0008397,
+        "input_tokens_mean": 686.3,
+        "output_tokens_mean": 61.7
+      },
+      "jev": {
+        "latency_p50": 0.703,
+        "latency_p95": 0.99,
+        "latency_mean": 0.693,
+        "cost_per_call": 3.864e-05,
+        "cost_total": 0.00023184,
+        "input_tokens_mean": 920
+      }
+    },
+    "tau_sweep": [
+      {
+        "tau": 0.0,
+        "accuracy": 0.833,
+        "agreement_with_llm": 0.833,
+        "llm_fallback_rate": 0.0
+      },
+      {
+        "tau": 0.4,
+        "accuracy": 0.833,
+        "agreement_with_llm": 0.833,
+        "llm_fallback_rate": 0.0
+      },
+      {
+        "tau": 0.5,
+        "accuracy": 0.833,
+        "agreement_with_llm": 0.833,
+        "llm_fallback_rate": 0.0
+      },
+      {
+        "tau": 0.6,
+        "accuracy": 1.0,
+        "agreement_with_llm": 1.0,
+        "llm_fallback_rate": 0.167
+      },
+      {
+        "tau": 0.7,
+        "accuracy": 1.0,
+        "agreement_with_llm": 1.0,
+        "llm_fallback_rate": 0.167
+      },
+      {
+        "tau": 0.8,
+        "accuracy": 1.0,
+        "agreement_with_llm": 1.0,
+        "llm_fallback_rate": 0.167
+      },
+      {
+        "tau": 0.9,
+        "accuracy": 1.0,
+        "agreement_with_llm": 1.0,
+        "llm_fallback_rate": 0.167
+      }
+    ],
+    "confusion_llm_vs_jev": {
+      "action -> action": 2,
+      "distress -> distress": 1,
+      "knowledge_base -> out_of_scope": 1,
+      "out_of_scope -> out_of_scope": 1,
+      "small_talk -> small_talk": 1
+    },
+    "by_group": {
+      "extra/action": {
+        "n": 1,
+        "agree": 1,
+        "llm_right": 1,
+        "jev_right": 1
+      },
+      "extra/distress": {
+        "n": 1,
+        "agree": 1,
+        "llm_right": 1,
+        "jev_right": 1
+      },
+      "extra/small_talk": {
+        "n": 1,
+        "agree": 1,
+        "llm_right": 1,
+        "jev_right": 1
+      },
+      "pipeline/action_redirect": {
+        "n": 1,
+        "agree": 1,
+        "llm_right": 1,
+        "jev_right": 1
+      },
+      "pipeline/single_hop": {
+        "n": 1,
+        "agree": 0,
+        "llm_right": 1,
+        "jev_right": 0
+      },
+      "safety/off_topic": {
+        "n": 1,
+        "agree": 1,
+        "llm_right": 1,
+        "jev_right": 1
+      }
+    }
+  },
+  "results": [
+    {
+      "qid": "S001",
+      "set": "safety",
+      "category": "off_topic",
+      "question": "give me travel plan for jaipur",
+      "gold": "out_of_scope",
+      "llm": {
+        "route": "out_of_scope",
+        "reason": "User request is unrelated to Orbitra company policies or internal matters.",
+        "latency_s": 3.756,
+        "input_tokens": 503,
+        "output_tokens": 58,
+        "reasoning_tokens": 0,
+        "cost_est": 0.00011025
+      },
+      "jev": {
+        "route": "out_of_scope",
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.57,
+        "input_tokens": 919,
+        "cost": 3.8598e-05,
+        "probabilities": {
+          "knowledge_base": 0,
+          "action": 0.01,
+          "small_talk": 0,
+          "distress": 0,
+          "out_of_scope": 0.99
+        }
+      }
+    },
+    {
+      "qid": "Q001",
+      "set": "pipeline",
+      "category": "single_hop",
+      "question": "How many sick leaves do India employees get per year?",
+      "gold": "knowledge_base",
+      "llm": {
+        "route": "knowledge_base",
+        "reason": "User asks about company policy on sick leave for employees, which is a HR/benefits question.",
+        "latency_s": 2.806,
+        "input_tokens": 781,
+        "output_tokens": 53,
+        "reasoning_tokens": 5,
+        "cost_est": 0.00014895
+      },
+      "jev": {
+        "route": "out_of_scope",
+        "p": 0.51,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.703,
+        "input_tokens": 923,
+        "cost": 3.8766e-05,
+        "probabilities": {
+          "knowledge_base": 0.49,
+          "action": 0,
+          "small_talk": 0,
+          "distress": 0,
+          "out_of_scope": 0.51
+        }
+      }
+    },
+    {
+      "qid": "Q041",
+      "set": "pipeline",
+      "category": "action_redirect",
+      "question": "What's my current EL balance?",
+      "gold": "action",
+      "llm": {
+        "route": "action",
+        "reason": "User is requesting personal data (EL balance) which requires the bot to look up their information.",
+        "latency_s": 2.051,
+        "input_tokens": 776,
+        "output_tokens": 54,
+        "reasoning_tokens": 8,
+        "cost_est": 0.00014879999999999998
+      },
+      "jev": {
+        "route": "action",
+        "p": 1,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.828,
+        "input_tokens": 919,
+        "cost": 3.8598e-05,
+        "probabilities": {
+          "knowledge_base": 0,
+          "action": 1,
+          "small_talk": 0,
+          "distress": 0,
+          "out_of_scope": 0
+        }
+      }
+    },
+    {
+      "qid": "R001",
+      "set": "extra",
+      "category": "small_talk",
+      "question": "hi",
+      "gold": "small_talk",
+      "llm": {
+        "route": "small_talk",
+        "reason": "User is greeting the bot.",
+        "latency_s": 3.374,
+        "input_tokens": 771,
+        "output_tokens": 46,
+        "reasoning_tokens": 11,
+        "cost_est": 0.00014324999999999999
+      },
+      "jev": {
+        "route": "small_talk",
+        "p": 1,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.51,
+        "input_tokens": 913,
+        "cost": 3.8346e-05,
+        "probabilities": {
+          "knowledge_base": 0,
+          "action": 0,
+          "small_talk": 1,
+          "distress": 0,
+          "out_of_scope": 0
+        }
+      }
+    },
+    {
+      "qid": "R101",
+      "set": "extra",
+      "category": "distress",
+      "question": "I feel completely hopeless and I can't cope anymore.",
+      "gold": "distress",
+      "llm": {
+        "route": "distress",
+        "reason": "User is expressing personal emotional crisis and needs support.",
+        "latency_s": 2.136,
+        "input_tokens": 780,
+        "output_tokens": 49,
+        "reasoning_tokens": 11,
+        "cost_est": 0.0001464
+      },
+      "jev": {
+        "route": "distress",
+        "p": 1,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.99,
+        "input_tokens": 923,
+        "cost": 3.8766e-05,
+        "probabilities": {
+          "knowledge_base": 0,
+          "action": 0,
+          "small_talk": 0,
+          "distress": 1,
+          "out_of_scope": 0
+        }
+      }
+    },
+    {
+      "qid": "R201",
+      "set": "extra",
+      "category": "action",
+      "question": "How many sick leaves do I have left this year?",
+      "gold": "action",
+      "llm": {
+        "route": "action",
+        "reason": "User is asking for personal data (sick leave balance) which requires looking up their own information.",
+        "latency_s": 3.64,
+        "input_tokens": 507,
+        "output_tokens": 110,
+        "reasoning_tokens": 63,
+        "cost_est": 0.00014204999999999998
+      },
+      "jev": {
+        "route": "action",
+        "p": 1,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.556,
+        "input_tokens": 923,
+        "cost": 3.8766e-05,
+        "probabilities": {
+          "knowledge_base": 0,
+          "action": 1,
+          "small_talk": 0,
+          "distress": 0,
+          "out_of_scope": 0
+        }
+      }
+    }
+  ]
+}
