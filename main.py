@@ -47,6 +47,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
+from langsmith import traceable
 from pydantic import BaseModel, Field
 
 import agent_tools
@@ -184,9 +185,17 @@ def reciprocal_rank_fusion(*ranked_lists: list[Document], k: int = 60) -> list[D
 RERANK_PREFIX = "Orbitra Technologies\n"
 
 
+# fastembed's reranker isn't a LangChain component, so it sends nothing to LangSmith on its own:
+# @traceable makes it (and hybrid_search, one per sub-question) show up as its own timed step
+@traceable(name="rerank")
+def rerank(query: str, candidates: list[Document]) -> list[float]:
+    return list(reranker.rerank(query, [RERANK_PREFIX + d.page_content for d in candidates], batch_size=4))
+
+
+@traceable(run_type="retriever", name="hybrid_search")
 def hybrid_search(query: str, top_k: int = TOP_K) -> list[Document]:
     candidates = reciprocal_rank_fusion(vector_retriever.invoke(query), bm25_retriever.invoke(query))[:CANDIDATES]
-    scores = reranker.rerank(query, [RERANK_PREFIX + d.page_content for d in candidates], batch_size=4)
+    scores = rerank(query, candidates)
     ranked = sorted(zip(scores, candidates), key=lambda pair: pair[0], reverse=True)
     return [doc for _, doc in ranked[:top_k]]
 
