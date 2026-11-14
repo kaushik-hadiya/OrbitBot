@@ -290,6 +290,10 @@ def chat(body: ChatRequest, request: Request):
         uuid.UUID(thread_id)
     except ValueError:
         raise HTTPException(422, "thread_id must be a UUID from a previous reply.")
+    # to check PROXY_HOPS on a new host: the number of X-Forwarded-For entries a normal request arrives with
+    # (one entry per proxy that appends; a client-sent fake adds one more in front). No IPs are logged.
+    xff = [h for h in request.headers.get("x-forwarded-for", "").split(",") if h.strip()]
+    log.info("chat request: %d X-Forwarded-For entries, PROXY_HOPS=%d", len(xff), PROXY_HOPS)
     limits.admit(client_ip(request), thread_id)
     employee_id = PERSONAS.get(body.persona) if body.persona else None
     return StreamingResponse(stream_turn(message, employee_id, thread_id), media_type="text/event-stream",

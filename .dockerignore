@@ -1,0 +1,21 @@
+# secrets: never in the build context
+.env
+.env.*
+
+# rebuilt inside the image
+.venv/
+models/
+chroma_db/
+frontend/node_modules/
+frontend/dist/
+
+# not needed at run time
+.git/
+eval/
+evalres/
+.deepeval/
+main.ipynb
+.ipynb_checkpoints/
+__pycache__/
+*.py[oc]
+*.zip
