@@ -1,14 +1,3 @@
----
-title: OrbitBot
-emoji: 🛰️
-colorFrom: indigo
-colorTo: purple
-sdk: docker
-app_port: 7860
-pinned: false
-short_description: Self-RAG assistant that checks its own work at every step
----
-
 # Self-RAG: Self-Reflective Retrieval-Augmented Generation with LangGraph
 
 **OrbitBot** is an internal assistant for a fictional company, Orbitra Technologies. It answers employee questions

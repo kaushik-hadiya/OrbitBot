@@ -1,4 +1,4 @@
-# OrbitBot: FastAPI + React UI in one image, for a Hugging Face Docker Space (or any container host).
+# OrbitBot: FastAPI + React UI in one image, for Google Cloud Run (deploy/cloudrun.sh) or any container host.
 #
 #   docker build -t orbitbot .
 #   docker run --rm -p 7860:7860 -e OPENROUTER_API_KEY=... orbitbot      # then open http://localhost:7860
@@ -52,4 +52,6 @@ ENV DECIDER=jev \
     PROXY_HOPS=1 \
     LANGSMITH_TRACING=false
 EXPOSE 7860
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "7860"]
+# Cloud Run sets PORT (8080 by default); elsewhere (Hugging Face, docker run) it falls back to 7860.
+# exec: uvicorn replaces the shell, so it gets the platform's stop signal and shuts down cleanly
+CMD ["sh", "-c", "exec uvicorn api:app --host 0.0.0.0 --port ${PORT:-7860}"]

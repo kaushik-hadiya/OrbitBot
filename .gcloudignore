@@ -1,0 +1,25 @@
+# What `gcloud run deploy --source .` uploads to Cloud Build. Without this file gcloud derives it from
+# .gitignore; it's explicit here so secrets can never be uploaded, whatever .gitignore says.
+
+# secrets
+.env
+.env.*
+
+# rebuilt inside the image
+.venv/
+models/
+chroma_db/
+frontend/node_modules/
+frontend/dist/
+
+# not needed to build or run
+.git/
+.gitignore
+eval/
+evalres/
+.deepeval/
+main.ipynb
+.ipynb_checkpoints/
+__pycache__/
+*.py[oc]
+*.zip
