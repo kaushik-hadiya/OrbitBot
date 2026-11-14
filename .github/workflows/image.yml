@@ -1,0 +1,50 @@
+# Builds the Docker image on every push to main and publishes it to GitHub Container Registry (free for
+# public images), where Azure Container Apps pulls it from: no paid Azure Container Registry needed.
+#   ghcr.io/kaushik-hadiya/orbitbot:latest   and   :<commit sha>
+name: image
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "eval/**", "evalres/**", "main.ipynb"]
+  workflow_dispatch:   # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read
+  packages: write   # push to ghcr.io with the workflow's own token, no personal token needed
+
+concurrency:
+  group: image
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/orbitbot
+          tags: |
+            type=raw,value=latest
+            type=sha,format=long,prefix=
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: VITE_GITHUB_URL=https://github.com/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
