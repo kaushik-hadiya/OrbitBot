@@ -3,6 +3,7 @@ import { getMeta, streamChat, type ChatEvent, type Done, type Meta, type Step } 
 import About from "./About";
 import DocDrawer from "./DocDrawer";
 import Markdown from "./Markdown";
+import ThemeToggle from "./ThemeToggle";
 import Timeline from "./Timeline";
 
 type Turn = {
@@ -169,6 +170,7 @@ export default function App() {
             About
           </button>
         </div>
+        <ThemeToggle />
       </header>
 
       <main className="chat">

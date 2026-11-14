@@ -20,8 +20,9 @@
   color-scheme: light;
 }
 
+/* dark: follows the system unless the user picked a theme (data-theme on <html>, set by the header toggle) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #111116;
     --surface: #1a1a21;
     --surface-2: #23232c;
@@ -41,6 +42,27 @@
     --shadow: none;
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --bg: #111116;
+    --surface: #1a1a21;
+    --surface-2: #23232c;
+    --text: #ececf1;
+    --muted: #9a9aab;
+    --border: #2e2e39;
+    --accent: #8f8ff5;
+    --accent-soft: #26264a;
+    --ok: #5cc98a;
+    --ok-soft: #173326;
+    --warn: #f0a85a;
+    --warn-soft: #3a2a17;
+    --fail: #f07a73;
+    --fail-soft: #3d1c1a;
+    --user: #4a4ac4;
+    --user-text: #ffffff;
+    --shadow: none;
+    color-scheme: dark;
 }
 
 * {
@@ -105,8 +127,7 @@ code {
 .top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   padding: 10px 16px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
@@ -117,6 +138,7 @@ code {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-right: auto;
 }
 
 .brand-name {
@@ -202,6 +224,15 @@ code {
 
 .icon-btn:hover {
   background: var(--surface-2);
+}
+
+.theme-btn {
+  width: 38px;
+  padding: 7px 0;
+}
+
+.theme-btn svg {
+  display: block;
 }
 
 /* ---------- welcome ---------- */
@@ -735,8 +766,22 @@ code {
   .brand-sub {
     display: none;
   }
+  /* row 1: logo + theme toggle; row 2: persona, New chat, About */
+  .theme-btn {
+    order: 1;
+  }
+  .top-actions {
+    order: 2;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+  .persona {
+    flex: 1;
+    min-width: 0;
+  }
   .persona select {
-    max-width: 150px;
+    width: 100%;
+    max-width: none;
   }
   .msg.user {
     max-width: 92%;
