@@ -2,6 +2,7 @@
 # Deploy OrbitBot to Azure Container Apps, from the image GitHub Actions publishes to ghcr.io.
 #
 #   bash deploy/azure.sh                 # first deploy, and every update after a new image is built
+#   NEW_KEY=1 bash deploy/azure.sh       # replace the OpenRouter key (asks for it, hidden) and reload
 #   LOCATION=eastus bash deploy/azure.sh # another region (see "Region" below)
 #
 # Run it in Azure Cloud Shell (Bash): az is preinstalled and already logged in. The first run asks for the
@@ -36,10 +37,16 @@ if ! az containerapp env show --name "$ENV_NAME" --resource-group "$RG" -o none 
     --logs-destination none --only-show-errors -o none
 fi
 
+ask_key() {
+  # hidden input; paste once. A wrong-looking length usually means it was pasted twice.
+  read -rsp "Paste the DEMO OpenRouter key (the one with a credit limit) ONCE, then Enter: " KEY; echo
+  [ -n "$KEY" ] || { echo "Empty key, stopping."; exit 1; }
+  echo "Key length: ${#KEY} (OpenRouter keys are about 73 characters)"
+}
+
 if ! az containerapp show --name "$APP" --resource-group "$RG" -o none 2>/dev/null; then
   echo "3/4 Creating the app..."
-  read -rsp "Paste the DEMO OpenRouter key (the one with a credit limit), then Enter: " KEY; echo
-  [ -n "$KEY" ] || { echo "Empty key, stopping."; exit 1; }
+  ask_key
   az containerapp create --name "$APP" --resource-group "$RG" --environment "$ENV_NAME" \
     --image "$IMAGE" \
     --ingress external --target-port 7860 \
@@ -50,10 +57,20 @@ if ! az containerapp show --name "$APP" --resource-group "$RG" -o none 2>/dev/nu
     --only-show-errors -o none
   unset KEY
 else
-  # same :latest tag, so force a new revision: it pulls the newest image
-  echo "3/4 Updating the app to the newest image..."
+  if [ -n "${NEW_KEY:-}" ]; then
+    echo "3/4 Replacing the OpenRouter key..."
+    ask_key
+    az containerapp secret set --name "$APP" --resource-group "$RG" \
+      --secrets "openrouter-key=$KEY" --only-show-errors -o none
+    unset KEY
+  else
+    echo "3/4 Updating the app to the newest image..."
+  fi
+  # The tag is always :latest, so the image alone doesn't count as a change. Changing DEPLOYED_AT does:
+  # it makes a new revision, which pulls the newest :latest and reads the current secret. (This
+  # environment type has no "revision restart", so this is also how a new key takes effect.)
   az containerapp update --name "$APP" --resource-group "$RG" --image "$IMAGE" \
-    --revision-suffix "r$(date +%Y%m%d%H%M%S)" --only-show-errors -o none
+    --set-env-vars "DEPLOYED_AT=$(date -u +%Y%m%dT%H%M%SZ)" --only-show-errors -o none
 fi
 
 echo "4/4 Done."
@@ -61,4 +78,4 @@ FQDN="$(az containerapp show --name "$APP" --resource-group "$RG" --query proper
 echo
 echo "URL:  https://$FQDN   (the first visit after idle wakes it up: ~30-60 s)"
 echo "Logs: az containerapp logs show --name $APP --resource-group $RG --follow"
-echo "Key:  to replace it later: az containerapp secret set --name $APP --resource-group $RG --secrets openrouter-key=<new key>"
+echo "Key:  to replace it later: NEW_KEY=1 bash deploy/azure.sh"

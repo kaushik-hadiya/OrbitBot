@@ -12,6 +12,23 @@ When a check fails, it fixes the problem by revising the answer or rewriting the
 passing a bad answer on. Built with LangChain + LangGraph, following the ideas of the
 [Self-RAG paper (Asai et al., 2023)](https://arxiv.org/abs/2310.11511).
 
+### ▶ Live demo: **<https://orbitbot.wittysand-c65296e1.centralindia.azurecontainerapps.io>**
+
+Try *"Can I deploy a feature on 9 November?"* and open **How I answered** to watch each reflection step arrive
+live. Click a citation such as `HR-HOL-2026` to read the source document. Pick a demo employee (India, US or UK)
+to ask about your own leave balance.
+
+> The demo scales to zero when nobody is using it, so the **first visit after a quiet period takes about 30-60 s**
+> to wake up. After that, answers take 5-20 s, because every answer is checked before you see it.
+
+![OrbitBot answering a multi-part question: the reflection timeline (Retrieve?, IsRel, IsSup, IsUse) above a cited answer](docs/screenshot.png)
+
+**Highlights:** Self-RAG graph in LangGraph with 4 reflection checks and bounded repair loops · hybrid search
+(vector + BM25, RRF, cross-encoder rerank) · tool-calling agent route · conversation memory · a Decisions model
+for the yes/no checks · React UI that streams every step over Server-Sent Events · one Docker image, built by
+GitHub Actions and deployed on Azure Container Apps. **Evals:** faithfulness 0.99, answer relevancy 0.96,
+safety 68/68, median 6.8 s per question.
+
 ---
 
 ## Why Self-RAG? What traditional RAG gets wrong
@@ -347,8 +364,8 @@ run the same morning), and the safety eval went from 66/68 to **68/68**: the gua
 `documents/` holds a **synthetic** company knowledge base. Everything in it is invented, so it is safe to publish.
 
 - **46 Markdown documents** in 11 departments (HR, IT, security, finance, admin, legal, engineering, product, sales/CS,
-  learning). The 45 that OrbitBot may answer from (all but SAL-001) are split into **151 chunks** (1,000 characters,
-  150 overlap).
+  learning). The 44 that OrbitBot may answer from (all but the superseded leave policy v4 and SAL-001) are split
+  into **151 chunks** (1,000 characters, 150 overlap).
 - **Built-in traps:** a superseded leave policy (`01_hr/archive/…v4_SUPERSEDED.md`), region-specific rules
   (India / US / UK), similar-but-different facts (internal IT P1 SLA 15 min vs customer P1 30 min), multi-hop questions,
   calculations, and unanswerable questions.
@@ -391,6 +408,11 @@ and froze a 7.5 GB laptop.
 - **OpenRouter** API key: <https://openrouter.ai/keys>. It covers the LLM (`openai/gpt-oss-120b`) and the optional
   Decisions model (`typesafe/jev-1.14`). The evals' judge models also go through OpenRouter.
 
+### Only for the web UI
+
+- **Node.js 18+** and npm, to build the React frontend. The command-line chat doesn't need them, and neither
+  does Docker (the image builds the UI itself).
+
 ---
 
 ## Setup
@@ -415,8 +437,8 @@ You don't need to install Python yourself: uv reads `.python-version` (3.12) and
 ### 2. Clone and install dependencies
 
 ```bash
-git clone <this-repo-url>
-cd SelfRAG
+git clone https://github.com/kaushik-hadiya/OrbitBot.git
+cd OrbitBot
 uv sync
 ```
 
@@ -501,6 +523,103 @@ When a check fails you will also see `✗` lines with unsupported claims, a `---
 
 ---
 
+## Web UI and API
+
+The same graph also runs behind a small web server: `api.py` (FastAPI) streams each node's result to a React
+frontend (`frontend/`), which shows them as a timeline under the answer. The command-line chat in `main.py` is
+unchanged.
+
+### Run it locally
+
+```bash
+cd frontend && npm ci && npm run build && cd ..      # once, and after every frontend change
+uv run uvicorn api:app --port 7860                    # then open http://localhost:7860
+```
+
+`api.py` serves the built UI from `frontend/dist/` and the API from the same address. To work on the UI with
+hot reload, keep uvicorn running and start `npm run dev` in `frontend/` (http://localhost:5173); Vite forwards the
+API calls to port 7860.
+
+### What the UI shows
+
+- **The reflection timeline** ("How I answered"): one line per node as it finishes, with the Self-RAG tag
+  (`Retrieve?`, `IsRel`, `IsSup`, `IsUse`), the sub-questions, which chunks were kept or rejected and why, and the
+  Decisions model's probabilities. A revision or a query rewrite shows up as extra steps.
+- **The answer while it's written**, replaced by the checked answer when the graph finishes.
+- **Citations as buttons**: `[HR-LV-001]` opens the source document in a side panel, with its owner, version,
+  status and region.
+- **Demo employees** (Bengaluru, US, UK) instead of a login, so the agent's tools have someone to look up, and
+  follow-up questions in the same conversation. Light and dark mode, and a phone layout.
+
+### API
+
+| Route | What it does |
+|---|---|
+| `POST /chat` | `{"message", "persona"?, "thread_id"?}` → a stream of Server-Sent Events: `start` (the `thread_id` to send back for follow-ups), one `step` per node, `token` while the answer is written, then `done` (answer, route, citations, support verdict, seconds) or `error` |
+| `GET /meta` | demo employees, example questions, limits, number of documents, which Decisions flags are on |
+| `GET /kb/{doc_id}` | one knowledge-base document with its metadata, for the citation panel |
+| `GET /health` | `{"ok": true}` |
+
+```bash
+curl -N -X POST localhost:7860/chat -H 'content-type: application/json' \
+  -d '{"message": "How long is comp-off valid?", "persona": "india"}'
+```
+
+### Guardrails for a public demo
+
+The demo spends a real API key, so `api.py` limits what one visitor can do. All are environment variables:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `MAX_QUESTION_CHARS` | 500 | longest message accepted |
+| `RATE_LIMIT` / `RATE_WINDOW_S` | 10 / 600 | messages per visitor IP per 10 minutes (`429` after that) |
+| `DAILY_LIMIT` | 300 | messages per day for the whole demo |
+| `MAX_ACTIVE_TURNS` | 3 | answers running at once (`503` when busy) |
+| `THREAD_TTL_S` / `MAX_THREADS` | 3600 / 500 | a conversation is forgotten after 1 hour idle; at most 500 are kept |
+| `PROXY_HOPS` | 0 (1 in the Docker image) | proxies in front of the app, so the visitor's IP is read from the right `X-Forwarded-For` entry |
+| `ALLOWED_ORIGINS` | none | extra origins allowed to call the API from a browser (CORS) |
+
+A conversation answers one message at a time (`409` otherwise). If the visitor closes the tab or presses Stop, the
+unfinished turn is removed from the conversation, so the next question doesn't see half an answer. Errors
+reach the browser only as a generic message; the details go to the server log.
+
+---
+
+## Deployment
+
+The app, the UI, the two ONNX models and the vector store all go into **one Docker image**, so a cold start only
+loads files: about 5 s and ~530 MB of RAM, with no downloads.
+
+```bash
+docker build -t orbitbot .
+docker run --rm -p 7860:7860 --env-file .env orbitbot     # then open http://localhost:7860
+```
+
+The API key is passed at run time and never goes into the image (`.dockerignore` excludes `.env`).
+
+### How the live demo is hosted
+
+```
+git push to main ─> GitHub Actions builds the image ─> ghcr.io/kaushik-hadiya/orbitbot:latest (public)
+                                                                 │
+                                    bash deploy/azure.sh ────────┴─> Azure Container Apps (scales to zero)
+```
+
+- **`.github/workflows/image.yml`** builds the image on every push to `main` and publishes it to GitHub Container
+  Registry, tagged `latest` and with the commit SHA. Changes to Markdown files and evals don't trigger a build.
+- **`deploy/azure.sh`**, run in Azure Cloud Shell, creates or updates the Container App: 1 vCPU and 2 GiB, 0 to 1
+  replica, HTTPS ingress on port 7860. The OpenRouter key is asked for with hidden input and stored as a
+  Container Apps secret. Run it again after a new image is built to deploy it; `NEW_KEY=1 bash deploy/azure.sh`
+  replaces the key.
+- **Kept free on purpose:** the image comes from ghcr.io instead of a paid Azure Container Registry, logs are
+  read live with `az containerapp logs show` instead of a paid Log Analytics workspace, and scaling to zero keeps
+  the app inside Container Apps' free monthly grant. One replica also keeps the rate limits and the in-memory
+  conversations consistent.
+- **The demo uses its own OpenRouter key with a credit limit**, separate from the development key, so the worst
+  case of abuse is a known amount.
+
+---
+
 ## Configuration
 
 All in `main.py` (and the matching notebook cells):
@@ -540,16 +659,24 @@ Decision-model settings are environment variables (in `.env` or the shell):
 | Answers don't reflect edited documents | Delete `chroma_db/` and run again to rebuild. |
 | The computer freezes while building | Not enough free RAM. Close other apps; don't raise the embeddings `batch_size`. |
 | `uv sync` warns `Failed to hardlink files` | Harmless; set `UV_LINK_MODE=copy` (see Setup step 2). |
+| http://localhost:7860 shows `{"detail":"Not Found"}` | The UI isn't built: run `npm ci && npm run build` in `frontend/`, then restart uvicorn. |
+| The live demo shows "Sorry, something went wrong" on every question | Usually the key: check it in Cloud Shell with `az containerapp logs show --name orbitbot --resource-group orbitbot-rg --tail 50`, then replace it with `NEW_KEY=1 bash deploy/azure.sh`. |
 
 ---
 
 ## Project structure
 
 ```
-SelfRAG/
+OrbitBot/
 ├── main.py               # the full Self-RAG graph, the tool-calling agent + command-line chat loop
 ├── decisions.py          # client for OpenRouter's Decisions API (Jev), with LLM-fallback errors
 ├── agent_tools.py        # the agent's tools over data/ (directory, leave balance, tickets, calculator, date)
+├── api.py                # FastAPI server: streams each node over SSE, demo guardrails, serves the UI
+├── frontend/             # React + TypeScript UI (Vite): chat, reflection timeline, citation panel
+├── Dockerfile            # one image: builds the UI, installs the app, bakes in the models and vector store
+├── deploy/azure.sh       # create or update the Azure Container App
+├── .github/workflows/    # image.yml: build the image and publish it to ghcr.io on every push to main
+├── docs/                 # screenshot for this README
 ├── main.ipynb            # same code as notebook sections, with the graph diagram and examples
 ├── eval/                 # evals (see Evaluation): datasets, full evals and node-only before/after evals
 ├── evalres/              # saved eval results (JSON), one file per run
@@ -606,6 +733,8 @@ probabilities (no extra calls), every disagreement, and latency and cost per cal
 | + | `plan_queries`: split multi-part questions into sub-questions, one search each |
 | + | Tool-calling agent (action route), conversation memory, LangSmith tracing |
 | + | Decisions model, one node per commit: decider + safety guard, grader, usefulness check, support gate |
+| + | Web: FastAPI streaming API with demo guardrails, React UI with the live reflection timeline |
+| + | Docker image, GitHub Actions build to ghcr.io, deployment on Azure Container Apps |
 
 ## Ideas for next steps
 
@@ -617,13 +746,16 @@ probabilities (no extra calls), every disagreement, and latency and cost per cal
   skip the follow-up condenser when a message is already self-contained; and merge the support gate and the
   usefulness check into one request.
 - **Next agentic steps:** human approval (`interrupt()`, which the checkpointer now makes possible) before a tool
-  submits anything such as a ticket, and a support check on the agent's answers like the one the knowledge-base
-  route has.
+  submits anything such as a ticket, with Approve / Edit / Cancel buttons in the web UI, and a support check on the
+  agent's answers like the one the knowledge-base route has.
+- **Keep conversations across restarts:** the web demo stores them in memory, so a scale-to-zero restart forgets
+  them. A `SqliteSaver` (or Postgres) checkpointer would keep them.
 
 ## Tech stack
 
 LangGraph · LangChain · OpenRouter (`openai/gpt-oss-120b`; Decisions API with TypeSafe Jev `typesafe/jev-1.14`) ·
-Pydantic · FastEmbed (bge-small embeddings, jina cross-encoder) · Chroma · rank-bm25 · LangSmith · DeepEval · uv
+Pydantic · FastEmbed (bge-small embeddings, jina cross-encoder) · Chroma · rank-bm25 · LangSmith · DeepEval · uv ·
+FastAPI (Server-Sent Events) · React + TypeScript (Vite) · Docker · GitHub Actions · Azure Container Apps
 
 ## References
 

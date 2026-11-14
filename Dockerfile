@@ -4,7 +4,7 @@
 #   docker build -t orbitbot .
 #   docker run --rm -p 7860:7860 -e OPENROUTER_API_KEY=... orbitbot      # then open http://localhost:7860
 #
-# The API key is passed at run time (a Space secret), never baked into the image.
+# The API key is passed at run time (a Container Apps secret), never baked into the image.
 
 # ---------- 1. build the React UI ----------
 FROM node:20-slim AS ui
@@ -21,7 +21,7 @@ RUN npm run build
 FROM python:3.12-slim
 COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /usr/local/bin/uv
 
-# Spaces run the container as uid 1000; Chroma writes to its directory even when only reading
+# run as a normal user, not root; Chroma writes to its directory even when only reading, so the user owns it
 RUN useradd -m -u 1000 user
 USER user
 ENV HOME=/home/user \
@@ -45,7 +45,7 @@ RUN OPENROUTER_API_KEY=build-only-placeholder python -c "import main"
 
 COPY --from=ui --chown=user /ui/dist frontend/dist
 
-# demo defaults; each can be overridden in the Space's Variables settings
+# demo defaults; each can be overridden with the host's environment variables (az containerapp update --set-env-vars)
 ENV DECIDER=jev \
     GRADER=jev \
     USEFUL=jev \
