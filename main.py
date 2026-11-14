@@ -588,6 +588,24 @@ useful_prompt = ChatPromptTemplate.from_messages([
 ])
 usefulness_checker = useful_prompt | judge_llm.with_structured_output(UsefulnessGrade).with_retry(**RETRY_BAD_OUTPUT)
 
+# USEFUL=jev asks the Decisions model the same yes/no instead of the LLM; useful when p >= TAU_USEFUL.
+# If the Decisions API fails, the LLM check runs.
+USEFUL = os.environ.get("USEFUL", "llm")
+# 0.6: on eval/useful_compare.py, accuracy 0.993 vs the LLM's 0.979; at 0.5 two answers to a different
+# question scored 0.52-0.53 and passed as useful
+TAU_USEFUL = float(os.environ.get("TAU_USEFUL", "0.6"))
+USEFUL_QUESTION = {"useful": decisions.noul_q(
+    useful_prompt.messages[0].prompt.template + " Is the answer useful to the employee?",
+    true="The answer gives the user what they asked for, or asks a clarifying question with the options "
+         "from the documents.",
+    false="The answer says the information is not available, or answers a different question.")}
+
+
+def jev_useful(question: str, answer: str) -> tuple[float, dict]:
+    """(probability the answer is useful, meta); raises DecisionsUnavailable."""
+    answers, meta = decisions.decide({"question": question, "answer": answer}, USEFUL_QUESTION)
+    return float(answers["useful"]["noul"]), meta
+
 # query rewriting: a new search query for retrieve only; grading and generation keep the original question
 rewrite_prompt = ChatPromptTemplate.from_messages([
     ("system",
@@ -952,6 +970,13 @@ def flag_unsupported(state: GraphState) -> dict:
 
 
 def check_useful(state: GraphState) -> dict:
+    if USEFUL == "jev":
+        try:
+            p, _ = jev_useful(state["question"], state["answer"])
+        except decisions.DecisionsUnavailable:
+            pass   # the LLM check below takes over
+        else:
+            return {"is_useful": p >= TAU_USEFUL, "usefulness_reason": f"jev p_useful={p:.2f}"}
     grade = usefulness_checker.invoke({"question": state["question"], "answer": state["answer"]})
     return {"is_useful": grade.is_useful, "usefulness_reason": grade.reason}
 

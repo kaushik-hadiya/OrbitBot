@@ -1,0 +1,3632 @@
+{
+  "stage": "useful_compare",
+  "run_at": "2026-11-14T11:48:07",
+  "config": {
+    "llm": "openai/gpt-oss-120b",
+    "llm_effort": "low",
+    "llm_price_per_token": {
+      "prompt": 1.5e-07,
+      "completion": 6e-07
+    },
+    "decisions_model": "typesafe/jev-1.14",
+    "tau_useful": 0.5,
+    "real": 120,
+    "mismatched": 40,
+    "seed": 7
+  },
+  "summary": {
+    "n": 160,
+    "compared": 160,
+    "with_gold": 142,
+    "gold_counts": {
+      "useful": 94,
+      "not_useful": 48
+    },
+    "agreement": 0.969,
+    "accuracy_vs_gold": {
+      "llm": 0.979,
+      "jev_at_0.5": 0.979
+    },
+    "accuracy_by_group": {
+      "llm": {
+        "real useful": 0.989,
+        "real not useful": 0.75,
+        "mismatched": 1.0
+      },
+      "jev": {
+        "real useful": 1.0,
+        "real not useful": 0.875,
+        "mismatched": 0.95
+      }
+    },
+    "tau_sweep": [
+      {
+        "tau": 0.2,
+        "accuracy": 0.979,
+        "agreement_with_llm": 0.975,
+        "false_not_useful": 0,
+        "false_useful": 3
+      },
+      {
+        "tau": 0.3,
+        "accuracy": 0.979,
+        "agreement_with_llm": 0.969,
+        "false_not_useful": 0,
+        "false_useful": 3
+      },
+      {
+        "tau": 0.4,
+        "accuracy": 0.979,
+        "agreement_with_llm": 0.969,
+        "false_not_useful": 0,
+        "false_useful": 3
+      },
+      {
+        "tau": 0.5,
+        "accuracy": 0.979,
+        "agreement_with_llm": 0.969,
+        "false_not_useful": 0,
+        "false_useful": 3
+      },
+      {
+        "tau": 0.6,
+        "accuracy": 0.993,
+        "agreement_with_llm": 0.981,
+        "false_not_useful": 0,
+        "false_useful": 1
+      },
+      {
+        "tau": 0.7,
+        "accuracy": 0.993,
+        "agreement_with_llm": 0.981,
+        "false_not_useful": 0,
+        "false_useful": 1
+      },
+      {
+        "tau": 0.8,
+        "accuracy": 0.993,
+        "agreement_with_llm": 0.981,
+        "false_not_useful": 0,
+        "false_useful": 1
+      }
+    ],
+    "llm_errors": {
+      "false_not_useful": 1,
+      "false_useful": 2
+    },
+    "cost_latency": {
+      "llm": {
+        "latency_p50": 1.129,
+        "latency_p95": 2.428,
+        "cost_per_call": 9.0380625e-05
+      },
+      "jev": {
+        "latency_p50": 0.733,
+        "latency_p95": 1.243,
+        "cost_per_call": 2.01702375e-05
+      }
+    }
+  },
+  "results": [
+    {
+      "kind": "real",
+      "qid": "Q038",
+      "question": "What is the dental coverage limit under the US health insurance plan?",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. The closest policy is Employee Benefits and Insurance – India [HR-BEN-001], owned by People Operations – Total Rewards: you can ask them at benefits@orbitra.io.",
+      "gold": false,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not provide the requested US dental coverage limit and redirects to unrelated information.",
+        "latency_s": 2.136,
+        "input_tokens": 323,
+        "cost": 9.945e-05
+      },
+      "jev": {
+        "p": 0.03,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.351,
+        "input_tokens": 448,
+        "cost": 1.8816e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q039",
+      "question": "Does Orbitra provide pet insurance?",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. The closest policy is Employee Benefits and Insurance – India [HR-BEN-001], owned by People Operations – Total Rewards: you can ask them at benefits@orbitra.io.",
+      "gold": false,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not answer whether Orbitra provides pet insurance and only suggests contacting HR.",
+        "latency_s": 2.428,
+        "input_tokens": 317,
+        "cost": 0.00010815
+      },
+      "jev": {
+        "p": 0.08,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.666,
+        "input_tokens": 443,
+        "cost": 1.8606e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q040",
+      "question": "What was Orbitra's net profit in FY26?",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. Try rephrasing, or raise an OrbitDesk ticket with the relevant team.",
+      "gold": false,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": false,
+        "reason": "The response says the information is unavailable instead of providing the requested net profit.",
+        "latency_s": 2.389,
+        "input_tokens": 301,
+        "cost": 8.715e-05
+      },
+      "jev": {
+        "p": 0.04,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.227,
+        "input_tokens": 426,
+        "cost": 1.7892e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q041",
+      "question": "What's my current EL balance?",
+      "answer": "I don’t know.\n\n⚠️ I couldn't verify these parts against the knowledge base:\n",
+      "gold": false,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not provide the requested EL balance information.",
+        "latency_s": 1.693,
+        "input_tokens": 284,
+        "cost": 8.099999999999999e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 2.129,
+        "input_tokens": 407,
+        "cost": 1.7094e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q041",
+      "question": "What's my current EL balance?",
+      "answer": "I don’t have access to your current EL balance.  \n\n- Check it in PeopleHub → Leave → My Balances.  \n- If the balance appears incorrect, raise an OrbitDesk ticket to HR with the request “Leave balance correction.” [HR-LV-001]",
+      "gold": false,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the user with the steps to locate their EL balance despite not having direct access.",
+        "latency_s": 2.351,
+        "input_tokens": 324,
+        "cost": 0.00010619999999999999
+      },
+      "jev": {
+        "p": 0.12,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.225,
+        "input_tokens": 451,
+        "cost": 1.8942e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q036",
+      "question": "What discount can an AE give without approval?",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. Try rephrasing, or raise an OrbitDesk ticket with the relevant team.",
+      "gold": false,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not provide the requested information about the discount an AE can give without approval; it only suggests rephrasing or raising a ticket.",
+        "latency_s": 1.648,
+        "input_tokens": 154,
+        "cost": 8.669999999999999e-05
+      },
+      "jev": {
+        "p": 0.03,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.61,
+        "input_tokens": 422,
+        "cost": 1.7724e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q036",
+      "question": "What discount can an AE give without approval?",
+      "answer": "I couldn't find an answer to this in the Orbitra knowledge base. The closest policy is Expense Reimbursement Policy [FIN-001], owned by Finance & Accounts: you can ask them at kavita.shah@orbitra.io.",
+      "gold": false,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not answer the specific question about the discount an AE can give without approval and instead redirects to an unrelated policy, providing no useful information.",
+        "latency_s": 1.679,
+        "input_tokens": 171,
+        "cost": 8.265e-05
+      },
+      "jev": {
+        "p": 0.03,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.67,
+        "input_tokens": 443,
+        "cost": 1.8606e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q003",
+      "question": "What is the maximum earned leave I can carry forward?",
+      "answer": "I don’t know — the carry‑forward limit varies by region.  \n\n- **India:** Up to **30 days** total EL balance can be carried into the next year [HR-LV-001].  \n- **United Kingdom:** Up to **5 days** of annual leave may be carried over, to be used by 31 March [HR-LV-003].  \n\nWhich location (or policy) applies to you?",
+      "gold": false,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides relevant carry‑forward limits and asks for clarification to give the correct answer.",
+        "latency_s": 1.248,
+        "input_tokens": 365,
+        "cost": 0.00012074999999999998
+      },
+      "jev": {
+        "p": 0.84,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.682,
+        "input_tokens": 492,
+        "cost": 2.0664e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q033",
+      "question": "What is the acknowledgement time for a SEV2 incident?",
+      "answer": "15 minutes. [ENG-004]",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the acknowledgement time for a SEV2 incident.",
+        "latency_s": 1.0,
+        "input_tokens": 282,
+        "cost": 8.01e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.791,
+        "input_tokens": 406,
+        "cost": 1.7052e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q032",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "answer": "2 approvals are required for a PR in orbitra/infra.  \n- At least one of the approvals must be from a code owner of the changed path. 【ENG-002】",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by stating the required number of approvals and the code owner condition.",
+        "latency_s": 1.002,
+        "input_tokens": 312,
+        "cost": 8.82e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.626,
+        "input_tokens": 438,
+        "cost": 1.8396e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q029",
+      "question": "I'm leaving Orbitra after 3 years. What happens to my ESOPs and gratuity?",
+      "answer": "**ESOPs:** You keep any options that have already vested (e.g., after 3 years you’ll have 75 % vested) and can exercise them during the June or December exercise windows for up to 5 years after your last working day; any unvested options lapse on your LWD. [HR-COMP-001]\n\n**Gratuity:** It is only payable after 5 years of continuous service, so you are not eligible after 3 years. [HR-COMP-001]",
+      "gold": true,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly explains the fate of vested ESOPs and gratuity eligibility after 3 years.",
+        "latency_s": 0.866,
+        "input_tokens": 391,
+        "cost": 0.00010065
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.641,
+        "input_tokens": 524,
+        "cost": 2.2008e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q001",
+      "question": "How many sick leaves do India employees get per year?",
+      "answer": "12 days of Sick Leave per year. 【HR-LV-001】",
+      "gold": true,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the number of sick leave days per year for India employees, which addresses the question.",
+        "latency_s": 1.622,
+        "input_tokens": 142,
+        "cost": 6.269999999999999e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.664,
+        "input_tokens": 410,
+        "cost": 1.722e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q025",
+      "question": "What is the gift limit from a vendor?",
+      "answer": "The gift limit from a vendor is **INR 5,000 / USD 75 / GBP 60 per person per year**【HR-COC-001】.\n\n- Cash or cash‑equivalent gifts (gift cards, vouchers) are never allowed.  \n- Any gift exceeding the limit must be entered in the Gift Register (PeopleHub → Declarations) within 7 days and may need to be returned.  \n- Gifts to government officials (including state‑owned enterprises) require prior written Legal approval【LEG-002】.",
+      "gold": null,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific vendor gift limit and relevant details.",
+        "latency_s": 0.824,
+        "input_tokens": 384,
+        "cost": 9.72e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.62,
+        "input_tokens": 517,
+        "cost": 2.1714e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q042",
+      "question": "My Okta Verify stopped working because I changed phones. Please raise a ticket for me.",
+      "answer": "Raise an OrbitDesk ticket → IT → select **“MFA reset.”** [IT-004]\n\n- IT will verify your identity on a video call (keep your employee ID card ready).  \n- The factor will be reset within 4 business hours.  \n- Do not ask colleagues to share MFA codes.",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly addresses the employee's request by providing clear instructions on how to raise an IT ticket for an MFA reset, which is exactly what the user asked for.",
+        "latency_s": 1.274,
+        "input_tokens": 199,
+        "cost": 7.905e-05
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.678,
+        "input_tokens": 470,
+        "cost": 1.974e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q022",
+      "question": "Can I paste a customer's export file with emails into a public AI chatbot to clean it up?",
+      "answer": "No – you may not paste a customer export file containing emails into a public AI chatbot.\n\n- Public free AI chatbots are **not permitted for work** and must not receive any internal, confidential, or restricted data, including customer personal data (PII) [IT-005].\n- Customer emails are classified as **Restricted** data, which may never be entered into AI tools [SEC-001].",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the employee's question about whether they can paste a customer export file with emails into a public AI chatbot, providing a clear 'no' and referencing relevant policies, which is exactly the guidance the employee needs.",
+        "latency_s": 2.132,
+        "input_tokens": 217,
+        "cost": 9.135e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.674,
+        "input_tokens": 490,
+        "cost": 2.058e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q003",
+      "question": "What is the maximum earned leave I can carry forward?",
+      "answer": "30 days is the maximum Earned Leave you can carry forward (India policy)【HR-LV-001】.  \n- This limit applies to India‑based employees; other regions have different rules—please tell me your location (India, UK, US) so I can confirm the applicable limit.",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the requested maximum carry‑forward amount and seeks clarification for region-specific rules.",
+        "latency_s": 0.987,
+        "input_tokens": 333,
+        "cost": 9.135e-05
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.535,
+        "input_tokens": 458,
+        "cost": 1.9236e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q012",
+      "question": "I'm an L7 taking a client for dinner in Pune with 3 client people and me. What is the maximum I can claim and what must I include?",
+      "answer": "**Maximum claim:** INR 9,000 ( INR 3,000 × 3 client attendees ).\n\n**What to include:** List each client’s name and company on the claim, and ensure that any alcohol charges do not exceed 30 % of the total bill. [FIN-001]",
+      "gold": null,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by stating the maximum claim amount and the required details to include.",
+        "latency_s": 0.892,
+        "input_tokens": 362,
+        "cost": 9.81e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.562,
+        "input_tokens": 493,
+        "cost": 2.0706e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q008",
+      "question": "I'm an L6 in Pune and want to resign. If I have 40 days of EL, can I use them to shorten my notice?",
+      "answer": "No, you cannot use your EL to shorten the 90‑day notice period.  \nEL balance cannot be adjusted against notice period. 【HR-EXIT-001】",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the user's question about using EL to shorten the notice period.",
+        "latency_s": 0.753,
+        "input_tokens": 323,
+        "cost": 8.865e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.485,
+        "input_tokens": 449,
+        "cost": 1.8858e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q030",
+      "question": "I referred a friend who joined as L5 on 1 August 2026. When and how much will I get?",
+      "answer": "**Amount and payment timing depend on your work location:**\n\n- **India:** INR 1,00,000 – paid in the payroll after the hired employee completes 90 days (≈ 30 Oct 2026).  \n- **United States:** USD 2,000 – paid in the payroll after the hired employee completes 90 days (≈ 30 Oct 2026).  \n- **United Kingdom:** GBP 1,500 – paid in the payroll after the hired employee completes 90 days (≈ 30 Oct 2026).  \n\n**Conditions / next steps**  \n- You must still be employed and not serving notice on the payout date.  \n- The referral must have been submitted through PeopleHub → Careers → Refer and be within the 6‑month validity window.  \n\n*Which location applies to you?*  \n\n[HR-TA-001]",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the referral bonus amount and payment timing, and asks for needed location clarification.",
+        "latency_s": 0.678,
+        "input_tokens": 471,
+        "cost": 0.00010845
+      },
+      "jev": {
+        "p": 0.95,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.515,
+        "input_tokens": 617,
+        "cost": 2.5914e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q007",
+      "question": "What is my notice period?",
+      "answer": "I can’t determine your exact notice period without knowing your role, location, and employment status (probation or confirmed).  \n\n- **Probation (any level)** – 15 days [HR-EXIT-001]  \n- **India, confirmed** – L1–L5: 60 days; L6–L10: 90 days [HR-EXIT-001]  \n- **US (at‑will)** – 2 weeks (requested) [HR-EXIT-001]  \n- **UK** – per contract: 1 month for L1–L5, 3 months for L6+ [HR-EXIT-001]  \n\nWhich of these categories matches your situation?",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides relevant notice period options and asks for clarification to pinpoint the correct one.",
+        "latency_s": 0.716,
+        "input_tokens": 419,
+        "cost": 0.00010424999999999999
+      },
+      "jev": {
+        "p": 0.93,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.643,
+        "input_tokens": 556,
+        "cost": 2.3352e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q019",
+      "question": "I lost my laptop for the second time in two years and I left it in my car. What will happen and what do I need to do?",
+      "answer": "You will be charged 50 % of the laptop’s book value for the second loss caused by negligence.  \n\n- Report the loss within 4 hours by calling the IT hotline (Ext. 4000) **and** emailing security@orbitra.io.  \n- File a police report (FIR) within 48 hours and upload it to an OrbitDesk ticket.  \n- A replacement laptop will be issued within 2 business days after the police report is uploaded.  \n\n[IT-002]",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly explains the consequences and required actions for a second laptop loss.",
+        "latency_s": 0.691,
+        "input_tokens": 395,
+        "cost": 9.884999999999999e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.545,
+        "input_tokens": 524,
+        "cost": 2.2008e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q020",
+      "question": "How long does my account stay locked after too many wrong passwords?",
+      "answer": "Your account is locked for **30 minutes** after 5 failed login attempts.  \n- Lockout triggers after **5** consecutive wrong passwords.  \n- You can unlock immediately via the self‑service unlock at orbitra.okta.com or by calling Ext. 4000.  \n\nSource: [IT-004]",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by stating the lockout duration (30 minutes) and provides additional relevant details about the trigger count and unlock options, which addresses the employee's inquiry.",
+        "latency_s": 1.405,
+        "input_tokens": 193,
+        "cost": 7.754999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.243,
+        "input_tokens": 466,
+        "cost": 1.9572e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q049",
+      "question": "My wife delivered a baby 40 days ago. Can I still add the baby to insurance and take paternity leave?",
+      "answer": "Yes, you can still take paternity leave, but you cannot add the baby to insurance now.  \n\n- Paternity leave: 10 working days per child, must be used within 6 months of birth【HR-LV-001】.  \n- Adding a newborn: must be done within 30 days of the birth via PeopleHub; after that you must wait for the March enrollment window【HR-BEN-001】.",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the employee's questions about adding the baby to insurance and taking paternity leave, providing relevant policy details and timelines.",
+        "latency_s": 1.883,
+        "input_tokens": 230,
+        "cost": 9.089999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.119,
+        "input_tokens": 507,
+        "cost": 2.1294e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q010",
+      "question": "I'm an L5 travelling Bengaluru to Delhi for 3 nights, flying out at 4 PM on day 1 and returning at 10 AM on day 4. What per diem can I claim?",
+      "answer": "You can claim **₹4,500** total per‑diem.\n\n- Day 1 (departure after 2 PM) and Day 4 (return before 12 PM) are each 50 % of the full rate (₹750 each).  \n- Days 2 and 3 are full days at the standard L5 domestic rate (₹1,500 each).  \n\n[FIN-002]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response provides the per‑diem amount and breakdown matching the travel details asked.",
+        "latency_s": 0.735,
+        "input_tokens": 386,
+        "cost": 0.0001005
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.016,
+        "input_tokens": 521,
+        "cost": 2.1882e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q050",
+      "question": "What is the free cab cut-off time?",
+      "answer": "The free‑cab booking must be made by **6 PM** on the same day.  \n\n- Applies only to employees whose shift ends **after 9 PM**.  \n- Book via **Orbitra Spaces → Cab** module; after 6 PM you may request ad‑hoc through the transport desk (ext. 3333), subject to availability.  \n- Cab drop‑off is limited to **40 km** from the office.  \n- If no company cab is available, you may use Uber/Ola and claim the actual expense under FIN‑001.  \n\n[ADM-002]",
+      "gold": null,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the cut‑off time for the free cab service.",
+        "latency_s": 1.475,
+        "input_tokens": 393,
+        "cost": 0.00010455
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.795,
+        "input_tokens": 521,
+        "cost": 2.1882e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q036",
+      "question": "What discount can an AE give without approval?",
+      "answer": "Up to 10 % off the list price can be given by an Account Executive without any additional approval.  \n\n- The AE self‑approves this discount directly in CPQ. [SAL-001]  \n- For 3‑year prepaid (multi‑year) deals, an extra 5 % discount may be added without extra approval (total up to 15 %). [SAL-001]  \n- Any discount beyond these limits requires the next‑level approver per the discount matrix. [SAL-001]",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by stating the discount limits an AE can give without approval, including details for standard and multi-year deals, which fulfills the employee's request.",
+        "latency_s": 2.614,
+        "input_tokens": 234,
+        "cost": 8.37e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.817,
+        "input_tokens": 511,
+        "cost": 2.1462e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q034",
+      "question": "I was on-call in India for a full week including the weekend. What allowance do I get?",
+      "answer": "**You’ll receive INR 25,000 as on‑call allowance for that week (5 × INR 3,000 for weekdays + 2 × INR 5,000 for the weekend).**  \n\n- You must submit the claim in PeopleHub → Payroll → “On‑call allowance” by the 20th of the month. [ENG-004]  \n- If you were paged for more than 2 hours on a weekend/holiday day, you’ll also earn one comp‑off day. [ENG-004]  ",
+      "gold": null,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the on‑call allowance amount for a full week including the weekend, explains how it is calculated, and gives the necessary steps to claim it, which fully addresses the employee's question.",
+        "latency_s": 2.093,
+        "input_tokens": 255,
+        "cost": 9.045e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.879,
+        "input_tokens": 535,
+        "cost": 2.247e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q001",
+      "question": "How many sick leaves do India employees get per year?",
+      "answer": "12 days of Sick Leave per year.  \n- Credited in full on 1 January (pro‑rated for new joiners) [HR-LV-001].  \n- Not carry‑forwardable and not encashable.",
+      "gold": null,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the exact number of sick leave days per year as requested.",
+        "latency_s": 0.897,
+        "input_tokens": 321,
+        "cost": 8.475e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.813,
+        "input_tokens": 448,
+        "cost": 1.8816e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q031",
+      "question": "I passed my CKA exam and I'm planning to resign in 6 months. Will the company reimburse it and will they recover it?",
+      "answer": "Yes, the exam fee can be reimbursed, but because you’ll resign within 12 months the reimbursement may be subject to a claw‑back pro‑rata from your final settlement if the reimbursed amount is INR 25,000 or more [HR-EXIT-001].\n\n- Pre‑approval from your manager must be recorded in LearnSphere before you booked the CKA exam [LND-001].  \n- Submit the claim (certificate + invoice) in SpendWise within 60 days of passing [LND-001].  \n- The CKA certification is a priority certification, so reimbursement is processed outside the annual L&D budget [LND-001].",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses reimbursement eligibility and potential claw‑back for resigning within 12 months.",
+        "latency_s": 1.09,
+        "input_tokens": 431,
+        "cost": 0.00012405
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.813,
+        "input_tokens": 578,
+        "cost": 2.4276e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q005",
+      "question": "I work in the Austin office. How many PTO days do I get in my first year?",
+      "answer": "You receive 20 days of PTO in your first year. [HR-LV-002]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the user's question about first-year PTO days.",
+        "latency_s": 1.005,
+        "input_tokens": 300,
+        "cost": 8.159999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.885,
+        "input_tokens": 423,
+        "cost": 1.7766e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q031",
+      "question": "I passed my CKA exam and I'm planning to resign in 6 months. Will the company reimburse it and will they recover it?",
+      "answer": "Yes – the CKA certification fee can be reimbursed, but because you’ll resign within 12 months the reimbursed amount will be clawed back pro‑rata from your final settlement.\n\n- Pre‑approval from your manager must have been recorded in LearnSphere before you booked the exam. [LND-001]  \n- You must submit the claim (certificate + invoice) in SpendWise within 60 days of passing. [FIN-001]  \n- Resigning within 12 months of the reimbursement triggers a pro‑rata recovery of the amount. [LND-001]  ",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question about reimbursement and recovery conditions.",
+        "latency_s": 1.003,
+        "input_tokens": 415,
+        "cost": 0.00010004999999999999
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.869,
+        "input_tokens": 558,
+        "cost": 2.3436e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q046",
+      "question": "Who should approve an expense claim of INR 1,20,000 submitted by someone whose manager is an L7?",
+      "answer": "The expense claim must be approved by the **L8 Director**.\n\n- Because the amount (INR 1,20,000) exceeds the L6/L7 manager’s INR 50,000 limit, it escalates to the next authority level per the approval matrix. [COM-002]",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by specifying that an expense claim of INR 1,20,000 submitted by someone with an L7 manager should be approved by an L8 Director, matching the requested approval hierarchy.",
+        "latency_s": 1.503,
+        "input_tokens": 201,
+        "cost": 8.475e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.812,
+        "input_tokens": 479,
+        "cost": 2.0118e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q018",
+      "question": "My VPN is connected but Confluence won't open. What should I try?",
+      "answer": "Flush your DNS cache (Mac: `sudo dscacheutil -flushcache`; Windows: `ipconfig /flushdns`) and try switching the VPN gateway to a nearer one. [IT-003]\n\nIf that doesn’t resolve it, raise an OrbitDesk ticket → IT → “VPN issue” with a screenshot and the **Help → Collect Logs** output.  \nIf you’re completely blocked, call Ext. 4000 (treated as a P2 ticket).",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly addresses the user's issue by providing actionable troubleshooting steps (flushing DNS, switching VPN gateway) and escalation procedures, which aligns with the question about Confluence not opening despite VPN connection.",
+        "latency_s": 1.849,
+        "input_tokens": 228,
+        "cost": 8.46e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.205,
+        "input_tokens": 505,
+        "cost": 2.121e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q024",
+      "question": "A vendor emailed asking us to update their bank account. What's the correct process?",
+      "answer": "Verify the request by calling the vendor on a known number, obtain a vendor‑letterhead request and cancelled cheque, and have AP complete a call‑back verification using the phone number in the vendor master before updating the bank account.  \n\n- Use only the vendor master phone number, not the number in the email. [FIN-003]  \n- Require a formal request on vendor letterhead and a cancelled cheque. [FIN-003]  \n- Follow the full FIN‑003 §6 bank‑change procedure before making any changes. [FIN-003]",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the correct bank account update process as requested.",
+        "latency_s": 1.099,
+        "input_tokens": 391,
+        "cost": 9.164999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.792,
+        "input_tokens": 521,
+        "cost": 2.1882e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q034",
+      "question": "I was on-call in India for a full week including the weekend. What allowance do I get?",
+      "answer": "You’ll receive INR 25,000 (INR 3,000 × 5 weekdays = 15,000 + INR 5,000 × 2 weekend days = 10,000).  \n\n- You get an extra comp‑off only if you were paged > 2 hours on a weekend/holiday.  \n- Claim the allowance via PeopleHub → Payroll → “On‑call allowance” by the 20th of the month.  \n\n[ENG-004]",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the employee's question by specifying the allowance amount for a full week on-call in India, explains the extra comp-off condition, and provides the claim procedure, making it useful.",
+        "latency_s": 1.659,
+        "input_tokens": 242,
+        "cost": 9.449999999999999e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.17,
+        "input_tokens": 526,
+        "cost": 2.2092e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q032",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "answer": "2 approvals are required for a pull request in orbitra/infra.  \n- At least one of those approvals must come from a code‑owner of the changed path. 【ENG-002】",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the exact number of approvals required and relevant condition.",
+        "latency_s": 0.963,
+        "input_tokens": 314,
+        "cost": 8.61e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.117,
+        "input_tokens": 441,
+        "cost": 1.8522e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q035",
+      "question": "What is the first response SLA for a P1 ticket from an Enterprise customer?",
+      "answer": "30 minutes.  \n- Applies only to Enterprise‑plan customers with a P1 (Urgent) ticket.  \n- Support is available 24 × 7 for P1/P2 tickets under the Enterprise tier.【CS-001】",
+      "gold": true,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the specific question by stating the first response SLA (30 minutes) and clarifies it applies to Enterprise customers with P1 tickets, which fully addresses the query.",
+        "latency_s": 1.493,
+        "input_tokens": 180,
+        "cost": 9.12e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.596,
+        "input_tokens": 451,
+        "cost": 1.8942e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q032",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "answer": "Two approvals are required for a PR in orbitra/infra.  \n- At least one of the approvals must come from a code‑owner of the changed path. 【ENG-002】",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly states the number of approvals required (two) and adds relevant detail about code‑owner involvement, fully addressing the question.",
+        "latency_s": 1.727,
+        "input_tokens": 168,
+        "cost": 8.58e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.509,
+        "input_tokens": 440,
+        "cost": 1.848e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q005",
+      "question": "I work in the Austin office. How many PTO days do I get in my first year?",
+      "answer": "You receive **20 PTO days** in your first year.  \n\n- PTO accrues each semi‑monthly pay period (24 periods per year). [HR-LV-002]  \n- Up to 5 unused PTO days can be carried over to the next calendar year; they expire on 31 Mar. [HR-LV-002]  \n- If you leave the company, Orbitra will pay out up to 10 unused PTO days (state law‑dependent). [HR-LV-002]",
+      "gold": null,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the employee's question about PTO days in the first year and provides relevant policy details, making it useful.",
+        "latency_s": 1.248,
+        "input_tokens": 244,
+        "cost": 7.979999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.564,
+        "input_tokens": 525,
+        "cost": 2.205e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q009",
+      "question": "My Basic is INR 60,000 and HRA is INR 30,000 per month. How much would I pay to buy out 20 days of notice?",
+      "answer": "**You would pay INR 60,000 to buy out 20 days of notice.**  \n\n- Early release can be granted by your manager (subject to knowledge‑transfer) [HR-EXIT-001].  \n- The buy‑out amount is deducted from your final settlement (FnF) [HR-EXIT-001].  \n- Earned‑leave balance cannot be applied against the notice period [HR-EXIT-001].",
+      "gold": null,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the buy‑out amount requested.",
+        "latency_s": 0.948,
+        "input_tokens": 386,
+        "cost": 0.00012209999999999999
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.525,
+        "input_tokens": 529,
+        "cost": 2.2218e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q030",
+      "question": "I referred a friend who joined as L5 on 1 August 2026. When and how much will I get?",
+      "answer": "You will receive the referral bonus **after the hired friend completes 90 days of employment (around 30 Oct 2026), in the amount that applies to the employee’s level and your location**【HR-TA-001】.\n\n- The bonus is paid through payroll — you must still be employed and not be serving notice at that time.  \n- The referral must have been submitted in PeopleHub → Careers → Refer within the last 6 months and the candidate must not have applied or been in our database in the prior 6 months.  \n- If you are in **India**, the amount is **INR 1,00,000** (L5‑L7).  \n- If you are in the **US**, the amount is **USD 2,000** (L1‑L5).  \n- If you are in the **UK**, the amount is **GBP 1,500** (L1‑L5).  \n\n*Please confirm which country you are based in so we can state the exact amount.*",
+      "gold": true,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers when the bonus is paid and the amount, and requests needed clarification.",
+        "latency_s": 0.801,
+        "input_tokens": 507,
+        "cost": 0.00011864999999999998
+      },
+      "jev": {
+        "p": 0.94,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.528,
+        "input_tokens": 646,
+        "cost": 2.7132e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q026",
+      "question": "Can I take a freelance project on weekends?",
+      "answer": "No – paid freelance work is not permitted without prior written approval.  \n\n- You must obtain written approval from your HR Business Partner and your department head before starting any paid freelance project. [HR-COC-001]",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the question about taking a freelance project on weekends.",
+        "latency_s": 0.643,
+        "input_tokens": 314,
+        "cost": 9.209999999999999e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.62,
+        "input_tokens": 436,
+        "cost": 1.8312e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q023",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "Click the **“Report Phish”** button in Gmail.  \nReport it within 1 hour of noticing the email. 【SEC-002】",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the correct steps for handling a suspicious email.",
+        "latency_s": 0.651,
+        "input_tokens": 303,
+        "cost": 9.405e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.515,
+        "input_tokens": 426,
+        "cost": 1.7892e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q024",
+      "question": "A vendor emailed asking us to update their bank account. What's the correct process?",
+      "answer": "**Direct answer:** Verify the request by calling the vendor on a known phone number (the one in the vendor master), obtain a written request on vendor letterhead plus a cancelled cheque, and complete the mandatory call‑back verification by AP before updating the bank details in the system. [FIN-003]  \n\n- **Condition:** Use the vendor‑master phone number, not the number in the email. [FIN-003]  \n- **Condition:** The request must be on vendor letterhead and include a cancelled cheque. [FIN-003]  \n- **Condition:** Call‑back verification by AP is mandatory due to fraud risk. [FIN-003]  ",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the exact steps required to update a vendor's bank account as requested.",
+        "latency_s": 0.748,
+        "input_tokens": 414,
+        "cost": 9.81e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.479,
+        "input_tokens": 546,
+        "cost": 2.2932e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q034",
+      "question": "I was on-call in India for a full week including the weekend. What allowance do I get?",
+      "answer": "**You’ll receive INR 25,000 for the week (5 × ₹3,000 for weekdays + 2 × ₹5,000 for weekend days).**  \n\n- You earn one comp‑off only if you’re paged > 2 hours on a weekend/holiday.  \n- Claim the allowance via PeopleHub → Payroll → “On‑call allowance” by the 20th of the month.  \n\n[ENG-004]",
+      "gold": null,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the employee's question about the on‑call allowance for a week in India, providing the exact amount, breakdown, eligibility condition, and claim procedure.",
+        "latency_s": 2.015,
+        "input_tokens": 232,
+        "cost": 8.4e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.871,
+        "input_tokens": 510,
+        "cost": 2.142e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q023",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "Click the **“Report Phish”** button in Gmail. [SEC-002]",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the user's question by advising them to report the suspicious email using the 'Report Phish' button, which is a relevant action for an email they haven't clicked.",
+        "latency_s": 1.83,
+        "input_tokens": 146,
+        "cost": 9.51e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.866,
+        "input_tokens": 414,
+        "cost": 1.7388e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q016",
+      "question": "Can I deploy a non-urgent feature to production on 9 November 2026?",
+      "answer": "No – production deployments of non‑urgent features are not allowed on 9 Nov 2026 because it falls within the Diwali freeze (6 Nov – 10 Nov) [ENG-004].\n\nOnly SEV1/SEV2 hot‑fixes may be deployed during a freeze, and they require VP Engineering approval.",
+      "gold": null,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the deployment question, explaining the freeze and why the request is denied.",
+        "latency_s": 2.207,
+        "input_tokens": 349,
+        "cost": 0.00010155
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.713,
+        "input_tokens": 479,
+        "cost": 2.0118e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q027",
+      "question": "How do I report sexual harassment and how long do I have?",
+      "answer": "File a written complaint to **icc@orbitra.io** within **3 months** of the incident (extendable another 3 months for valid reasons).【HR-POSH-001】\n\n- Must be in writing; a friend, relative or colleague may file on your behalf with your consent.  \n- You may request interim relief (e.g., transfer, leave up to 3 months, restraint order).  \n- The Internal Committee will acknowledge receipt within 2 working days.",
+      "gold": true,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the reporting procedure and the applicable time limit as requested.",
+        "latency_s": 2.112,
+        "input_tokens": 373,
+        "cost": 8.955e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.826,
+        "input_tokens": 499,
+        "cost": 2.0958e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q028",
+      "question": "When do ESOPs vest?",
+      "answer": "**ESOPs vest on a 4‑year schedule with a 1‑year cliff: 25 % vests on the first anniversary of the grant date, and the remaining 75 % vests quarterly (6.25 % each quarter) over the next three years.**【HR-COMP-001】\n\n- **Refresh grants** vest over four years but have **no 1‑year cliff**.  \n- This schedule applies to the standard Orbitra ESOP Plan 2021 (India).  ",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific vesting schedule for ESOPs as asked.",
+        "latency_s": 1.681,
+        "input_tokens": 376,
+        "cost": 9.24e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.838,
+        "input_tokens": 508,
+        "cost": 2.1336e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q025",
+      "question": "What is the gift limit from a vendor?",
+      "answer": "The gift limit from a vendor is **INR 5,000 / USD 75 / GBP 60 per person per year**【HR-COC-001】.  \n- Cash or cash‑equivalent gifts (gift cards, vouchers) are never allowed.  \n- Gifts exceeding the limit must be entered in the Gift Register (PeopleHub → Declarations) within 7 days and may need to be returned.",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by stating the vendor gift limit and adds relevant details about cash gifts and registration requirements, making it helpful for the employee.",
+        "latency_s": 1.944,
+        "input_tokens": 215,
+        "cost": 7.725e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.849,
+        "input_tokens": 489,
+        "cost": 2.0538e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q015",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "answer": "No, the Hyderabad office is not closed on 9 November 2026.  \n- Hyderabad is closed only on 8 Nov 2026 (per the holiday calendar)【HR-HOL-2026】.  \n- The company announcement notes the office closure 8–9 Nov, but specifies Hyderabad closed only on 8 Nov【COM-004】.",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the employee's question about the Hyderabad office closure on 9 November 2026, providing the relevant holiday information and clarifying the office status.",
+        "latency_s": 1.328,
+        "input_tokens": 205,
+        "cost": 7.874999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.806,
+        "input_tokens": 482,
+        "cost": 2.0244e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q050",
+      "question": "What is the free cab cut-off time?",
+      "answer": "The free cab must be booked by **6 PM** on the same day.  \n- Applies only to employees leaving the office **after 9 PM**.  \n- Booking is done through the Orbitra Spaces → Cab module; after 6 PM you can request ad‑hoc via the transport desk (ext. 3333) subject to availability.  \n- Cab drop‑off is limited to **40 km** from the office.  \n- If no company cab is available, you may use Uber/Ola and claim the actuals under FIN‑001.  \n\n[ADM-002]",
+      "gold": null,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific cut‑off time (6 PM) as requested.",
+        "latency_s": 1.186,
+        "input_tokens": 392,
+        "cost": 0.00010439999999999999
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.779,
+        "input_tokens": 521,
+        "cost": 2.1882e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q025",
+      "question": "What is the gift limit from a vendor?",
+      "answer": "The gift limit from a vendor is **INR 5,000 / USD 75 / GBP 60 per person per year**【HR-COC-001】.  \n\n- Cash or cash‑equivalent gifts (e.g., gift cards, vouchers) are never allowed【HR-COC-001】.  \n- Any gift exceeding the limit must be entered in the Gift Register (PeopleHub → Declarations) within 7 days and may need to be returned【HR-COC-001】.  \n- Gifts to government officials (including state‑owned enterprises) require prior written Legal approval【LEG-002】.",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question about the vendor gift limit, providing the specific amount and relevant policy details.",
+        "latency_s": 1.349,
+        "input_tokens": 259,
+        "cost": 7.245e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.688,
+        "input_tokens": 540,
+        "cost": 2.268e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q037",
+      "question": "When is Legacy Forms v1 being retired?",
+      "answer": "Legacy Forms v1 will be retired on **31 January 2027**. 【PRD-002】",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the retirement date for Legacy Forms v1, which is exactly what the question asked.",
+        "latency_s": 2.522,
+        "input_tokens": 147,
+        "cost": 7.185e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.555,
+        "input_tokens": 419,
+        "cost": 1.7598e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q001",
+      "question": "How many sick leaves do India employees get per year?",
+      "answer": "12 days per year.  \nCredited in full on 1 January (pro‑rated for new joiners) [HR‑LV‑001].",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the exact number of sick leave days per year as requested.",
+        "latency_s": 0.773,
+        "input_tokens": 304,
+        "cost": 8.4e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.733,
+        "input_tokens": 430,
+        "cost": 1.806e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q007",
+      "question": "What is my notice period?",
+      "answer": "Your notice period depends on your level, location, and whether you are still in probation.\n\n- If you are **in probation (any level)** → 15 days notice [HR-EXIT-001]  \n- If you are **confirmed in India**:  \n  • L1–L5 → 60 days notice [HR-EXIT-001]  \n  • L6–L10 → 90 days notice [HR-EXIT-001]  \n- If you are **in the US (at‑will)** → 2 weeks requested [HR-EXIT-001]  \n- If you are **in the UK** → per contract: 1 month for L1–L5, 3 months for L6+ [HR-EXIT-001]  \n\n*Please let me know your location, level, and if you are still on probation so I can give the exact notice period.*",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the relevant notice period details and asks for needed specifics to give an exact answer.",
+        "latency_s": 0.889,
+        "input_tokens": 466,
+        "cost": 0.00011189999999999998
+      },
+      "jev": {
+        "p": 0.95,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.671,
+        "input_tokens": 613,
+        "cost": 2.5746e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q007",
+      "question": "What is my notice period?",
+      "answer": "Your notice period depends on your level and location:\n\n- **India, confirmed L1–L5:** 60 days [HR-EXIT-001]  \n- **India, confirmed L6–L10:** 90 days [HR-EXIT-001]  \n- **US (at‑will):** 2 weeks (requested) [HR-EXIT-001]  \n- **UK:** 1 month for L1–L5, 3 months for L6+ (as per contract) [HR-EXIT-001]  \n- **During probation (any level):** 15 days [HR-EXIT-001]  \n\nWhich level and location apply to you?",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the notice period details and asks for needed clarification to give a precise answer.",
+        "latency_s": 0.85,
+        "input_tokens": 416,
+        "cost": 0.0001038
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.655,
+        "input_tokens": 557,
+        "cost": 2.3394e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q046",
+      "question": "Who should approve an expense claim of INR 1,20,000 submitted by someone whose manager is an L7?",
+      "answer": "The expense claim must be approved by an **L8 Director**【COM-002】.\n\n- The claim must be submitted in SpendWise within 30 days of the expense date【FIN-001】.  \n- A receipt is required because the amount exceeds INR 500【FIN-001】.  \n- If the claim is approved after the 20th of the month, payment will be in the following month’s salary【FIN-001】.  \n- Claims older than 60 days are automatically rejected unless the Financial Controller gives an exception【FIN-001】.",
+      "gold": null,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly states who must approve the expense claim as requested.",
+        "latency_s": 0.922,
+        "input_tokens": 403,
+        "cost": 0.00010365
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.604,
+        "input_tokens": 543,
+        "cost": 2.2806e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q005",
+      "question": "I work in the Austin office. How many PTO days do I get in my first year?",
+      "answer": "20 days of PTO in your first year. 【HR-LV-002】",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly provides the number of PTO days for a first-year employee in the Austin office.",
+        "latency_s": 0.683,
+        "input_tokens": 296,
+        "cost": 8.46e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.758,
+        "input_tokens": 419,
+        "cost": 1.7598e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q016",
+      "question": "Can I deploy a non-urgent feature to production on 9 November 2026?",
+      "answer": "No, you cannot deploy a non‑urgent feature to production on 9 November 2026.  \n- The Diwali freeze (6 Nov – 10 Nov 2026) permits only SEV1/SEV2 fixes, and they require VP Engineering approval [ENG-004].",
+      "gold": true,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the user's question about deploying a non‑urgent feature on the specified date.",
+        "latency_s": 0.946,
+        "input_tokens": 342,
+        "cost": 9.209999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.853,
+        "input_tokens": 475,
+        "cost": 1.995e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q004",
+      "question": "Within how many days must I use a comp-off?",
+      "answer": "60 days.  \n- Must be approved by your manager. [HR-LV-001]  \n- Applies to the India leave policy. [HR-LV-001]",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific timeframe (60 days) the user asked for.",
+        "latency_s": 0.89,
+        "input_tokens": 309,
+        "cost": 8.294999999999998e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.839,
+        "input_tokens": 434,
+        "cost": 1.8228e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q029",
+      "question": "I'm leaving Orbitra after 3 years. What happens to my ESOPs and gratuity?",
+      "answer": "**ESOPs:** You keep any options that have already vested; you can exercise them in the June or December exercise windows and you have up to 5 years after your last working day to do so. All unvested options will lapse on your last working day.  \n\n**Gratuity:** You are not eligible for gratuity because it is only payable after 5 years of continuous service.  \n\n- Exercise must be done via the Equity portal during the June/December windows; perquisite tax will be deducted from payroll (HR‑COMP‑001).  \n- Unvested options automatically lapse on the LWD (HR‑COMP‑001).  \n- Gratuity eligibility requires ≥5 years of service; otherwise no payment is made (HR‑COMP‑001).",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly explains the handling of ESOPs and gratuity upon leaving.",
+        "latency_s": 1.47,
+        "input_tokens": 440,
+        "cost": 0.00010559999999999999
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.714,
+        "input_tokens": 576,
+        "cost": 2.4192e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q033",
+      "question": "What is the acknowledgement time for a SEV2 incident?",
+      "answer": "15 minutes [ENG-004]",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the acknowledgement time (15 minutes) for a SEV2 incident, which addresses the user's question.",
+        "latency_s": 1.563,
+        "input_tokens": 136,
+        "cost": 7.74e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.805,
+        "input_tokens": 405,
+        "cost": 1.701e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q044",
+      "question": "What should I bring on my first day and when will I get my ID card?",
+      "answer": "On your first day you should be present for the reception check‑in, where a photo will be taken for your employee ID card, and then attend the scheduled onboarding activities [HR-ONB-001].\n\nYour official ID card will be ready within 3 working days of your start date. Until it is issued, you will be given a temporary visitor badge from reception [ADM-001][HR-ONB-001].",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": false,
+        "reason": "The answer does not specify what the employee should bring on the first day (e.g., identification documents, forms), only mentions the check‑in process and ID card timing, so it does not fully address the first part of the question.",
+        "latency_s": 3.017,
+        "input_tokens": 221,
+        "cost": 0.00013935
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.657,
+        "input_tokens": 497,
+        "cost": 2.0874e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q021",
+      "question": "Who approves my request for production AWS console access and for how long?",
+      "answer": "VP Engineering and the Security team must approve production AWS console access, and it is granted for a maximum of 8 hours.  \n- The request must be submitted via the “Break‑glass” option in OrbitDesk. [IT-004]",
+      "gold": null,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly states who must approve the request and the maximum access duration.",
+        "latency_s": 1.233,
+        "input_tokens": 325,
+        "cost": 8.715e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.987,
+        "input_tokens": 449,
+        "cost": 1.8858e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q015",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "answer": "No, the Hyderabad office is open on 9 November 2026.  \n- Hyderabad is closed only on 8 November 2026 (not on the 9th)【COM-004】.",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the user's question about the Hyderabad office status on the specified date.",
+        "latency_s": 1.243,
+        "input_tokens": 316,
+        "cost": 8.52e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.031,
+        "input_tokens": 448,
+        "cost": 1.8816e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q002",
+      "question": "How many days of paternity leave can I take in Bengaluru?",
+      "answer": "10 working days of paternity leave per child.  \nMust be taken within 6 months of the child’s birth. [HR-LV-001]",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the employee's question by stating the number of paternity leave days available in Bengaluru and provides the relevant condition and policy reference.",
+        "latency_s": 1.925,
+        "input_tokens": 161,
+        "cost": 7.335e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.481,
+        "input_tokens": 434,
+        "cost": 1.8228e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q020",
+      "question": "How long does my account stay locked after too many wrong passwords?",
+      "answer": "Your account is locked for **30 minutes** after too many wrong passwords.  \n- Lockout occurs after **5 failed login attempts**.  \n- You can unlock immediately via the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by stating the account lockout duration (30 minutes) and provides additional relevant details about the lockout policy and how to unlock, which is helpful to the employee.",
+        "latency_s": 1.71,
+        "input_tokens": 190,
+        "cost": 7.95e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.626,
+        "input_tokens": 463,
+        "cost": 1.9446e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q006",
+      "question": "How much paternity leave do London employees get?",
+      "answer": "London employees receive 6 weeks of paternity/partner leave at full pay.  \n- Must book the leave in PeopleHub. [HR-LV-003]",
+      "gold": null,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the amount of paternity leave for London employees and includes relevant booking instructions, fully addressing the question.",
+        "latency_s": 2.54,
+        "input_tokens": 160,
+        "cost": 7.92e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.784,
+        "input_tokens": 432,
+        "cost": 1.8144e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q028",
+      "question": "When do ESOPs vest?",
+      "answer": "ESOPs vest on a **4‑year schedule with a 1‑year cliff** – 25 % vests on the first anniversary of the grant date, then the remaining 75 % vests quarterly (6.25 % each quarter) over the next three years.  \n\n- Refresh grants vest over 4 years **without a cliff**. [HR-COMP-001]",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the vesting schedule for ESOPs as asked.",
+        "latency_s": 1.081,
+        "input_tokens": 351,
+        "cost": 8.685e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.514,
+        "input_tokens": 479,
+        "cost": 2.0118e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q028",
+      "question": "When do ESOPs vest?",
+      "answer": "**ESOPs vest on a 4‑year schedule with a 1‑year cliff: 25 % vests on the first anniversary of the grant date, and the remaining 75 % vests quarterly (6.25 % each quarter) over the next three years.**【HR-COMP-001】\n\n- Refresh grants vest over four years with **no cliff**.【HR-COMP-001】",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly explains when ESOPs vest, providing a typical 4‑year schedule with a 1‑year cliff and details on quarterly vesting, which addresses the user's question.",
+        "latency_s": 2.416,
+        "input_tokens": 209,
+        "cost": 8.235e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.787,
+        "input_tokens": 485,
+        "cost": 2.037e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q009",
+      "question": "My Basic is INR 60,000 and HRA is INR 30,000 per month. How much would I pay to buy out 20 days of notice?",
+      "answer": "**INR 60,000** (= (60,000 + 30,000) ÷ 30 × 20)【HR-EXIT-001】\n\n- Buyout is only possible if your manager does **not** grant an early release.  \n- The amount is recovered from your final settlement (FnF).  \n- Your earned leave balance cannot be used to reduce the notice period.",
+      "gold": null,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the calculated buyout amount and relevant details, directly answering the user's query.",
+        "latency_s": 1.29,
+        "input_tokens": 380,
+        "cost": 9.539999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.238,
+        "input_tokens": 522,
+        "cost": 2.1924e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q022",
+      "question": "Can I paste a customer's export file with emails into a public AI chatbot to clean it up?",
+      "answer": "No – you may not paste a customer export file containing emails (Restricted data/PII) into a public AI chatbot.\n\n- Public free AI chatbots are not permitted for work and must never receive internal or Restricted data. [IT-005]  \n- Customer personal data is classified as Restricted and cannot be used in any AI tool, especially external ones. [SEC-001]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the user's question about using a public AI chatbot for customer data.",
+        "latency_s": 1.797,
+        "input_tokens": 358,
+        "cost": 9.209999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.483,
+        "input_tokens": 486,
+        "cost": 2.0412e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q010",
+      "question": "I'm an L5 travelling Bengaluru to Delhi for 3 nights, flying out at 4 PM on day 1 and returning at 10 AM on day 4. What per diem can I claim?",
+      "answer": "**INR 4,500** per diem can be claimed.\n\n- Day 1 (departure after 2 PM) and Day 4 (return before 12 PM) are each 50 % of the INR 1,500 daily rate; Days 2 and 3 are full rates.  \n- Claim the amount **without receipts** in SpendWise → “Per diem” with the travel dates.  \n\n[FIN-002]",
+      "gold": true,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly provides the per diem amount and explains how it is calculated for the given travel dates.",
+        "latency_s": 1.609,
+        "input_tokens": 394,
+        "cost": 0.00010229999999999999
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.482,
+        "input_tokens": 528,
+        "cost": 2.2176e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q021",
+      "question": "Who approves my request for production AWS console access and for how long?",
+      "answer": "VP Engineering and Security must approve the request, and the access is limited to a maximum of 8 hours.  \n- Submit the request as a “Break‑glass” ticket in OrbitDesk. [IT-004]  \n- Access is time‑bound and cannot exceed 8 hours. [IT-004]",
+      "gold": null,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers who approves the request and the time limit.",
+        "latency_s": 1.112,
+        "input_tokens": 339,
+        "cost": 9.465e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.466,
+        "input_tokens": 466,
+        "cost": 1.9572e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q043",
+      "question": "I joined on 1 September 2026 and I'm on probation. Can I take 8 days of EL in December?",
+      "answer": "No – you can only use up to 6 days of Earned Leave while you’re on probation, and by December you will have accrued exactly 6 days.  \n\n- Probation limits EL usage to a maximum of 6 days [HR-LV-001].  \n- EL accrues 1.5 days on the 1st of each month; joining 1 Sept gives you 6 days by 1 Dec [HR-LV-001].  ",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the employee's question about taking 8 days of Earned Leave while on probation, explains the probation limit and accrual details, and cites the relevant policy, making it useful.",
+        "latency_s": 1.372,
+        "input_tokens": 243,
+        "cost": 8.805e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.502,
+        "input_tokens": 516,
+        "cost": 2.1672e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q043",
+      "question": "I joined on 1 September 2026 and I'm on probation. Can I take 8 days of EL in December?",
+      "answer": "No – while on probation you can use at most 6 days of Earned Leave, so 8 days in December isn’t allowed.  \n- Probation limit: maximum 6 EL days usable during the first 6 months [HR-LV-001].  \n- If you request ≤6 days, apply in PeopleHub → Leave → Apply Leave; for >3 consecutive days, submit at least 7 calendar days before the start date.",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the user's question about taking 8 days of EL while on probation.",
+        "latency_s": 0.772,
+        "input_tokens": 381,
+        "cost": 0.00010935
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.494,
+        "input_tokens": 509,
+        "cost": 2.1378e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q036",
+      "question": "What discount can an AE give without approval?",
+      "answer": "Up to 10 % discount off the list price can be given by an Account Executive without any further approval.  \n- For a 3‑year prepaid (multi‑year) deal, the AE may add an additional 5 % discount (total 15 %) without extra approval. [SAL-001]",
+      "gold": true,
+      "source": "pipeline_20261106_153648.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question about the discount an AE can give without approval.",
+        "latency_s": 0.699,
+        "input_tokens": 335,
+        "cost": 8.864999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.461,
+        "input_tokens": 461,
+        "cost": 1.9362e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q046",
+      "question": "Who should approve an expense claim of INR 1,20,000 submitted by someone whose manager is an L7?",
+      "answer": "L8 Director must approve the INR 1,20,000 expense claim.  \n- The L7 manager cannot approve because the amount exceeds the INR 50,000 limit for L6/L7 approval. [COM-002]",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly states the required approver for the specified expense amount and manager level.",
+        "latency_s": 0.901,
+        "input_tokens": 331,
+        "cost": 8.985e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.595,
+        "input_tokens": 462,
+        "cost": 1.9404e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q004",
+      "question": "Within how many days must I use a comp-off?",
+      "answer": "You must use a comp‑off within 60 days.  \n- It requires prior approval from your manager. 【HR-LV-001】",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the requested timeframe for using a comp-off.",
+        "latency_s": 0.877,
+        "input_tokens": 301,
+        "cost": 8.175e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.573,
+        "input_tokens": 424,
+        "cost": 1.7808e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q015",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "answer": "No, the Hyderabad office is not closed on 9 November 2026.  \n- Hyderabad is closed only on 8 Nov 2026; 9 Nov 2026 is a regular workday (COM-004; HR-HOL-2026).",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the employee's question about whether the Hyderabad office is closed on 9 November 2026, providing a clear 'no' and additional context.",
+        "latency_s": 2.05,
+        "input_tokens": 183,
+        "cost": 8.805e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.788,
+        "input_tokens": 462,
+        "cost": 1.9404e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q016",
+      "question": "Can I deploy a non-urgent feature to production on 9 November 2026?",
+      "answer": "No, you cannot deploy a non‑urgent feature to production on 9 November 2026.  \n- 9 Nov falls within the Diwali freeze (6 Nov – 10 Nov 2026) where only SEV1/SEV2 fixes are permitted with VP Engineering approval [ENG-004].  \n- 9 Nov is a public holiday for Bengaluru and Pune offices, and production deploys on holidays require an approved exception [HR-HOL-2026].",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the deployment request and explains why it is not allowed.",
+        "latency_s": 0.605,
+        "input_tokens": 382,
+        "cost": 9.63e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.518,
+        "input_tokens": 520,
+        "cost": 2.184e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q050",
+      "question": "What is the free cab cut-off time?",
+      "answer": "6 PM – you must book the free cab by 6 PM for a same‑day ride.  \nAfter 6 PM you may request an ad‑hoc cab through the transport desk (ext 3333), but it’s only provided if a company cab is available. 【ADM-002】",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the requested free cab cut‑off time.",
+        "latency_s": 1.073,
+        "input_tokens": 333,
+        "cost": 8.714999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.737,
+        "input_tokens": 457,
+        "cost": 1.9194e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q050",
+      "question": "What is the free cab cut-off time?",
+      "answer": "The free cab must be booked by 6 PM on the same day you plan to leave after 9 PM.  \n- Booking must be done through the Orbitra Spaces → Cab module (or via the transport desk after 6 PM, subject to availability) [ADM-002].",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer provides the specific cut‑off time for booking a free cab.",
+        "latency_s": 1.085,
+        "input_tokens": 330,
+        "cost": 0.0001041
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.82,
+        "input_tokens": 453,
+        "cost": 1.9026e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q019",
+      "question": "I lost my laptop for the second time in two years and I left it in my car. What will happen and what do I need to do?",
+      "answer": "You’ll be charged 50 % of the laptop’s book value and a replacement will be issued after you complete the required reporting steps.\n\n- Report the loss within 4 hours by calling the IT hotline (Ext. 4000) **and** emailing security@orbitra.io.  \n- File a police report (FIR) within 48 hours and upload it to an OrbitDesk ticket.  \n- Once the police report is uploaded, a replacement laptop will be provided within 2 business days.  \n\n[IT-002]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly explains the consequences and required actions for a lost laptop.",
+        "latency_s": 1.383,
+        "input_tokens": 402,
+        "cost": 0.00010529999999999998
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.659,
+        "input_tokens": 534,
+        "cost": 2.2428e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q015",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "answer": "No, the Hyderabad office is not closed on 9 November 2026.  \n- Hyderabad is closed only on 8 Nov 2026 (per the holiday calendar)【HR-HOL-2026】.",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers whether the Hyderabad office is closed on the specified date.",
+        "latency_s": 1.368,
+        "input_tokens": 318,
+        "cost": 8.85e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.653,
+        "input_tokens": 448,
+        "cost": 1.8816e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q044",
+      "question": "What should I bring on my first day and when will I get my ID card?",
+      "answer": "Your ID card will be issued within 3 working days of your start date; until then you should use a temporary visitor badge from reception.  \n\nI don’t have information on what items you need to bring on your first day. [ADM-001] [HR-ONB-001]\n\nThe closest policy is New Joiner Onboarding Guide (First 90 Days) [HR-ONB-001], owned by People Operations: you can ask them at onboarding@orbitra.io.",
+      "gold": null,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the ID card timeline and acknowledges lack of info on items, directing the user to the appropriate source.",
+        "latency_s": 0.929,
+        "input_tokens": 379,
+        "cost": 0.00011625
+      },
+      "jev": {
+        "p": 0.2,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.773,
+        "input_tokens": 515,
+        "cost": 2.163e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q047",
+      "question": "Who is my HRBP if I work in Sales in India?",
+      "answer": "Pooja Reddy (pooja.reddy@orbitra.io) is the HR Business Partner for Sales, Marketing, and Customer Success in India.",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific HR Business Partner for Sales in India as requested.",
+        "latency_s": 0.966,
+        "input_tokens": 305,
+        "cost": 8.235e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.948,
+        "input_tokens": 426,
+        "cost": 1.7892e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q010",
+      "question": "I'm an L5 travelling Bengaluru to Delhi for 3 nights, flying out at 4 PM on day 1 and returning at 10 AM on day 4. What per diem can I claim?",
+      "answer": "You can claim **₹4,500** total per‑diem (₹750 for day 1, ₹1,500 each for days 2‑3, and ₹750 for day 4)【FIN-002】.  \n- Day 1 and day 4 are paid at 50 % because travel starts after 2 PM and ends before 12 PM.  \n- No receipts are required; submit the claim in SpendWise under “Per diem” with the travel dates.",
+      "gold": true,
+      "source": "pipeline_20261114_032841.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly provides the per diem amount and breakdown for the specified travel dates.",
+        "latency_s": 1.146,
+        "input_tokens": 404,
+        "cost": 0.0001026
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.019,
+        "input_tokens": 541,
+        "cost": 2.2722e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q050",
+      "question": "What is the free cab cut-off time?",
+      "answer": "The free cab must be booked by **6 PM** on the same day.  \n- Book via Orbitra Spaces → Cab module by 6 PM; after 6 PM you can request ad‑hoc through the transport desk (ext. 3333) but it’s subject to availability. 【ADM-002】",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific cut‑off time the user asked for.",
+        "latency_s": 1.106,
+        "input_tokens": 336,
+        "cost": 9.24e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.969,
+        "input_tokens": 461,
+        "cost": 1.9362e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q043",
+      "question": "I joined on 1 September 2026 and I'm on probation. Can I take 8 days of EL in December?",
+      "answer": "No – you can only use up to 6 days of Earned Leave while you’re on probation, and by December you will have accrued only 6 days (1.5 days per month from September 1).  \n\n- Probation rule limits EL usage to 6 days total [HR-LV-001].  \n- EL accrues 1.5 days on the 1st of each month, so by 1 December you’ll have 6 days [HR-LV-001].  \n- Any planned leave > 3 consecutive working days must be applied at least 7 calendar days in advance via PeopleHub [HR-LV-001].  ",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the employee's query about taking 8 days of EL while on probation.",
+        "latency_s": 1.054,
+        "input_tokens": 434,
+        "cost": 0.0001059
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.967,
+        "input_tokens": 570,
+        "cost": 2.394e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q006",
+      "question": "How much paternity leave do London employees get?",
+      "answer": "London employees receive **6 weeks of paternity/partner leave at full pay**.【HR-LV-003】\n\n- Book the leave through PeopleHub.  \n- For any questions or to confirm eligibility, contact Hannah Price (hannah.price@orbitra.io), HRBP UK.",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the exact paternity leave amount for London employees as asked.",
+        "latency_s": 1.342,
+        "input_tokens": 329,
+        "cost": 8.835e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.821,
+        "input_tokens": 460,
+        "cost": 1.932e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q049",
+      "question": "My wife delivered a baby 40 days ago. Can I still add the baby to insurance and take paternity leave?",
+      "answer": "You can still take paternity leave, but you can’t add the baby to insurance now.  \n\n- Paternity leave: 10 working days per child, must be used within 6 months of birth. [HR‑LV‑001]  \n- Adding a newborn: must be done within 30 days of the event; after that you must wait for the annual window (1‑15 March). [HR‑BEN‑001]",
+      "gold": true,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers both parts of the question about adding the baby to insurance and taking paternity leave.",
+        "latency_s": 1.147,
+        "input_tokens": 378,
+        "cost": 0.00010889999999999999
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.713,
+        "input_tokens": 510,
+        "cost": 2.142e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q047",
+      "question": "Who is my HRBP if I work in Sales in India?",
+      "answer": "Pooja Reddy is your HR Business Partner for Sales, Marketing and Customer Success in India.  \n- For career, manager, performance or employee‑relations matters contact Pooja; transactional queries (e.g., leave balance, payslip) should be routed through OrbitDesk → HR. 【COM-002】",
+      "gold": null,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by identifying the HR Business Partner for Sales in India and adds helpful guidance on how to contact them, which addresses the employee's request.",
+        "latency_s": 1.323,
+        "input_tokens": 193,
+        "cost": 7.515e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.55,
+        "input_tokens": 464,
+        "cost": 1.9488e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q003",
+      "question": "What is the maximum earned leave I can carry forward?",
+      "answer": "30 days maximum can be carried forward.  \n- Applies to India employees; the total Earned Leave balance carried into the next year cannot exceed 30 days [HR-LV-001].",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the maximum earned leave that can be carried forward.",
+        "latency_s": 0.875,
+        "input_tokens": 313,
+        "cost": 8.654999999999999e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.548,
+        "input_tokens": 439,
+        "cost": 1.8438e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q021",
+      "question": "Who approves my request for production AWS console access and for how long?",
+      "answer": "VP Engineering and Security must approve production AWS console access, and it is limited to a maximum of 8 hours per request.  \n- The request must be submitted as a “Break‑glass” ticket in OrbitDesk. [IT-004]  ",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers who approves the request and the time limit.",
+        "latency_s": 0.946,
+        "input_tokens": 326,
+        "cost": 9.27e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.584,
+        "input_tokens": 450,
+        "cost": 1.89e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q044",
+      "question": "What should I bring on my first day and when will I get my ID card?",
+      "answer": "Bring a valid photo ID so you can collect a temporary visitor badge from reception on your first day.  \nYour official ID card will be issued within 3 working days of your start date, after which you’ll switch from the temporary badge.  \n\n- The temporary badge is used only until the ID card is ready [HR-ONB-001].",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers both parts of the question about what to bring and ID card timing.",
+        "latency_s": 0.691,
+        "input_tokens": 349,
+        "cost": 9.195e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.587,
+        "input_tokens": 472,
+        "cost": 1.9824e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q020",
+      "question": "How long does my account stay locked after too many wrong passwords?",
+      "answer": "Your account remains locked for **30 minutes** after 5 failed sign‑in attempts.  \n- You can unlock it immediately using the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the lockout duration directly, answering the user's question.",
+        "latency_s": 1.027,
+        "input_tokens": 327,
+        "cost": 8.685e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.705,
+        "input_tokens": 455,
+        "cost": 1.911e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q049",
+      "question": "My wife delivered a baby 40 days ago. Can I still add the baby to insurance and take paternity leave?",
+      "answer": "You can still take paternity leave, but you cannot add the baby to insurance now; you must wait for the March enrollment window.  \n\n- Paternity leave: 10 working days per child, must be used within 6 months of birth【HR-LV-001】.  \n- Adding a newborn: must be done within 30 days of the birth; after that you must wait for the March window【HR-BEN-001】.",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers both parts of the question about insurance enrollment and paternity leave eligibility.",
+        "latency_s": 0.994,
+        "input_tokens": 378,
+        "cost": 0.00011009999999999999
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.714,
+        "input_tokens": 509,
+        "cost": 2.1378e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q004",
+      "question": "Within how many days must I use a comp-off?",
+      "answer": "Comp‑off must be used within **60 days** of earning it.  \n- Requires manager approval before it can be taken.  \n- Comp‑off is only offered to employees in India; U.S. employees do not have this leave type.  \n\nAre you an employee based in India or the United States?",
+      "gold": null,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the requested comp-off usage timeframe and follows up with a relevant clarification question.",
+        "latency_s": 0.844,
+        "input_tokens": 335,
+        "cost": 9.104999999999999e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.7,
+        "input_tokens": 456,
+        "cost": 1.9152e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q023",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "Click the **“Report Phish”** button in Gmail.  \n- Do this within 1 hour of noticing the email. [SEC-002]",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the correct action to take for a suspicious email.",
+        "latency_s": 0.763,
+        "input_tokens": 305,
+        "cost": 9.195e-05
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.758,
+        "input_tokens": 428,
+        "cost": 1.7976e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q023",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "Click the **“Report Phish”** button in Gmail.  \n\n- Do this within 1 hour of noticing the email.  \n- You will never be penalised for reporting it in good faith.  \n\n[SEC-002: Reporting Security Incidents and Phishing]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly tells the user how to handle a suspicious email they haven't clicked.",
+        "latency_s": 0.784,
+        "input_tokens": 328,
+        "cost": 8.58e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.585,
+        "input_tokens": 453,
+        "cost": 1.9026e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q026",
+      "question": "Can I take a freelance project on weekends?",
+      "answer": "No, you cannot take a paid freelance project on weekends without prior written approval.  \n- You must obtain written approval from your HR Business Partner and your department head before starting any paid freelance work. [HR-COC-001]",
+      "gold": true,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the employee's question about taking a freelance project on weekends, providing the relevant policy requirement.",
+        "latency_s": 1.985,
+        "input_tokens": 172,
+        "cost": 7.98e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.586,
+        "input_tokens": 439,
+        "cost": 1.8438e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q002",
+      "question": "How many days of paternity leave can I take in Bengaluru?",
+      "answer": "10 working days of paternity leave per child.  \n- Must be taken within 6 months of the child’s birth. [HR-LV-001]",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific number of paternity leave days requested for Bengaluru.",
+        "latency_s": 1.31,
+        "input_tokens": 307,
+        "cost": 8.145e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.82,
+        "input_tokens": 435,
+        "cost": 1.827e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q006",
+      "question": "How much paternity leave do London employees get?",
+      "answer": "6 weeks of paternity/partner leave at full pay.  \n- Book the leave in PeopleHub.  \n- For any questions or approval, contact Hannah Price (hannah.price@orbitra.io), HRBP UK.  \n\n[HR-LV-003]",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific paternity leave amount and relevant details.",
+        "latency_s": 1.593,
+        "input_tokens": 325,
+        "cost": 8.835e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.69,
+        "input_tokens": 454,
+        "cost": 1.9068e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q032",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "answer": "2 approvals are required for a PR in `orbitra/infra`.  \n- At least one of the approvals must come from a code‑owner of the changed path. 【ENG-002】",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by stating the required number of approvals and the condition.",
+        "latency_s": 1.124,
+        "input_tokens": 314,
+        "cost": 8.91e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.785,
+        "input_tokens": 441,
+        "cost": 1.8522e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q034",
+      "question": "I was on-call in India for a full week including the weekend. What allowance do I get?",
+      "answer": "**INR 25,000** for the week (5 × ₹3,000 for weekdays + 2 × ₹5,000 for weekend days), plus **one comp‑off** if you were paged > 2 hours on a weekend/holiday.  \n\n- Claim the allowance via PeopleHub → Payroll → “On‑call allowance” by the 20th of the month [ENG-004].  \n- The extra comp‑off is only granted when paged > 2 hours on a weekend/holiday [ENG-004].  \n- Eligibility requires you have completed 3 months tenure and shadowed two shifts before joining the rotation [ENG-004].  ",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the question by specifying the allowance amount, how it is calculated, the claim process, and related eligibility and comp‑off details, providing the employee with the needed information.",
+        "latency_s": 3.206,
+        "input_tokens": 285,
+        "cost": 0.00010515
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.628,
+        "input_tokens": 572,
+        "cost": 2.4024e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q012",
+      "question": "I'm an L7 taking a client for dinner in Pune with 3 client people and me. What is the maximum I can claim and what must I include?",
+      "answer": "**Maximum claim:** INR 12,000 (INR 3,000 per head × 4 attendees).  \n\n**What to include:** Client name and company on the claim, ensure alcohol does not exceed 30 % of the total bill, and attach the receipt (required for amounts > INR 500).  \n\n- Submit the claim in **SpendWise** within 30 days of the dinner (FIN‑001).  \n- Obtain your manager’s approval (approval flow per FIN‑001).  \n- Claims approved by the 20th are paid with that month’s salary; later approvals are paid the following month.",
+      "gold": true,
+      "source": "pipeline_20261114_042204.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly provides the maximum claim amount and required details for the claim as asked.",
+        "latency_s": 0.595,
+        "input_tokens": 426,
+        "cost": 0.0001059
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.561,
+        "input_tokens": 563,
+        "cost": 2.3646e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q026",
+      "question": "Can I take a freelance project on weekends?",
+      "answer": "No — you may not take a paid freelance project on weekends without prior written approval.  \n- Must obtain written approval from your HR Business Partner **and** your department head before starting the work. [HR-COC-001]",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the employee's question about taking a freelance project on weekends, providing a clear policy statement and required steps.",
+        "latency_s": 1.785,
+        "input_tokens": 173,
+        "cost": 7.874999999999999e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.693,
+        "input_tokens": 440,
+        "cost": 1.848e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q018",
+      "question": "My VPN is connected but Confluence won't open. What should I try?",
+      "answer": "Flush your DNS cache (Mac: `sudo dscacheutil -flushcache`; Windows: `ipconfig /flushdns`) and try switching the VPN gateway to a nearer location.  \nIf it still doesn’t work, raise an IT ticket (OrbitDesk → IT → “VPN issue”) with a screenshot and log output. [IT-003]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly addresses the user's issue by suggesting practical troubleshooting steps (flushing DNS cache, switching VPN gateway) and provides a clear escalation path with ticket instructions, which aligns with the question about Confluence not opening while VPN is connected.",
+        "latency_s": 1.345,
+        "input_tokens": 204,
+        "cost": 8.58e-05
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.817,
+        "input_tokens": 477,
+        "cost": 2.0034e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q013",
+      "question": "What is the deadline for submitting tax investment proofs?",
+      "answer": "The deadline to submit tax investment proofs is 31 January.  \n\n- Proofs must be submitted between 5 January and 31 January; missing the 31 January deadline results in higher TDS deductions in February and March. [HR-PAY-001]",
+      "gold": true,
+      "source": "pipeline_20261112_221310.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly provides the deadline for submitting tax investment proofs (31 January) and includes relevant details, fully addressing the question.",
+        "latency_s": 1.727,
+        "input_tokens": 183,
+        "cost": 8.265e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.665,
+        "input_tokens": 461,
+        "cost": 1.9362e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q023",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "Click the **“Report Phish”** button in Gmail.  \n- Do it within 1 hour of noticing the email. [SEC-002]",
+      "gold": true,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the correct action to take for a suspicious email.",
+        "latency_s": 0.963,
+        "input_tokens": 305,
+        "cost": 9.135e-05
+      },
+      "jev": {
+        "p": 0.96,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.723,
+        "input_tokens": 428,
+        "cost": 1.7976e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q002",
+      "question": "How many days of paternity leave can I take in Bengaluru?",
+      "answer": "10 working days per child [HR-LV-001].  \nMust be taken within 6 months of the child’s birth.",
+      "gold": true,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific number of paternity leave days for Bengaluru as requested.",
+        "latency_s": 0.74,
+        "input_tokens": 302,
+        "cost": 8.49e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.59,
+        "input_tokens": 429,
+        "cost": 1.8018e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q012",
+      "question": "I'm an L7 taking a client for dinner in Pune with 3 client people and me. What is the maximum I can claim and what must I include?",
+      "answer": "**Maximum claim:** INR 12,000 (INR 3,000 × 4 heads – you + 3 clients)【FIN-001】  \n\n**What to include:**  \n- Client name and their company on the expense report.  \n- Full receipt (expense > INR 500) showing the total amount and itemised bill.  \n- Alcohol charges must not exceed 30 % of the total bill.  \n- Submit the claim in SpendWise within 30 days, with manager’s approval.  ",
+      "gold": true,
+      "source": "pipeline_20261106_135930.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the employee's question by stating the maximum claim amount and listing the required documentation and submission details.",
+        "latency_s": 1.739,
+        "input_tokens": 264,
+        "cost": 8.4e-05
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.827,
+        "input_tokens": 544,
+        "cost": 2.2848e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q026",
+      "question": "Can I take a freelance project on weekends?",
+      "answer": "No – paid freelance work is not permitted without written approval from your HR Business Partner and department head.  \n- You must obtain written approval from both your HRBP and department head before starting any paid freelance project. [HR-COC-001]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the request about taking a freelance project on weekends.",
+        "latency_s": 1.017,
+        "input_tokens": 320,
+        "cost": 9.3e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.04,
+        "input_tokens": 442,
+        "cost": 1.8564e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q006",
+      "question": "How much paternity leave do London employees get?",
+      "answer": "6 weeks of paternity/partner leave at full pay.  \n- Book the leave in PeopleHub.  \n- For questions or approval, contact HRBP UK – Hannah Price (hannah.price@orbitra.io). [HR-LV-003]",
+      "gold": true,
+      "source": "pipeline_20261113_112944.json",
+      "llm": {
+        "useful": true,
+        "reason": "Provides the specific paternity leave amount and relevant details.",
+        "latency_s": 0.894,
+        "input_tokens": 325,
+        "cost": 8.835e-05
+      },
+      "jev": {
+        "p": 0.97,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.089,
+        "input_tokens": 454,
+        "cost": 1.9068e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q045",
+      "question": "When is the next town hall? (asked on 19 Oct 2026)",
+      "answer": "The next town hall is on **Thursday 29 October 2026 at 5:00 PM IST**【COM-004】.  \n- It will be held in the Bengaluru Auditorium and streamed on Zoom.  \n- Submit any questions in advance via Slido (link in #announcements).",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers the question by providing the date, time, location, and additional relevant details about the upcoming town hall, which fulfills the employee's request.",
+        "latency_s": 2.398,
+        "input_tokens": 195,
+        "cost": 8.444999999999999e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.55,
+        "input_tokens": 477,
+        "cost": 2.0034e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q014",
+      "question": "Is tomorrow a holiday in the Bengaluru office? (asked on 19 Oct 2026)",
+      "answer": "Yes, tomorrow (20 Oct 2026) is a holiday in the Bengaluru office – Dussehra (Vijayadashami) ✔ [HR-HOL-2026].",
+      "gold": true,
+      "source": "pipeline_20261106_144935.json",
+      "llm": {
+        "useful": true,
+        "reason": "The answer directly addresses the employee's question by confirming that tomorrow is a holiday in the Bengaluru office and provides the specific holiday name.",
+        "latency_s": 2.009,
+        "input_tokens": 175,
+        "cost": 8.204999999999999e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.538,
+        "input_tokens": 453,
+        "cost": 1.9026e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q049",
+      "question": "My wife delivered a baby 40 days ago. Can I still add the baby to insurance and take paternity leave?",
+      "answer": "You can still take paternity leave, but you can no longer add the newborn to your health insurance until the next enrollment window.\n\n- The newborn must be added within 30 days of birth; at 40 days you’ve missed that deadline, so you must wait for the March enrollment window. [HR-BEN-001]  \n- Paternity leave of 10 working days can be taken up to 6 months after the birth, so you’re still eligible. [HR-LV-001]",
+      "gold": true,
+      "source": "pipeline_20261113_205942.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly answers both questions about adding the baby to insurance and eligibility for paternity leave.",
+        "latency_s": 1.116,
+        "input_tokens": 391,
+        "cost": 0.00010784999999999999
+      },
+      "jev": {
+        "p": 0.98,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.914,
+        "input_tokens": 524,
+        "cost": 2.2008e-05
+      }
+    },
+    {
+      "kind": "real",
+      "qid": "Q025",
+      "question": "What is the gift limit from a vendor?",
+      "answer": "The gift limit from a vendor is **INR 5,000 / USD 75 / GBP 60 per person per year**【HR-COC-001】.\n\n- Cash or cash‑equivalent gifts (gift cards, vouchers) are never allowed【HR-COC-001】.  \n- Any gift exceeding the limit must be entered in the Gift Register (PeopleHub → Declarations) within 7 days and may need to be returned【HR-COC-001】.",
+      "gold": true,
+      "source": "pipeline_20261114_035525.json",
+      "llm": {
+        "useful": true,
+        "reason": "The response directly provides the vendor gift limit and relevant details, fully addressing the employee's question.",
+        "latency_s": 1.296,
+        "input_tokens": 231,
+        "cost": 7.604999999999999e-05
+      },
+      "jev": {
+        "p": 0.99,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.922,
+        "input_tokens": 510,
+        "cost": 2.142e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q023<-Q001",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "12 days per year.  \nCredited in full on 1 January (pro‑rated for new joiners) [HR‑LV‑001].",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about handling a suspicious email.",
+        "latency_s": 0.656,
+        "input_tokens": 305,
+        "cost": 7.515e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.528,
+        "input_tokens": 432,
+        "cost": 1.8144e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q005<-Q028",
+      "question": "I work in the Austin office. How many PTO days do I get in my first year?",
+      "answer": "**ESOPs vest on a 4‑year schedule with a 1‑year cliff: 25 % vests on the first anniversary of the grant date, and the remaining 75 % vests quarterly (6.25 % each quarter) over the next three years.**【HR-COMP-001】\n\n- **Refresh grants** vest over four years but have **no 1‑year cliff**.  \n- This schedule applies to the standard Orbitra ESOP Plan 2021 (India).  ",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses ESOP vesting instead of PTO days for the Austin office.",
+        "latency_s": 0.827,
+        "input_tokens": 388,
+        "cost": 9.3e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.912,
+        "input_tokens": 520,
+        "cost": 2.184e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q022<-Q047",
+      "question": "Can I paste a customer's export file with emails into a public AI chatbot to clean it up?",
+      "answer": "Pooja Reddy (pooja.reddy@orbitra.io) is the HR Business Partner for Sales, Marketing, and Customer Success in India.",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about using a public AI chatbot to clean up a customer's export file.",
+        "latency_s": 1.375,
+        "input_tokens": 311,
+        "cost": 8.505e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.902,
+        "input_tokens": 434,
+        "cost": 1.8228e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q019<-Q034",
+      "question": "I lost my laptop for the second time in two years and I left it in my car. What will happen and what do I need to do?",
+      "answer": "You’ll receive INR 25,000 (INR 3,000 × 5 weekdays = 15,000 + INR 5,000 × 2 weekend days = 10,000).  \n\n- You get an extra comp‑off only if you were paged > 2 hours on a weekend/holiday.  \n- Claim the allowance via PeopleHub → Payroll → “On‑call allowance” by the 20th of the month.  \n\n[ENG-004]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses unrelated compensation details instead of addressing the lost laptop situation.",
+        "latency_s": 1.395,
+        "input_tokens": 397,
+        "cost": 0.00010755
+      },
+      "jev": {
+        "p": 0.04,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.942,
+        "input_tokens": 536,
+        "cost": 2.2512e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q015<-Q010",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "answer": "**INR 4,500** per diem can be claimed.\n\n- Day 1 (departure after 2 PM) and Day 4 (return before 12 PM) are each 50 % of the INR 1,500 daily rate; Days 2 and 3 are full rates.  \n- Claim the amount **without receipts** in SpendWise → “Per diem” with the travel dates.  \n\n[FIN-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses per diem claims instead of answering whether the Hyderabad office is closed on that date.",
+        "latency_s": 1.152,
+        "input_tokens": 365,
+        "cost": 9.194999999999999e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.775,
+        "input_tokens": 497,
+        "cost": 2.0874e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q021<-Q037",
+      "question": "Who approves my request for production AWS console access and for how long?",
+      "answer": "Legacy Forms v1 will be retired on **31 January 2027**. 【PRD-002】",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not answer the question about who approves AWS console access and its duration.",
+        "latency_s": 1.078,
+        "input_tokens": 297,
+        "cost": 7.635e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.701,
+        "input_tokens": 424,
+        "cost": 1.7808e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q031<-Q046",
+      "question": "I passed my CKA exam and I'm planning to resign in 6 months. Will the company reimburse it and will they recover it?",
+      "answer": "L8 Director must approve the INR 1,20,000 expense claim.  \n- The L7 manager cannot approve because the amount exceeds the INR 50,000 limit for L6/L7 approval. [COM-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about reimbursement and recovery of CKA exam costs.",
+        "latency_s": 1.067,
+        "input_tokens": 334,
+        "cost": 8.549999999999999e-05
+      },
+      "jev": {
+        "p": 0.14,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.807,
+        "input_tokens": 463,
+        "cost": 1.9446e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q021<-Q037",
+      "question": "Who approves my request for production AWS console access and for how long?",
+      "answer": "Legacy Forms v1 will be retired on **31 January 2027**. 【PRD-002】",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses legacy form retirement dates, which does not address who approves the request for production AWS console access or the duration of that access.",
+        "latency_s": 2.529,
+        "input_tokens": 152,
+        "cost": 8.04e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.708,
+        "input_tokens": 424,
+        "cost": 1.7808e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q045<-Q043",
+      "question": "When is the next town hall? (asked on 19 Oct 2026)",
+      "answer": "No – while on probation you can use at most 6 days of Earned Leave, so 8 days in December isn’t allowed.  \n- Probation limit: maximum 6 EL days usable during the first 6 months [HR-LV-001].  \n- If you request ≤6 days, apply in PeopleHub → Leave → Apply Leave; for >3 consecutive days, submit at least 7 calendar days before the start date.",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses leave policy instead of providing the town hall date.",
+        "latency_s": 1.23,
+        "input_tokens": 373,
+        "cost": 9.015e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.714,
+        "input_tokens": 502,
+        "cost": 2.1084e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q015<-Q012",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "answer": "**Maximum claim:** INR 12,000 (INR 3,000 × 4 heads – you + 3 clients)【FIN-001】  \n\n**What to include:**  \n- Client name and their company on the expense report.  \n- Full receipt (expense > INR 500) showing the total amount and itemised bill.  \n- Alcohol charges must not exceed 30 % of the total bill.  \n- Submit the claim in SpendWise within 30 days, with manager’s approval.  ",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses expense claim details instead of the office closure date.",
+        "latency_s": 1.105,
+        "input_tokens": 389,
+        "cost": 8.774999999999999e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.596,
+        "input_tokens": 525,
+        "cost": 2.205e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q028<-Q023",
+      "question": "When do ESOPs vest?",
+      "answer": "Click the **“Report Phish”** button in Gmail. [SEC-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about ESOP vesting and is unrelated.",
+        "latency_s": 0.916,
+        "input_tokens": 286,
+        "cost": 7.41e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.617,
+        "input_tokens": 408,
+        "cost": 1.7136e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q018<-Q019",
+      "question": "My VPN is connected but Confluence won't open. What should I try?",
+      "answer": "You will be charged 50 % of the laptop’s book value for the second loss caused by negligence.  \n\n- Report the loss within 4 hours by calling the IT hotline (Ext. 4000) **and** emailing security@orbitra.io.  \n- File a police report (FIR) within 48 hours and upload it to an OrbitDesk ticket.  \n- A replacement laptop will be issued within 2 business days after the police report is uploaded.  \n\n[IT-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses laptop loss policy, not VPN or Confluence troubleshooting.",
+        "latency_s": 0.954,
+        "input_tokens": 380,
+        "cost": 8.7e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.605,
+        "input_tokens": 511,
+        "cost": 2.1462e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q032<-Q018",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "answer": "Flush your DNS cache (Mac: `sudo dscacheutil -flushcache`; Windows: `ipconfig /flushdns`) and try switching the VPN gateway to a nearer one. [IT-003]\n\nIf that doesn’t resolve it, raise an OrbitDesk ticket → IT → “VPN issue” with a screenshot and the **Help → Collect Logs** output.  \nIf you’re completely blocked, call Ext. 4000 (treated as a P2 ticket).",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses DNS cache flushing, VPN issues, and support tickets, which do not address the question about the number of approvals required for a PR in the orbitra/infra repository.",
+        "latency_s": 1.908,
+        "input_tokens": 227,
+        "cost": 9.885e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.951,
+        "input_tokens": 504,
+        "cost": 2.1168e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q023<-Q013",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "The deadline to submit tax investment proofs is 31 January.  \n\n- Proofs must be submitted between 5 January and 31 January; missing the 31 January deadline results in higher TDS deductions in February and March. [HR-PAY-001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response gives tax deadline info, not guidance on handling a suspicious email.",
+        "latency_s": 0.741,
+        "input_tokens": 330,
+        "cost": 8.01e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.745,
+        "input_tokens": 464,
+        "cost": 1.9488e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q023<-Q032",
+      "question": "What should I do with a suspicious email I haven't clicked?",
+      "answer": "2 approvals are required for a PR in orbitra/infra.  \n- At least one of the approvals must be from a code owner of the changed path. 【ENG-002】",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses PR approval requirements, which does not address the user's question about handling a suspicious email.",
+        "latency_s": 2.258,
+        "input_tokens": 165,
+        "cost": 7.815e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.949,
+        "input_tokens": 435,
+        "cost": 1.827e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q015<-Q023",
+      "question": "Is Hyderabad office closed on 9 November 2026?",
+      "answer": "Click the **“Report Phish”** button in Gmail.  \n\n- Do this within 1 hour of noticing the email.  \n- You will never be penalised for reporting it in good faith.  \n\n[SEC-002: Reporting Security Incidents and Phishing]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about the Hyderabad office closure.",
+        "latency_s": 0.805,
+        "input_tokens": 328,
+        "cost": 7.86e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.835,
+        "input_tokens": 454,
+        "cost": 1.9068e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q035<-Q015",
+      "question": "What is the first response SLA for a P1 ticket from an Enterprise customer?",
+      "answer": "No, the Hyderabad office is not closed on 9 November 2026.  \n- Hyderabad is closed only on 8 Nov 2026 (per the holiday calendar)【HR-HOL-2026】.  \n- The company announcement notes the office closure 8–9 Nov, but specifies Hyderabad closed only on 8 Nov【COM-004】.",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses Hyderabad office closure dates, which does not address the question about the first response SLA for a P1 ticket from an Enterprise customer.",
+        "latency_s": 5.346,
+        "input_tokens": 209,
+        "cost": 9.015e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.807,
+        "input_tokens": 484,
+        "cost": 2.0328e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q001<-Q033",
+      "question": "How many sick leaves do India employees get per year?",
+      "answer": "15 minutes. [ENG-004]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer does not address the question about sick leave entitlement.",
+        "latency_s": 0.919,
+        "input_tokens": 281,
+        "cost": 7.095e-05
+      },
+      "jev": {
+        "p": 0.53,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.944,
+        "input_tokens": 405,
+        "cost": 1.701e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q046<-Q043",
+      "question": "Who should approve an expense claim of INR 1,20,000 submitted by someone whose manager is an L7?",
+      "answer": "No – while on probation you can use at most 6 days of Earned Leave, so 8 days in December isn’t allowed.  \n- Probation limit: maximum 6 EL days usable during the first 6 months [HR-LV-001].  \n- If you request ≤6 days, apply in PeopleHub → Leave → Apply Leave; for >3 consecutive days, submit at least 7 calendar days before the start date.",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses earned leave policies, which does not answer the question about who should approve an expense claim of INR 1,20,000 for an employee with an L7 manager.",
+        "latency_s": 1.592,
+        "input_tokens": 235,
+        "cost": 7.725e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.542,
+        "input_tokens": 508,
+        "cost": 2.1336e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q049<-Q020",
+      "question": "My wife delivered a baby 40 days ago. Can I still add the baby to insurance and take paternity leave?",
+      "answer": "Your account is locked for **30 minutes** after too many wrong passwords.  \n- Lockout occurs after **5 failed login attempts**.  \n- You can unlock immediately via the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about adding a baby to insurance or paternity leave.",
+        "latency_s": 1.016,
+        "input_tokens": 346,
+        "cost": 8.79e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.517,
+        "input_tokens": 476,
+        "cost": 1.9992e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q006<-Q020",
+      "question": "How much paternity leave do London employees get?",
+      "answer": "Your account remains locked for **30 minutes** after 5 failed sign‑in attempts.  \n- You can unlock it immediately using the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response addresses account lockout, not the question about paternity leave.",
+        "latency_s": 0.773,
+        "input_tokens": 324,
+        "cost": 8.759999999999999e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.509,
+        "input_tokens": 453,
+        "cost": 1.9026e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q016<-Q005",
+      "question": "Can I deploy a non-urgent feature to production on 9 November 2026?",
+      "answer": "You receive 20 days of PTO in your first year. [HR-LV-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the deployment question and provides unrelated PTO information.",
+        "latency_s": 0.697,
+        "input_tokens": 299,
+        "cost": 7.485e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.439,
+        "input_tokens": 425,
+        "cost": 1.785e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q026<-Q050",
+      "question": "Can I take a freelance project on weekends?",
+      "answer": "The free cab must be booked by **6 PM** on the same day.  \n- Book via Orbitra Spaces → Cab module by 6 PM; after 6 PM you can request ad‑hoc through the transport desk (ext. 3333) but it’s subject to availability. 【ADM-002】",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response talks about cab booking times, not about weekend freelance projects.",
+        "latency_s": 0.716,
+        "input_tokens": 336,
+        "cost": 8.04e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 1.061,
+        "input_tokens": 461,
+        "cost": 1.9362e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q032<-Q018",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "answer": "Flush your DNS cache (Mac: `sudo dscacheutil -flushcache`; Windows: `ipconfig /flushdns`) and try switching the VPN gateway to a nearer location.  \nIf it still doesn’t work, raise an IT ticket (OrbitDesk → IT → “VPN issue”) with a screenshot and log output. [IT-003]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about PR approval count and provides unrelated VPN troubleshooting.",
+        "latency_s": 1.196,
+        "input_tokens": 348,
+        "cost": 8.4e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.962,
+        "input_tokens": 476,
+        "cost": 1.9992e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q016<-Q012",
+      "question": "Can I deploy a non-urgent feature to production on 9 November 2026?",
+      "answer": "**Maximum claim:** INR 12,000 (INR 3,000 × 4 heads – you + 3 clients)【FIN-001】  \n\n**What to include:**  \n- Client name and their company on the expense report.  \n- Full receipt (expense > INR 500) showing the total amount and itemised bill.  \n- Alcohol charges must not exceed 30 % of the total bill.  \n- Submit the claim in SpendWise within 30 days, with manager’s approval.  ",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response provides expense claim instructions unrelated to the question about deploying a non-urgent feature to production on a specific date.",
+        "latency_s": 2.095,
+        "input_tokens": 250,
+        "cost": 7.35e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.793,
+        "input_tokens": 532,
+        "cost": 2.2344e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q044<-Q022",
+      "question": "What should I bring on my first day and when will I get my ID card?",
+      "answer": "No – you may not paste a customer export file containing emails (Restricted data/PII) into a public AI chatbot.\n\n- Public free AI chatbots are not permitted for work and must never receive internal or Restricted data. [IT-005]  \n- Customer personal data is classified as Restricted and cannot be used in any AI tool, especially external ones. [SEC-001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the employee's question about what to bring on the first day or when they will receive their ID card; instead it provides a policy warning unrelated to the query.",
+        "latency_s": 2.108,
+        "input_tokens": 211,
+        "cost": 8.265e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.812,
+        "input_tokens": 482,
+        "cost": 2.0244e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q022<-Q010",
+      "question": "Can I paste a customer's export file with emails into a public AI chatbot to clean it up?",
+      "answer": "**INR 4,500** per diem can be claimed.\n\n- Day 1 (departure after 2 PM) and Day 4 (return before 12 PM) are each 50 % of the INR 1,500 daily rate; Days 2 and 3 are full rates.  \n- Claim the amount **without receipts** in SpendWise → “Per diem” with the travel dates.  \n\n[FIN-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about using a public AI chatbot to clean a customer's email export file.",
+        "latency_s": 0.744,
+        "input_tokens": 372,
+        "cost": 9.419999999999999e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.8,
+        "input_tokens": 504,
+        "cost": 2.1168e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q022<-Q010",
+      "question": "Can I paste a customer's export file with emails into a public AI chatbot to clean it up?",
+      "answer": "You can claim **₹4,500** total per‑diem.\n\n- Day 1 (departure after 2 PM) and Day 4 (return before 12 PM) are each 50 % of the full rate (₹750 each).  \n- Days 2 and 3 are full days at the standard L5 domestic rate (₹1,500 each).  \n\n[FIN-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses per-diem rates and unrelated details, not whether it's permissible to paste a customer's export file with emails into a public AI chatbot.",
+        "latency_s": 1.789,
+        "input_tokens": 219,
+        "cost": 9.585e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.62,
+        "input_tokens": 497,
+        "cost": 2.0874e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q019<-Q012",
+      "question": "I lost my laptop for the second time in two years and I left it in my car. What will happen and what do I need to do?",
+      "answer": "**Maximum claim:** INR 12,000 (INR 3,000 per head × 4 attendees).  \n\n**What to include:** Client name and company on the claim, ensure alcohol does not exceed 30 % of the total bill, and attach the receipt (required for amounts > INR 500).  \n\n- Submit the claim in **SpendWise** within 30 days of the dinner (FIN‑001).  \n- Obtain your manager’s approval (approval flow per FIN‑001).  \n- Claims approved by the 20th are paid with that month’s salary; later approvals are paid the following month.",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses expense claim procedures unrelated to the lost laptop question.",
+        "latency_s": 0.976,
+        "input_tokens": 424,
+        "cost": 9.72e-05
+      },
+      "jev": {
+        "p": 0.03,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.665,
+        "input_tokens": 560,
+        "cost": 2.352e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q010<-Q008",
+      "question": "I'm an L5 travelling Bengaluru to Delhi for 3 nights, flying out at 4 PM on day 1 and returning at 10 AM on day 4. What per diem can I claim?",
+      "answer": "No, you cannot use your EL to shorten the 90‑day notice period.  \nEL balance cannot be adjusted against notice period. 【HR-EXIT-001】",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the per diem question and is unrelated.",
+        "latency_s": 1.007,
+        "input_tokens": 335,
+        "cost": 7.965e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.928,
+        "input_tokens": 463,
+        "cost": 1.9446e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q032<-Q030",
+      "question": "How many approvals are needed for a PR in orbitra/infra?",
+      "answer": "**Amount and payment timing depend on your work location:**\n\n- **India:** INR 1,00,000 – paid in the payroll after the hired employee completes 90 days (≈ 30 Oct 2026).  \n- **United States:** USD 2,000 – paid in the payroll after the hired employee completes 90 days (≈ 30 Oct 2026).  \n- **United Kingdom:** GBP 1,500 – paid in the payroll after the hired employee completes 90 days (≈ 30 Oct 2026).  \n\n**Conditions / next steps**  \n- You must still be employed and not serving notice on the payout date.  \n- The referral must have been submitted through PeopleHub → Careers → Refer and be within the 6‑month validity window.  \n\n*Which location applies to you?*  \n\n[HR-TA-001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses referral bonuses instead of the number of PR approvals required.",
+        "latency_s": 0.833,
+        "input_tokens": 460,
+        "cost": 0.00010199999999999999
+      },
+      "jev": {
+        "p": 0.05,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.626,
+        "input_tokens": 606,
+        "cost": 2.5452e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q026<-Q004",
+      "question": "Can I take a freelance project on weekends?",
+      "answer": "You must use a comp‑off within 60 days.  \n- It requires prior approval from your manager. 【HR-LV-001】",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses comp-off policy, not whether freelance work on weekends is allowed.",
+        "latency_s": 0.811,
+        "input_tokens": 299,
+        "cost": 9.585e-05
+      },
+      "jev": {
+        "p": 0.52,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.615,
+        "input_tokens": 422,
+        "cost": 1.7724e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q024<-Q036",
+      "question": "A vendor emailed asking us to update their bank account. What's the correct process?",
+      "answer": "Up to 10 % off the list price can be given by an Account Executive without any additional approval.  \n\n- The AE self‑approves this discount directly in CPQ. [SAL-001]  \n- For 3‑year prepaid (multi‑year) deals, an extra 5 % discount may be added without extra approval (total up to 15 %). [SAL-001]  \n- Any discount beyond these limits requires the next‑level approver per the discount matrix. [SAL-001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses discount approvals instead of the vendor bank account update process.",
+        "latency_s": 0.866,
+        "input_tokens": 386,
+        "cost": 9.209999999999999e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.71,
+        "input_tokens": 519,
+        "cost": 2.1798e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q033<-Q026",
+      "question": "What is the acknowledgement time for a SEV2 incident?",
+      "answer": "No, you cannot take a paid freelance project on weekends without prior written approval.  \n- You must obtain written approval from your HR Business Partner and your department head before starting any paid freelance work. [HR-COC-001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the question about SEV2 acknowledgement time.",
+        "latency_s": 1.129,
+        "input_tokens": 320,
+        "cost": 7.8e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.758,
+        "input_tokens": 442,
+        "cost": 1.8564e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q003<-Q010",
+      "question": "What is the maximum earned leave I can carry forward?",
+      "answer": "You can claim **₹4,500** total per‑diem.\n\n- Day 1 (departure after 2 PM) and Day 4 (return before 12 PM) are each 50 % of the full rate (₹750 each).  \n- Days 2 and 3 are full days at the standard L5 domestic rate (₹1,500 each).  \n\n[FIN-002]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses per‑diem rates instead of the maximum earned leave that can be carried forward.",
+        "latency_s": 1.243,
+        "input_tokens": 356,
+        "cost": 9.3e-05
+      },
+      "jev": {
+        "p": 0.03,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.813,
+        "input_tokens": 487,
+        "cost": 2.0454e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q033<-Q020",
+      "question": "What is the acknowledgement time for a SEV2 incident?",
+      "answer": "Your account remains locked for **30 minutes** after 5 failed sign‑in attempts.  \n- You can unlock it immediately using the self‑service unlock at orbitra.okta.com or by calling Ext. 4000. [IT-004]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer discusses account lockout details, not the SEV2 incident acknowledgement time.",
+        "latency_s": 0.823,
+        "input_tokens": 326,
+        "cost": 9.03e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.709,
+        "input_tokens": 454,
+        "cost": 1.9068e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q018<-Q049",
+      "question": "My VPN is connected but Confluence won't open. What should I try?",
+      "answer": "You can still take paternity leave, but you can’t add the baby to insurance now.  \n\n- Paternity leave: 10 working days per child, must be used within 6 months of birth. [HR‑LV‑001]  \n- Adding a newborn: must be done within 30 days of the event; after that you must wait for the annual window (1‑15 March). [HR‑BEN‑001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response does not address the user's question about VPN and Confluence; it provides unrelated HR information.",
+        "latency_s": 1.691,
+        "input_tokens": 224,
+        "cost": 6.72e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.81,
+        "input_tokens": 501,
+        "cost": 2.1042e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q006<-Q001",
+      "question": "How much paternity leave do London employees get?",
+      "answer": "12 days of Sick Leave per year. 【HR-LV-001】",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The answer provides sick leave information instead of the requested paternity leave details.",
+        "latency_s": 0.926,
+        "input_tokens": 286,
+        "cost": 7.71e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.526,
+        "input_tokens": 410,
+        "cost": 1.722e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q007<-Q026",
+      "question": "What is my notice period?",
+      "answer": "No – paid freelance work is not permitted without prior written approval.  \n\n- You must obtain written approval from your HR Business Partner and your department head before starting any paid freelance project. [HR-COC-001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses freelance work approval, not the notice period.",
+        "latency_s": 1.253,
+        "input_tokens": 311,
+        "cost": 7.725e-05
+      },
+      "jev": {
+        "p": 0.02,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.577,
+        "input_tokens": 433,
+        "cost": 1.8186e-05
+      }
+    },
+    {
+      "kind": "mismatched",
+      "qid": "Q006<-Q028",
+      "question": "How much paternity leave do London employees get?",
+      "answer": "ESOPs vest on a **4‑year schedule with a 1‑year cliff** – 25 % vests on the first anniversary of the grant date, then the remaining 75 % vests quarterly (6.25 % each quarter) over the next three years.  \n\n- Refresh grants vest over 4 years **without a cliff**. [HR-COMP-001]",
+      "gold": false,
+      "source": "mismatched",
+      "llm": {
+        "useful": false,
+        "reason": "The response discusses ESOP vesting instead of paternity leave for London employees.",
+        "latency_s": 1.053,
+        "input_tokens": 354,
+        "cost": 8.429999999999999e-05
+      },
+      "jev": {
+        "p": 0.01,
+        "model": "typesafe/jev-1.14-20261014",
+        "latency_s": 0.726,
+        "input_tokens": 483,
+        "cost": 2.0286e-05
+      }
+    }
+  ]
+}
