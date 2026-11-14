@@ -1,0 +1,668 @@
+{
+  "stage": "grader_compare",
+  "run_at": "2026-11-14T04:01:03",
+  "config": {
+    "llm": "openai/gpt-oss-120b",
+    "llm_effort": "low",
+    "llm_price_per_token": {
+      "prompt": 1.5e-07,
+      "completion": 6e-07
+    },
+    "decisions_model": "typesafe/jev-1.14",
+    "tau_rel": 0.5,
+    "graders": [
+      "llm",
+      "jev_batched",
+      "jev_chunk"
+    ],
+    "retrieval_from": null,
+    "concurrency": 3
+  },
+  "summary": {
+    "before_grading": {
+      "gold_doc_recall": 1.0,
+      "chunks": 12
+    },
+    "graders": {
+      "llm": {
+        "at_tau": {
+          "tau": null,
+          "questions": 3,
+          "chunks": 12,
+          "keep_rate": 0.25,
+          "gold_chunk_recall": 0.6,
+          "precision": 1.0,
+          "gold_doc_recall": 1.0,
+          "questions_all_dropped": 0,
+          "questions_losing_a_gold_doc": 0,
+          "agreement_with_llm": null
+        },
+        "latency_p50": 4.994,
+        "latency_p95": 5.142,
+        "latency_mean": 4.567,
+        "requests_per_question": 4,
+        "input_tokens_per_question": 2404.7,
+        "cost_per_question": 0.0006163,
+        "errors": 0
+      },
+      "jev_batched": {
+        "at_tau": {
+          "tau": 0.5,
+          "questions": 3,
+          "chunks": 12,
+          "keep_rate": 0.417,
+          "gold_chunk_recall": 1.0,
+          "precision": 1.0,
+          "gold_doc_recall": 1.0,
+          "questions_all_dropped": 0,
+          "questions_losing_a_gold_doc": 0,
+          "agreement_with_llm": 0.833
+        },
+        "latency_p50": 1.032,
+        "latency_p95": 1.212,
+        "latency_mean": 1.045,
+        "requests_per_question": 1,
+        "input_tokens_per_question": 2328.3,
+        "cost_per_question": 9.779e-05,
+        "errors": 0,
+        "tau_sweep": [
+          {
+            "tau": 0.1,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.583,
+            "gold_chunk_recall": 1.0,
+            "precision": 0.714,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.667
+          },
+          {
+            "tau": 0.2,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.5,
+            "gold_chunk_recall": 1.0,
+            "precision": 0.833,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.75
+          },
+          {
+            "tau": 0.3,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.5,
+            "gold_chunk_recall": 1.0,
+            "precision": 0.833,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.75
+          },
+          {
+            "tau": 0.4,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.5,
+            "gold_chunk_recall": 1.0,
+            "precision": 0.833,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.75
+          },
+          {
+            "tau": 0.5,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.417,
+            "gold_chunk_recall": 1.0,
+            "precision": 1.0,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.833
+          },
+          {
+            "tau": 0.6,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.417,
+            "gold_chunk_recall": 1.0,
+            "precision": 1.0,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.833
+          },
+          {
+            "tau": 0.7,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.333,
+            "gold_chunk_recall": 0.8,
+            "precision": 1.0,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.917
+          },
+          {
+            "tau": 0.8,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.25,
+            "gold_chunk_recall": 0.6,
+            "precision": 1.0,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 1.0
+          }
+        ]
+      },
+      "jev_chunk": {
+        "at_tau": {
+          "tau": 0.5,
+          "questions": 3,
+          "chunks": 12,
+          "keep_rate": 0.417,
+          "gold_chunk_recall": 0.8,
+          "precision": 0.8,
+          "gold_doc_recall": 1.0,
+          "questions_all_dropped": 0,
+          "questions_losing_a_gold_doc": 0,
+          "agreement_with_llm": 0.833
+        },
+        "latency_p50": 0.892,
+        "latency_p95": 1.062,
+        "latency_mean": 0.948,
+        "requests_per_question": 4,
+        "input_tokens_per_question": 3183.3,
+        "cost_per_question": 0.0001337,
+        "errors": 0,
+        "tau_sweep": [
+          {
+            "tau": 0.1,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.583,
+            "gold_chunk_recall": 1.0,
+            "precision": 0.714,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.667
+          },
+          {
+            "tau": 0.2,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.5,
+            "gold_chunk_recall": 1.0,
+            "precision": 0.833,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.75
+          },
+          {
+            "tau": 0.3,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.5,
+            "gold_chunk_recall": 1.0,
+            "precision": 0.833,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.75
+          },
+          {
+            "tau": 0.4,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.417,
+            "gold_chunk_recall": 0.8,
+            "precision": 0.8,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.833
+          },
+          {
+            "tau": 0.5,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.417,
+            "gold_chunk_recall": 0.8,
+            "precision": 0.8,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.833
+          },
+          {
+            "tau": 0.6,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.417,
+            "gold_chunk_recall": 0.8,
+            "precision": 0.8,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.833
+          },
+          {
+            "tau": 0.7,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.333,
+            "gold_chunk_recall": 0.6,
+            "precision": 0.75,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 0.917
+          },
+          {
+            "tau": 0.8,
+            "questions": 3,
+            "chunks": 12,
+            "keep_rate": 0.25,
+            "gold_chunk_recall": 0.6,
+            "precision": 1.0,
+            "gold_doc_recall": 1.0,
+            "questions_all_dropped": 0,
+            "questions_losing_a_gold_doc": 0,
+            "agreement_with_llm": 1.0
+          }
+        ]
+      }
+    }
+  },
+  "results": [
+    {
+      "qid": "Q001",
+      "type": "single_hop",
+      "question": "How many sick leaves do India employees get per year?",
+      "gold_docs": [
+        "HR-LV-001"
+      ],
+      "sub_questions": [
+        "How many sick leaves do India employees get per year?"
+      ],
+      "chunks": [
+        {
+          "text": "## 2. Leave types and entitlement\n| Leave type | Entitlement per year | Accrual | Carry forward | Encashable |\n|---|---|---|---|---|\n| Earned Leave (EL) | 18 days | 1.5 days credited on the 1st of every month | Yes, max **30 days** total balance into next year | Yes, at exit only, max 30 days on Basic salary |\n| Sick Leave (SL) | 12 days | Full 12 credited on 1 January (pro-rated for joiners) | No | No |\n| Casual Leave (CL) | 6 days | Full 6 credited on 1 January (pro-rated) | No | No |\n| Maternity Leave | 26 weeks (first two children); 12 weeks thereafter | — | — | — |\n| Paternity Leave | **10 working days** | Per child | Must be used within 6 months of birth | No |\n| Adoption Leave | 12 weeks for the primary caregiver (child of any age up to 5 years); 10 working days for the secondary caregiver | Per adoption | Must start within 3 months of placement | No |\n| Bereavement Leave | 5 working days (immediate family); 2 days (extended family) | Per event | — | No |",
+          "metadata": {
+            "source": "documents/01_hr/HR-LV-001_leave_policy_india_v5.md",
+            "doc_id": "HR-LV-001",
+            "title": "Leave Policy – India",
+            "department": "People Operations",
+            "owner": "ritu.malhotra@orbitra.io",
+            "version": 5.0,
+            "status": "active",
+            "effective_date": "2026-04-01",
+            "last_updated": "2026-03-15",
+            "supersedes": "HR-LV-001 v4.0",
+            "applies_to": "India (Bengaluru, Pune, Hyderabad) – full-time employees",
+            "classification": "Internal",
+            "tags": "leave, earned leave, sick leave, casual leave, maternity, paternity, bereavement, comp-off, sabbatical, india"
+          }
+        },
+        {
+          "text": "## 7. Leave encashment at exit\nAt exit, up to 30 days of EL balance is encashed at Basic salary / 30 per day as part of the Full and Final settlement (see HR-EXIT-001). SL, CL and comp-off are not encashed.\n\n## 8. Holidays\nIndia offices follow the published holiday calendar (HR-HOL-2026): 10 fixed holidays + 2 floating (optional) holidays.\n\n## 9. FAQs\n**Can I take EL in advance?** No. Only credited EL can be used.\n**What if I fall sick during EL?** You can request your manager to convert EL days to SL with a medical certificate.\n**Do I lose CL at year end?** Yes, CL and SL lapse on 31 December.\n**Where do I check my balance?** PeopleHub → Leave → My Balances. If it looks wrong, raise OrbitDesk → HR → \"Leave balance correction\".",
+          "metadata": {
+            "source": "documents/01_hr/HR-LV-001_leave_policy_india_v5.md",
+            "doc_id": "HR-LV-001",
+            "title": "Leave Policy – India",
+            "department": "People Operations",
+            "owner": "ritu.malhotra@orbitra.io",
+            "version": 5.0,
+            "status": "active",
+            "effective_date": "2026-04-01",
+            "last_updated": "2026-03-15",
+            "supersedes": "HR-LV-001 v4.0",
+            "applies_to": "India (Bengaluru, Pune, Hyderabad) – full-time employees",
+            "classification": "Internal",
+            "tags": "leave, earned leave, sick leave, casual leave, maternity, paternity, bereavement, comp-off, sabbatical, india"
+          }
+        },
+        {
+          "text": "# PTO and Leave Policy – United States\n\n## PTO\n| Years of service | Annual PTO |\n|---|---|\n| 0–2 years | 20 days |\n| 3–5 years | 23 days |\n| 6+ years | 25 days |\n\n- PTO accrues per pay period (semi-monthly, 24 periods).\n- Up to **5 days** of unused PTO carry over to the next calendar year; carried-over days expire on 31 March.\n- Unused PTO is paid out at termination where required by state law (Texas does not require it, but Orbitra pays out up to 10 days as company practice).\n\n## Sick time\n10 paid sick days per year, front-loaded on 1 January (pro-rated for new hires). Does not carry over. A doctor's note is required only for absences longer than 3 consecutive days.\n\n## Holidays\n11 company holidays: New Year's Day, MLK Day, Presidents' Day, Memorial Day, Juneteenth, Independence Day, Labor Day, Thanksgiving Day, Day after Thanksgiving, Christmas Eve, Christmas Day. Plus 1 floating holiday.",
+          "metadata": {
+            "source": "documents/01_hr/HR-LV-002_pto_policy_us.md",
+            "doc_id": "HR-LV-002",
+            "title": "Paid Time Off (PTO) and Leave Policy – United States",
+            "department": "People Operations",
+            "owner": "rachel.kim@orbitra.io",
+            "version": 3.1,
+            "status": "active",
+            "effective_date": "2026-01-01",
+            "last_updated": "2025-12-01",
+            "applies_to": "United States – Orbitra Inc. full-time employees",
+            "classification": "Internal",
+            "tags": "pto, sick leave, us, fmla, parental leave, holidays, austin"
+          }
+        },
+        {
+          "text": "## Parental leave\n- **16 weeks fully paid** for birthing parents (includes short-term disability benefit).\n- **12 weeks fully paid** for non-birthing parents, including adoptive and foster parents.\n- Must be taken within 12 months of the birth/placement; may be split into at most 2 blocks.\n\n## Other leaves\n- **FMLA:** up to 12 weeks job-protected unpaid leave for eligible employees (12 months service, 1,250 hours).\n- **Bereavement:** 5 days (immediate family), 2 days (extended).\n- **Jury duty:** fully paid for up to 10 days.\n- **Voting:** up to 2 hours paid.\n\n## How to request\nRequest PTO in PeopleHub at least 2 weeks in advance for 5+ consecutive days. Contact your HRBP Rachel Kim (rachel.kim@orbitra.io) for leaves of absence.\n\nNote: US employees do not receive Earned Leave, Casual Leave or comp-off — these are India-only leave types.",
+          "metadata": {
+            "source": "documents/01_hr/HR-LV-002_pto_policy_us.md",
+            "doc_id": "HR-LV-002",
+            "title": "Paid Time Off (PTO) and Leave Policy – United States",
+            "department": "People Operations",
+            "owner": "rachel.kim@orbitra.io",
+            "version": 3.1,
+            "status": "active",
+            "effective_date": "2026-01-01",
+            "last_updated": "2025-12-01",
+            "applies_to": "United States – Orbitra Inc. full-time employees",
+            "classification": "Internal",
+            "tags": "pto, sick leave, us, fmla, parental leave, holidays, austin"
+          }
+        }
+      ],
+      "grades": {
+        "llm": {
+          "keep": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "reasons": [
+            "The chunk lists sick leave entitlement for India employees as 12 days per year, directly answering the question.",
+            "The chunk does not provide the number of sick leaves allocated per year.",
+            "The chunk applies only to United States employees, not to India employees.",
+            "The chunk applies only to United States employees and does not provide sick leave information for India."
+          ],
+          "latency_s": 3.565,
+          "requests": 4,
+          "input_tokens": 2505,
+          "output_tokens": 373,
+          "cost": 0.00059955
+        },
+        "jev_batched": {
+          "probs": [
+            0.99,
+            0.64,
+            0.13,
+            0.08
+          ],
+          "mode": "batched",
+          "requests": 1,
+          "latency_s": 1.212,
+          "input_tokens": 2371,
+          "cost": 9.9582e-05
+        },
+        "jev_chunk": {
+          "probs": [
+            0.99,
+            0.35,
+            0.05,
+            0.1
+          ],
+          "mode": "per_chunk",
+          "requests": 4,
+          "latency_s": 0.892,
+          "input_tokens": 3194,
+          "cost": 0.000134148
+        }
+      }
+    },
+    {
+      "qid": "Q014",
+      "type": "temporal",
+      "question": "Is tomorrow a holiday in the Bengaluru office? (asked on 19 Oct 2026)",
+      "gold_docs": [
+        "HR-HOL-2026"
+      ],
+      "sub_questions": [
+        "Is tomorrow a holiday in the Bengaluru office? (asked on 19 Oct 2026)"
+      ],
+      "chunks": [
+        {
+          "text": "# Company Announcements (Jul – Oct 2026)\n\n**16 Oct 2026 — Diwali celebrations & freeze reminder**\nDiwali celebrations in all India offices on **Friday 6 November** (ethnic day, rangoli competition, lunch). Reminder: deployment freeze from 6–10 Nov (ENG-004). Office closed 8–9 Nov as per holiday calendar (Hyderabad closed only on 8 Nov).\n\n**9 Oct 2026 — Q2 FY27 Town Hall**\nThe Q2 town hall will be on **Thursday 29 October, 5:00 PM IST** (6:30 AM CT / 11:30 AM GMT) in the Bengaluru Auditorium and on Zoom. Submit questions in advance via Slido (link in #announcements).\n\n**1 Oct 2026 — Mid-year review cycle opens**\nSelf-reviews are open **1–10 October** in PeopleHub. Ratings will be shared by 15 November (HR-PERF-001).\n\n**22 Sep 2026 — Open enrolment for mentorship programme**\nApply on LearnSphere by 15 October.",
+          "metadata": {
+            "source": "documents/00_company/COM-004_announcements_q3_fy27.md",
+            "doc_id": "COM-004",
+            "title": "Company Announcements – July to October 2026",
+            "department": "Corporate Communications",
+            "owner": "internal-comms@orbitra.io",
+            "version": 1.4,
+            "status": "active",
+            "last_updated": "2026-10-16",
+            "applies_to": "all",
+            "classification": "Internal",
+            "tags": "announcements, news, town hall, events, offsite, policy changes, time-sensitive"
+          }
+        },
+        {
+          "text": "## Fixed holidays\n| Date | Day | Holiday | Bengaluru | Pune | Hyderabad |\n|---|---|---|---|---|---|\n| 01-Jan-2026 | Thu | New Year's Day | ✔ | ✔ | ✔ |\n| 15-Jan-2026 | Thu | Makar Sankranti / Pongal | ✔ | — | ✔ |\n| 26-Jan-2026 | Mon | Republic Day | ✔ | ✔ | ✔ |\n| 04-Mar-2026 | Wed | Holi | — | ✔ | ✔ |\n| 19-Mar-2026 | Thu | Ugadi / Gudi Padwa | ✔ | ✔ | ✔ |\n| 01-May-2026 | Fri | May Day / Maharashtra Day | ✔ | ✔ | ✔ |\n| 15-Aug-2026 | Sat | Independence Day | ✔ | ✔ | ✔ |\n| 14-Sep-2026 | Mon | Ganesh Chaturthi | ✔ | ✔ | ✔ |\n| 02-Oct-2026 | Fri | Gandhi Jayanti | ✔ | ✔ | ✔ |\n| 20-Oct-2026 | Tue | Dussehra (Vijayadashami) | ✔ | ✔ | ✔ |\n| 01-Nov-2026 | Sun | Karnataka Rajyotsava | ✔ | — | — |\n| 08-Nov-2026 | Sun | Diwali (Deepavali) | ✔ | ✔ | ✔ |\n| 09-Nov-2026 | Mon | Diwali (Balipratipada / Padwa) | ✔ | ✔ | — |\n| 25-Dec-2026 | Fri | Christmas | ✔ | ✔ | ✔ |",
+          "metadata": {
+            "source": "documents/01_hr/HR-HOL-2026_holiday_calendar_india.md",
+            "doc_id": "HR-HOL-2026",
+            "title": "Holiday Calendar 2026 – India Offices",
+            "department": "People Operations",
+            "owner": "ritu.malhotra@orbitra.io",
+            "version": 1.1,
+            "status": "active",
+            "last_updated": "2025-12-05",
+            "applies_to": "India – Bengaluru, Pune, Hyderabad",
+            "classification": "Internal",
+            "tags": "holidays, 2026, calendar, floating holiday, optional holiday, india"
+          }
+        },
+        {
+          "text": "Note: Where a fixed holiday falls on a weekend (Independence Day, Karnataka Rajyotsava, Diwali), no substitute holiday is given. Telangana Formation Day (02-Jun) is a holiday for Hyderabad in place of the second Diwali day.\n\n## Optional / floating holiday list (choose any 2)\nEid-ul-Fitr (21-Mar), Good Friday (03-Apr), Eid-ul-Adha (27-May), Muharram (26-Jun), Raksha Bandhan (28-Aug), Onam (26-Aug), Janmashtami (04-Sep), Guru Nanak Jayanti (24-Nov), Your birthday, Your work anniversary.\n\n## Year-end\nThe office remains open between Christmas and New Year, but a voluntary **\"Quiet Week\"** applies from 28–31 December: no internal meetings are scheduled and deployments are frozen (see ENG-004).",
+          "metadata": {
+            "source": "documents/01_hr/HR-HOL-2026_holiday_calendar_india.md",
+            "doc_id": "HR-HOL-2026",
+            "title": "Holiday Calendar 2026 – India Offices",
+            "department": "People Operations",
+            "owner": "ritu.malhotra@orbitra.io",
+            "version": 1.1,
+            "status": "active",
+            "last_updated": "2025-12-05",
+            "applies_to": "India – Bengaluru, Pune, Hyderabad",
+            "classification": "Internal",
+            "tags": "holidays, 2026, calendar, floating holiday, optional holiday, india"
+          }
+        },
+        {
+          "text": "**22 Sep 2026 — Open enrolment for mentorship programme**\nApply on LearnSphere by 15 October.\n\n**5 Sep 2026 — New Bengaluru HQ: Tower 2 opening**\nFloors 4–7 of Tower 2 open on **2 November 2026** for Data & AI and Customer Success teams. Desk neighbourhoods will move; check Orbitra Spaces from 26 October.\n\n**18 Aug 2026 — Security: phishing campaign alert**\nSeveral employees received WhatsApp messages impersonating the CEO asking for gift cards. This is a scam — report per SEC-002.\n\n**1 Aug 2026 — Transport update**\nMetro shuttle frequency on anchor days increased to every 20 minutes (ADM-002).\n\n**15 Jul 2026 — FY27 Annual Offsite**\nThe company offsite \"Orbit 2027\" will be held in **Goa from 21–23 January 2027** for all India employees; US and UK teams have regional offsites in March 2027. Travel will be booked centrally — do not book on your own.",
+          "metadata": {
+            "source": "documents/00_company/COM-004_announcements_q3_fy27.md",
+            "doc_id": "COM-004",
+            "title": "Company Announcements – July to October 2026",
+            "department": "Corporate Communications",
+            "owner": "internal-comms@orbitra.io",
+            "version": 1.4,
+            "status": "active",
+            "last_updated": "2026-10-16",
+            "applies_to": "all",
+            "classification": "Internal",
+            "tags": "announcements, news, town hall, events, offsite, policy changes, time-sensitive"
+          }
+        }
+      ],
+      "grades": {
+        "llm": {
+          "keep": [
+            false,
+            true,
+            false,
+            false
+          ],
+          "reasons": [
+            "The chunk does not mention a holiday on 20 Oct 2026 for the Bengaluru office.",
+            "The chunk lists 20-Oct-2026 (tomorrow) as Dussehra, a holiday for Bengaluru, directly answering the question.",
+            "The chunk provides general holiday policy but does not indicate whether 20 Oct 2026 is a holiday for the Bengaluru office.",
+            "The chunk contains unrelated announcements and does not mention any holiday on 20 Oct 2026 for Bengaluru."
+          ],
+          "latency_s": 5.142,
+          "requests": 4,
+          "input_tokens": 2574,
+          "output_tokens": 556,
+          "cost": 0.0007197
+        },
+        "jev_batched": {
+          "probs": [
+            0.47,
+            0.98,
+            0.71,
+            0.07
+          ],
+          "mode": "batched",
+          "requests": 1,
+          "latency_s": 0.892,
+          "input_tokens": 2511,
+          "cost": 0.000105462
+        },
+        "jev_chunk": {
+          "probs": [
+            0.76,
+            0.99,
+            0.68,
+            0.06
+          ],
+          "mode": "per_chunk",
+          "requests": 4,
+          "latency_s": 1.062,
+          "input_tokens": 3418,
+          "cost": 0.000143556
+        }
+      }
+    },
+    {
+      "qid": "Q020",
+      "type": "single_hop",
+      "question": "How long does my account stay locked after too many wrong passwords?",
+      "gold_docs": [
+        "IT-004"
+      ],
+      "sub_questions": [
+        "How long does my account stay locked after too many wrong passwords?"
+      ],
+      "chunks": [
+        {
+          "text": "# Accounts, Passwords, MFA and Access\n\n## 1. Single sign-on (Okta)\nAll company applications are accessed through **orbitra.okta.com**. Your username is your email address.\n\n## 2. Password rules\n- Minimum **14 characters**; must not contain your name or \"orbitra\".\n- Passwords expire every **180 days**; you receive reminders 14, 7 and 1 day before expiry.\n- Last 10 passwords cannot be reused.\n- **Self-service reset:** orbitra.okta.com → \"Forgot password?\" → verify with Okta Verify or SMS. Takes 2 minutes.\n- On Mac, after a reset, the laptop login password syncs on next login while connected to the internet (Okta Platform SSO). If it doesn't sync, connect to the office Wi-Fi or VPN and lock/unlock the screen.\n\n## 3. Account lockout\nAfter **5 failed attempts** your account is locked for **30 minutes** and then unlocks automatically. To unlock immediately, use self-service unlock at orbitra.okta.com or call Ext. 4000.",
+          "metadata": {
+            "source": "documents/02_it/IT-004_accounts_passwords_mfa_access.md",
+            "doc_id": "IT-004",
+            "title": "Accounts, Passwords, MFA and Application Access",
+            "department": "Corporate IT & Security",
+            "owner": "iam@orbitra.io",
+            "version": 3.3,
+            "status": "active",
+            "last_updated": "2026-07-11",
+            "applies_to": "all employees and contractors",
+            "classification": "Internal",
+            "tags": "password, reset, okta, mfa, account locked, sso, access request, new phone, application owners, github access, aws access"
+          }
+        },
+        {
+          "text": "Tip: Before raising a ticket, ask **OrbitBot** — most password, VPN and software issues can be self-resolved.\n\n## 2. Ticket priorities and SLAs\n| Priority | Definition | First response | Resolution target |\n|---|---|---|---|\n| P1 – Critical | Company-wide or team-wide outage; security incident | 15 minutes | 4 hours |\n| P2 – High | Single user fully blocked (cannot log in, laptop failure) | 1 hour | 8 business hours |\n| P3 – Medium | Degraded but can work (slow laptop, one app failing) | 4 business hours | 3 business days |\n| P4 – Low | Requests (new software, accessories) | 1 business day | 5 business days |\n\nIf your ticket breaches SLA, reply on the ticket with \"ESCALATE\" – it is routed to the IT team lead automatically.",
+          "metadata": {
+            "status": "active",
+            "last_updated": "2026-08-30",
+            "tags": "it support, helpdesk, orbitdesk, ticket, sla, priority, service catalog, it hours",
+            "version": 4.2,
+            "department": "Corporate IT",
+            "applies_to": "all employees",
+            "doc_id": "IT-001",
+            "source": "documents/02_it/IT-001_it_support_and_service_catalog.md",
+            "owner": "suresh.pillai@orbitra.io",
+            "title": "IT Support – How to Get Help and Service Catalog",
+            "classification": "Internal"
+          }
+        },
+        {
+          "text": "| \"HIP check failed\" | Your laptop is non-compliant (OS update pending, disk encryption off, or antivirus disabled). Install pending updates and restart. |\n| VPN works at home but not at a hotel | Hotel networks may block UDP; SecureConnect will fall back to TCP 443 automatically—wait 60 seconds. If it still fails, use a mobile hotspot. |",
+          "metadata": {
+            "doc_id": "IT-003",
+            "department": "Corporate IT",
+            "tags": "vpn, secureconnect, globalprotect, remote access, troubleshooting, connection error, portal, how-to",
+            "last_updated": "2026-09-02",
+            "title": "VPN (Orbitra SecureConnect) – Setup and Troubleshooting",
+            "applies_to": "all employees",
+            "source": "documents/02_it/IT-003_vpn_remote_access_troubleshooting.md",
+            "version": 2.6,
+            "status": "active",
+            "owner": "it-network@orbitra.io",
+            "classification": "Internal"
+          }
+        },
+        {
+          "text": "You will **never** be penalised for reporting in good faith, even if you made the mistake.\n\n## 3. How to spot phishing\n- Sender domain looks similar but wrong (orbitra-hr.com, 0rbitra.io). Only **@orbitra.io** is ours.\n- Urgency or secrecy: \"do this now, don't tell anyone\".\n- Requests for gift cards, wire transfers, bank detail changes, or OTPs.\n- Unexpected attachments (.html, .zip, .iso) or QR codes.\n- Executives will **never** ask you to buy gift cards or share OTPs over WhatsApp.\n\n## 4. Vendor bank detail change requests\nAny email asking to change a vendor's bank account must be verified by **calling the vendor on a known number** (not the number in the email). Finance must follow FIN-003 §6.\n\n## 5. What happens after you report\nSecurity triages within 30 minutes (24x7). You may be asked to hand over your laptop for forensic analysis; a loaner will be provided.",
+          "metadata": {
+            "source": "documents/03_security/SEC-002_incident_reporting_and_phishing.md",
+            "doc_id": "SEC-002",
+            "title": "Reporting Security Incidents and Phishing",
+            "department": "Information Security",
+            "owner": "security@orbitra.io",
+            "version": 3.0,
+            "status": "active",
+            "last_updated": "2026-09-15",
+            "applies_to": "all employees and contractors",
+            "classification": "Internal",
+            "tags": "security incident, phishing, report phishing, suspicious email, malware, data breach, lost laptop, social engineering, whatsapp scam, ceo fraud"
+          }
+        }
+      ],
+      "grades": {
+        "llm": {
+          "keep": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "reasons": [
+            "The chunk includes the specific information that after 5 failed attempts the account is locked for 30 minutes, directly answering the question about how long the account stays locked.",
+            "The chunk discusses ticket priorities and SLAs, not account lockout duration.",
+            "The chunk discusses VPN setup/troubleshooting and does not address account lockout duration.",
+            "The chunk discusses phishing reporting and security incident procedures, not account lockout duration."
+          ],
+          "latency_s": 4.994,
+          "requests": 4,
+          "input_tokens": 2135,
+          "output_tokens": 349,
+          "cost": 0.00052965
+        },
+        "jev_batched": {
+          "probs": [
+            0.99,
+            0.04,
+            0.01,
+            0.02
+          ],
+          "mode": "batched",
+          "requests": 1,
+          "latency_s": 1.032,
+          "input_tokens": 2103,
+          "cost": 8.8326e-05
+        },
+        "jev_chunk": {
+          "probs": [
+            0.99,
+            0.07,
+            0.02,
+            0.02
+          ],
+          "mode": "per_chunk",
+          "requests": 4,
+          "latency_s": 0.891,
+          "input_tokens": 2938,
+          "cost": 0.000123396
+        }
+      }
+    }
+  ]
+}

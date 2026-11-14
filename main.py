@@ -26,7 +26,9 @@ import hashlib
 import json
 import re
 import os
+import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Annotated, Literal, TypedDict
 
@@ -452,19 +454,68 @@ class DocGrade(BaseModel):
     reason: str = Field(description="One short sentence explaining the grade.")
 
 
-grade_prompt = ChatPromptTemplate.from_messages([
-    ("system",
+GRADE_RULES = (
      "You grade whether a chunk from Orbitra's knowledge base is relevant to an employee's question. "
      "Use the chunk's metadata: a chunk with status 'superseded' is never relevant, because a newer "
      "version exists. A chunk whose applies_to clearly excludes the region or group the question is "
      "about is not relevant. If the question names no region, any region can be relevant. Otherwise "
      "be lenient: the chunk only needs to contain part of the answer. If the question has several "
-     "parts, a chunk that answers any one part is relevant."),
+     "parts, a chunk that answers any one part is relevant.")
+grade_prompt = ChatPromptTemplate.from_messages([
+    ("system", GRADE_RULES),
     ("human",
      "Question: {question}\nParts of the question: {parts}\n\nChunk metadata: doc_id={doc_id}, title={title}, status={status}, "
      "applies_to={applies_to}\n\nChunk:\n{chunk}"),
 ])
 grader = grade_prompt | judge_llm.with_structured_output(DocGrade).with_retry(**RETRY_BAD_OUTPUT)
+
+# GRADER=jev grades chunks with the Decisions model instead of one LLM call per chunk. A chunk is kept when
+# its probability of being relevant is at least TAU_REL; if the Decisions API fails, the LLM grader runs.
+#   JEV_GRADE_MODE=batched    one request: every chunk in the state, one yes/no question per chunk
+#   JEV_GRADE_MODE=per_chunk  one small request per chunk (state = the question + that chunk), in parallel
+GRADER = os.environ.get("GRADER", "llm")
+# 0.3: on eval/grader_compare.py it kept more gold chunks than the LLM grader (0.88 vs 0.73) with higher
+# precision (0.838 vs 0.811); stricter thresholds trade gold chunks for precision
+TAU_REL = float(os.environ.get("TAU_REL", "0.3"))
+JEV_GRADE_MODE = os.environ.get("JEV_GRADE_MODE", "batched")
+GRADE_FIELDS = ("doc_id", "title", "status", "applies_to")
+
+
+def chunk_state(d: Document, chunk_id: str | None = None) -> dict:
+    return ({"chunk_id": chunk_id} if chunk_id else {}) | \
+        {k: str(d.metadata.get(k, "?")) for k in GRADE_FIELDS} | {"text": d.page_content}
+
+
+def jev_grade(question: str, parts: list[str], docs: list[Document],
+              mode: str | None = None) -> tuple[list[float], dict]:
+    """(probability each chunk is relevant, meta with summed cost/tokens and wall-clock latency);
+    raises DecisionsUnavailable."""
+    mode = mode or JEV_GRADE_MODE
+    started = time.perf_counter()
+    if mode == "batched":
+        state = {"question": question, "parts_of_the_question": parts,
+                 "chunks": [chunk_state(d, f"c{i}") for i, d in enumerate(docs)]}
+        questions = {f"rel_{i}": decisions.noul_q(
+            f"{GRADE_RULES} Grade only the chunk with chunk_id c{i}: does it help answer the question?",
+            true=f"Chunk c{i} contains information that helps answer the question or one of its parts.",
+            false=f"Chunk c{i} is off-topic, superseded, or for a different region or group than the question.")
+            for i in range(len(docs))}
+        answers, meta = decisions.decide(state, questions)
+        probs, metas = [float(answers[f"rel_{i}"]["noul"]) for i in range(len(docs))], [meta]
+    else:
+        question_spec = {"rel": decisions.noul_q(
+            f"{GRADE_RULES} Does the chunk help answer the question?",
+            true="The chunk contains information that helps answer the question or one of its parts.",
+            false="The chunk is off-topic, superseded, or for a different region or group than the question.")}
+        def one(d):
+            return decisions.decide({"question": question, "parts_of_the_question": parts,
+                                     "chunk": chunk_state(d)}, question_spec)
+        with ThreadPoolExecutor(max_workers=max(1, len(docs))) as pool:
+            results = list(pool.map(one, docs))
+        probs, metas = [float(a["rel"]["noul"]) for a, _ in results], [m for _, m in results]
+    return probs, {"mode": mode, "requests": len(metas), "latency_s": round(time.perf_counter() - started, 3),
+                   "input_tokens": sum(m["input_tokens"] or 0 for m in metas),
+                   "cost": sum(m["cost"] or 0 for m in metas)}
 
 
 # support check (Self-RAG's "IsSup" step): is the answer grounded in the chunks?
@@ -794,6 +845,14 @@ def retrieve(state: GraphState) -> dict:
 
 def grade_documents(state: GraphState) -> dict:
     docs = state["documents"]
+    if GRADER == "jev" and docs:
+        try:
+            probs, _ = jev_grade(state["question"], state["sub_questions"], docs)
+        except decisions.DecisionsUnavailable:
+            pass   # the LLM grader below takes over
+        else:
+            grades = [DocGrade(is_relevant=p >= TAU_REL, reason=f"jev p_rel={p:.2f}") for p in probs]
+            return graded(docs, grades)
     grades = grader.batch([
         {"question": state["question"], "parts": "; ".join(state["sub_questions"]), "chunk": d.page_content,
          **{k: d.metadata.get(k, "?") for k in ("doc_id", "title", "status", "applies_to")}}
@@ -803,6 +862,10 @@ def grade_documents(state: GraphState) -> dict:
     # check_support catches anything it wrongly lets through) rather than failing the whole question
     grades = [DocGrade(is_relevant=True, reason=f"not graded ({type(g).__name__}), kept")
               if isinstance(g, Exception) else g for g in grades]
+    return graded(docs, grades)
+
+
+def graded(docs: list[Document], grades: list[DocGrade]) -> dict:
     # no reducer on "documents", so this filtered list replaces the one retrieve wrote
     return {
         "documents": [d for d, g in zip(docs, grades) if g.is_relevant],
