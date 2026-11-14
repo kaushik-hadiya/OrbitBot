@@ -24,3 +24,6 @@ eval/results_*.jsonl
 
 # DeepEval local run cache
 .deepeval/
+
+# frontend
+node_modules/

@@ -37,6 +37,7 @@ from fastapi import FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.concurrency import run_in_threadpool  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.responses import StreamingResponse  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
 from langchain_core.messages import AIMessageChunk, RemoveMessage  # noqa: E402
 from pydantic import BaseModel, Field  # noqa: E402
 
@@ -306,6 +307,7 @@ def meta():
         "personas": personas,
         "examples": EXAMPLES,
         "max_question_chars": MAX_QUESTION_CHARS,
+        "documents": len(DOCS),
         "decision_model": {"decider": orbit.DECIDER, "grader": orbit.GRADER,
                            "support": orbit.SUPPORT, "useful": orbit.USEFUL},
     }
@@ -326,3 +328,10 @@ def kb_document(doc_id: str):
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+# the React UI (cd frontend && npm run build), served from the same origin as the API: no CORS needed.
+# Mounted last, so the API routes above take precedence over files.
+UI_DIR = Path("frontend/dist")
+if UI_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=UI_DIR, html=True), name="ui")
