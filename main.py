@@ -534,8 +534,7 @@ class SupportGrade(BaseModel):
         "fully supported.")
 
 
-support_prompt = ChatPromptTemplate.from_messages([
-    ("system",
+SUPPORT_RULES = (
      "You check whether an answer from OrbitBot is grounded in the retrieved chunks from Orbitra's "
      "knowledge base. A claim is supported if a chunk states it, if the user stated it in their "
      "question (e.g. their own salary, dates or counts), or if it is a direct calculation or "
@@ -547,14 +546,39 @@ support_prompt = ChatPromptTemplate.from_messages([
      "each chunk is prefixed with its doc_id, so check which document a claim comes from. Likewise, "
      "a suggested exception, approval, workaround or alternative is unsupported unless a chunk says "
      "it applies to the user's case; if a chunk limits it to other cases (other data classes, "
-     "incident types, situations), it is unsupported even though the chunk mentions it.\n\n"
-     "Chunks:\n{context}"),
+     "incident types, situations), it is unsupported even though the chunk mentions it.")
+support_prompt = ChatPromptTemplate.from_messages([
+    ("system", SUPPORT_RULES + "\n\nChunks:\n{context}"),
     ("human", "Question: {question}\n\nAnswer to check:\n{answer}"),
 ])
 # medium effort: one call per answer (not per chunk like the grader), and at low effort the check
 # missed most workarounds that a chunk rules out for the user's case
 support_llm = ChatOpenAI(**OPENROUTER, extra_body={"reasoning": {"effort": "medium"}})
 support_checker = support_prompt | support_llm.with_structured_output(SupportGrade).with_retry(**RETRY_BAD_OUTPUT)
+
+# SUPPORT=jev puts a Decisions-model gate in front of the LLM support check: if the probability that the
+# answer is fully supported is at least TAU_SUP, the answer passes without the LLM; otherwise (or if the
+# Decisions API fails) the LLM check runs as before and still lists the unsupported claims for revise_answer.
+# The gate can only skip the LLM, never fail an answer, so a strict threshold keeps faithfulness safe.
+SUPPORT = os.environ.get("SUPPORT", "llm")
+# 0.8: on eval/support_compare.py, 76% of real answers skip the LLM with no false pass on 80 real and 75
+# unsupported answers; the first false pass appears at 0.6
+TAU_SUP = float(os.environ.get("TAU_SUP", "0.8"))
+SUPPORT_QUESTION = {"fully_supported": decisions.noul_q(
+    SUPPORT_RULES + " Is every factual claim in the answer supported?",
+    true="Every factual claim in the answer is stated in, or directly calculated from, the chunks or the "
+         "user's question, and every exception, approval or alternative it suggests applies to the user's case.",
+    false="At least one number, name, rule, step, exception or alternative in the answer is not in the chunks "
+          "or the question, or is applied to a case the chunk is not about.")}
+
+
+def jev_support(question: str, docs: list[Document], answer: str) -> tuple[float, dict]:
+    """(probability the answer is fully supported, meta); raises DecisionsUnavailable."""
+    state = {"question": question, "chunks": [{"doc_id": d.metadata.get("doc_id", "?"),
+                                               "title": d.metadata.get("title", "?"), "text": d.page_content}
+                                              for d in docs], "answer": answer}
+    answers, meta = decisions.decide(state, SUPPORT_QUESTION)
+    return float(answers["fully_supported"]["noul"]), meta
 
 # used when the support check fails: edit the previous answer instead of starting over
 revise_prompt = ChatPromptTemplate.from_messages([
@@ -943,6 +967,13 @@ def revise_answer(state: GraphState) -> dict:
 
 
 def check_support(state: GraphState) -> dict:
+    if SUPPORT == "jev":
+        try:
+            p, _ = jev_support(state["question"], state["documents"], state["answer"])
+        except decisions.DecisionsUnavailable:
+            p = 0.0   # no gate: the LLM check below decides
+        if p >= TAU_SUP:
+            return {"support": "fully", "unsupported_claims": []}
     grade = support_checker.invoke({
         "context": format_docs(state["documents"]),
         "question": state["question"],  # the user's own numbers are valid inputs to the answer
