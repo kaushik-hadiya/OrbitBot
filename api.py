@@ -7,7 +7,8 @@ Try it:        curl -N -X POST localhost:7860/chat -H 'content-type: application
 POST /chat returns Server-Sent Events, one JSON object per `data:` line:
   {"type": "start", "thread_id": ...}            the conversation id: send it back for follow-ups
   {"type": "step",  "node": ..., "data": {...}}  one per graph node, as it finishes (the reflection timeline)
-  {"type": "token", "node": ..., "text": ...}    answer text while it's written (a revision starts a new draft)
+  {"type": "token", "node": ..., "text": ...}    answer text while it's written, only from routes with no checks after
+                                                 (a knowledge-base answer is checked first, so it arrives in `done`)
   {"type": "done",  "answer": ..., ...}          the final answer: it replaces any streamed draft
   {"type": "error", "message": ...}              the turn failed; the conversation so far is kept
 
@@ -79,8 +80,10 @@ EXAMPLES = [
     "Does Orbitra provide pet insurance?",
     "What's the hotel limit for a trip to Mumbai?",
 ]
-# nodes whose LLM output is the answer the user reads (the others return structured verdicts)
-ANSWER_NODES = {"generate", "revise_answer", "generate_direct", "agent"}
+# nodes whose LLM output is already the final answer, so it can be streamed as it's written.
+# generate / revise_answer are left out: check_support and check_useful may throw their draft away
+# (revise or search again), and the user should only see the answer that passed; it arrives in `done`.
+STREAMED_NODES = {"generate_direct", "agent"}
 CITATION = re.compile(r"\[([A-Z]{2,4}(?:-[A-Z0-9]+)+)\]")
 GENERIC_ERROR = "Sorry, something went wrong while answering. Please try again; the conversation so far is kept."
 
@@ -234,7 +237,7 @@ def run_turn(message: str, employee_id: str | None, thread_id: str):
             if mode == "messages":
                 chunk, meta = payload
                 node = meta.get("langgraph_node")
-                if node in ANSWER_NODES and isinstance(chunk, AIMessageChunk) and chunk.content \
+                if node in STREAMED_NODES and isinstance(chunk, AIMessageChunk) and chunk.content \
                         and not chunk.tool_call_chunks:
                     yield sse({"type": "token", "node": node, "text": chunk.content})
                 continue

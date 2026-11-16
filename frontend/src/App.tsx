@@ -10,8 +10,7 @@ type Turn = {
   id: number;
   question: string;
   steps: Step[];
-  draft: string; // answer text streamed so far (replaced by done.answer)
-  draftNode: string | null;
+  draft: string; // answer text streamed so far, only on routes with no checks after (replaced by done.answer)
   done: Done | null;
   error: string | null;
   running: boolean;
@@ -25,6 +24,35 @@ const ROUTE_LABEL: Record<string, string> = {
   out_of_scope: "Out of scope",
   distress: "Wellbeing",
 };
+
+// what OrbitBot is doing now, from the last step that finished (shown until the checked answer arrives)
+function statusFor(last: Step | undefined): string {
+  switch (last?.node) {
+    case undefined:
+    case "start_turn":
+      return "Reading your question…";
+    case "decide_retrieval":
+    case "plan_queries":
+    case "rewrite_query":
+      return "Searching the documents…";
+    case "retrieve":
+      return "Checking which sources are relevant…";
+    case "grade_documents":
+      return "Writing an answer…";
+    case "generate":
+    case "revise_answer":
+      return "Checking the answer against the sources…";
+    case "check_support":
+      return last.data?.support === "fully" ? "Making sure the answer helps…" : "Improving the answer…";
+    case "check_useful":
+      return last.data?.useful === false ? "Searching again…" : "Finishing up…";
+    case "agent":
+    case "tools":
+      return "Looking up your details…";
+    default:
+      return "Working on it…";
+  }
+}
 
 let nextId = 1;
 
@@ -78,7 +106,7 @@ export default function App() {
       setInput("");
       setTurns((ts) => [
         ...ts.map((t) => ({ ...t, open: false })),
-        { id, question: message, steps: [], draft: "", draftNode: null, done: null, error: null, running: true, open: true },
+        { id, question: message, steps: [], draft: "", done: null, error: null, running: true, open: true },
       ]);
       const controller = new AbortController();
       abortRef.current = controller;
@@ -89,19 +117,10 @@ export default function App() {
             setThreadId(e.thread_id);
             break;
           case "step":
-            update(id, (t) => ({
-              ...t,
-              steps: [...t.steps, { node: e.node, data: e.data, t: e.t }],
-              // a revision or a second search starts a new draft
-              draft: ["revise_answer", "rewrite_query"].includes(e.node) ? "" : t.draft,
-            }));
+            update(id, (t) => ({ ...t, steps: [...t.steps, { node: e.node, data: e.data, t: e.t }] }));
             break;
           case "token":
-            update(id, (t) =>
-              t.draftNode && t.draftNode !== e.node
-                ? { ...t, draft: e.text, draftNode: e.node }
-                : { ...t, draft: t.draft + e.text, draftNode: e.node },
-            );
+            update(id, (t) => ({ ...t, draft: t.draft + e.text }));
             break;
           case "done":
             update(id, (t) => ({ ...t, done: e, running: false }));
@@ -225,6 +244,10 @@ export default function App() {
                 <div className="draft">
                   <Markdown text={t.draft} />
                 </div>
+              ) : t.running ? (
+                <p className="status shimmer" role="status">
+                  {statusFor(t.steps[t.steps.length - 1])}
+                </p>
               ) : null}
               {t.error && <p className="error">{t.error}</p>}
             </div>

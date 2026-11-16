@@ -372,6 +372,11 @@ code {
   opacity: 0.75;
 }
 
+.status {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+}
+
 .error {
   color: var(--fail);
   background: var(--fail-soft);
